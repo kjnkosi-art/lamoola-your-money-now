@@ -73,8 +73,14 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4 py-8 font-nunito">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4 py-8 font-nunito relative overflow-hidden">
+      {/* Decorative citrus wheels */}
+      <img src={citrusWheel} alt="" aria-hidden="true" className="pointer-events-none select-none absolute -top-16 -right-24 w-72 opacity-[0.07] rotate-12" />
+      <img src={citrusWheel} alt="" aria-hidden="true" className="pointer-events-none select-none absolute -bottom-20 -left-28 w-96 opacity-[0.06] -rotate-[20deg]" />
+      <img src={citrusWheel} alt="" aria-hidden="true" className="pointer-events-none select-none absolute top-1/3 -left-10 w-40 opacity-[0.04] rotate-45" />
+      <img src={citrusWheel} alt="" aria-hidden="true" className="pointer-events-none select-none absolute bottom-12 right-8 w-28 opacity-[0.05] -rotate-[35deg]" />
+
+      <div className="w-full max-w-md relative z-10">
         <form
           onSubmit={handleLogin}
           className="rounded-xl border border-border bg-card p-8 space-y-6 shadow-lg"
