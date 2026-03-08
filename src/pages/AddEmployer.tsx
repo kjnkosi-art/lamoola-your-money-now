@@ -443,8 +443,61 @@ export default function AddEmployer() {
           />
         )}
 
-        {/* Placeholder for steps 4-5 */}
-        {currentStep > 3 && (
+        {/* ===== STEP 4 ===== */}
+        {currentStep === 4 && (
+          <Step4Contacts
+            data={step4}
+            onChange={updateStep4}
+            errors={errors}
+            saving={saving}
+            onBack={() => { setErrors({}); setSearchParams({ step: "3" }); }}
+            onNext={async () => {
+              const e = validateStep4(step4);
+              setErrors(e);
+              if (Object.keys(e).length > 0) return;
+              // Save employer progress
+              const ok = await saveEmployer("4 of 5 steps complete");
+              if (!ok) return;
+              // Save contacts to employer_contacts table
+              try {
+                const contacts = [
+                  {
+                    employer_id: employerId!,
+                    contact_type: "general" as const,
+                    first_name: step4.general.first_name.trim(),
+                    last_name: step4.general.last_name.trim(),
+                    email: step4.general.email.trim(),
+                    cellphone: step4.general.cellphone.trim(),
+                    landline: step4.general.landline.trim() || null,
+                  },
+                  {
+                    employer_id: employerId!,
+                    contact_type: "authorised_representative" as const,
+                    role_title: step4.authorised.role_title.trim(),
+                    first_name: step4.authorised.first_name.trim(),
+                    last_name: step4.authorised.last_name.trim(),
+                    email: step4.authorised.email.trim(),
+                    cellphone: step4.authorised.cellphone.trim(),
+                    landline: step4.authorised.landline.trim() || null,
+                  },
+                ];
+                // Delete existing contacts for this employer, then insert fresh
+                await supabase.from("employer_contacts").delete().eq("employer_id", employerId!);
+                const { error } = await supabase.from("employer_contacts").insert(contacts);
+                if (error) throw error;
+                toast.success("Step 4 complete");
+                setErrors({});
+                setSearchParams({ step: "5" });
+              } catch (err: any) {
+                toast.error(err.message || "Failed to save contacts");
+              }
+            }}
+            onSaveDraft={handleSaveDraft}
+          />
+        )}
+
+        {/* Placeholder for step 5 */}
+        {currentStep > 4 && (
           <Card>
             <CardContent className="py-16 text-center text-muted-foreground">
               <p className="text-lg font-medium">Step {currentStep}: {STEPS[currentStep - 1]}</p>
