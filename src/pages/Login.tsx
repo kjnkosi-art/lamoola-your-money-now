@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import logoGreenDark from "@/assets/logo-green-dark.png";
+import citrusWheel from "@/assets/citrus-wheel.png";
 
 const Login = () => {
   const navigate = useNavigate();
