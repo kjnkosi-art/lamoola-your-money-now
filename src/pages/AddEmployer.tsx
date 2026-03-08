@@ -415,8 +415,31 @@ export default function AddEmployer() {
           </Card>
         )}
 
-        {/* Placeholder for steps 3-5 */}
-        {currentStep > 2 && (
+        {/* ===== STEP 3 ===== */}
+        {currentStep === 3 && (
+          <Step3PolicyConfig
+            data={step3}
+            onChange={updateStep3}
+            errors={errors}
+            saving={saving}
+            onBack={() => { setErrors({}); setSearchParams({ step: "2" }); }}
+            onNext={async () => {
+              const e = validateStep3(step3);
+              setErrors(e);
+              if (Object.keys(e).length > 0) return;
+              const ok = await saveEmployer("3 of 5 steps complete");
+              if (ok) {
+                toast.success("Step 3 complete");
+                setErrors({});
+                setSearchParams({ step: "4" });
+              }
+            }}
+            onSaveDraft={handleSaveDraft}
+          />
+        )}
+
+        {/* Placeholder for steps 4-5 */}
+        {currentStep > 3 && (
           <Card>
             <CardContent className="py-16 text-center text-muted-foreground">
               <p className="text-lg font-medium">Step {currentStep}: {STEPS[currentStep - 1]}</p>
