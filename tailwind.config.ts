@@ -13,7 +13,16 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        nunito: ["Nunito", "sans-serif"],
+      },
       colors: {
+        lamoola: {
+          orange: "#EB5E07",
+          navy: "#062247",
+          green: "#6AE809",
+          yellow: "#ECF01F",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
