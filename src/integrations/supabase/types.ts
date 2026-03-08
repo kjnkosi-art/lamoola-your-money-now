@@ -583,7 +583,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_employer_id: { Args: { _user_id: string }; Returns: string }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_lamoola_staff: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       account_type: "Cheque" | "Savings" | "Transmission"
