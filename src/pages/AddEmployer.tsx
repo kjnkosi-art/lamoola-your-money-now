@@ -142,6 +142,8 @@ export default function AddEmployer() {
         payroll_period_start: step2.payroll_period_start.trim() || null,
         payroll_period_end: step2.payroll_period_end.trim() || null,
         payroll_export_format: step2.payroll_export_format || null,
+        fee_flat_amount: 25.00,
+        fee_percent: 0,
         status: "Draft" as const,
         onboarding_progress: progressLabel,
       };
