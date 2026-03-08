@@ -20,8 +20,7 @@ export function AdminTopBar({ firstName, lastName }: AdminTopBarProps) {
   const initials = `${(firstName || "L")[0]}${(lastName || "A")[0]}`.toUpperCase();
 
   return (
-    <header className="h-14 flex items-center justify-between px-4 border-b-2 border-accent"
-      style={{ backgroundColor: "#111111" }}>
+    <header className="h-14 flex items-center justify-between px-4 border-b-2 border-accent bg-secondary">
       <div className="flex items-center gap-2">
         <SidebarTrigger className="text-white hover:bg-white/10" />
       </div>
