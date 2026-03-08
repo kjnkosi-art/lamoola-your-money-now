@@ -73,26 +73,8 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-start bg-background px-4 py-8 font-nunito">
-      <h2 className="text-lg font-bold text-foreground mb-6">
-        Compare logo options — pick your favourite
-      </h2>
-
-      {/* Logo comparison grid */}
-      <div className="w-full max-w-5xl grid grid-cols-2 md:grid-cols-3 gap-4 mb-10">
-        {logos.map((logo) => (
-          <div
-            key={logo.label}
-            className={`rounded-xl border border-border p-6 flex flex-col items-center justify-center gap-3 shadow-sm ${
-              logo.dark ? "bg-secondary" : "bg-card"
-            }`}
-          >
-            <img
-              src={logo.src}
-              alt={logo.label}
-              className="h-14 w-auto object-contain"
-            />
-            <span className={`text-xs font-medium ${logo.dark ? "text-secondary-foreground/70" : "text-muted-foreground"}`}>
-              {logo.label}
+      {/* Login Card */}
+      <div className="w-full max-w-md">
             </span>
           </div>
         ))}
