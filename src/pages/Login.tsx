@@ -75,10 +75,9 @@ const Login = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4 py-8 font-nunito relative overflow-hidden">
       {/* Decorative citrus wheel cluster — bottom-left corner */}
-      <img src={citrusWheel} alt="" aria-hidden="true" className="pointer-events-none select-none absolute -bottom-16 -left-20 w-72 opacity-80 -rotate-[15deg]" style={{ filter: 'brightness(1.1) saturate(1.3) hue-rotate(-10deg)' }} />
-      <img src={citrusWheel} alt="" aria-hidden="true" className="pointer-events-none select-none absolute -bottom-8 left-24 w-48 opacity-80 rotate-[25deg]" style={{ filter: 'brightness(1.1) saturate(1.3) hue-rotate(-10deg)' }} />
-      <img src={citrusWheel} alt="" aria-hidden="true" className="pointer-events-none select-none absolute bottom-16 -left-10 w-36 opacity-75 rotate-[50deg]" style={{ filter: 'brightness(1.1) saturate(1.3) hue-rotate(-10deg)' }} />
-      <img src={citrusWheel} alt="" aria-hidden="true" className="pointer-events-none select-none absolute -bottom-24 left-44 w-28 opacity-70 -rotate-[40deg]" style={{ filter: 'brightness(1.1) saturate(1.3) hue-rotate(-10deg)' }} />
+      <img src={citrusWheel} alt="" aria-hidden="true" className="pointer-events-none select-none absolute -bottom-20 -left-24 w-72 opacity-100 -rotate-[15deg]" style={{ filter: 'brightness(1.1) saturate(1.3) hue-rotate(-10deg)' }} />
+      <img src={citrusWheel} alt="" aria-hidden="true" className="pointer-events-none select-none absolute bottom-32 -left-12 w-44 opacity-100 rotate-[30deg]" style={{ filter: 'brightness(1.1) saturate(1.3) hue-rotate(-10deg)' }} />
+      <img src={citrusWheel} alt="" aria-hidden="true" className="pointer-events-none select-none absolute -bottom-6 left-44 w-32 opacity-100 -rotate-[40deg]" style={{ filter: 'brightness(1.1) saturate(1.3) hue-rotate(-10deg)' }} />
 
       <div className="w-full max-w-md relative z-10">
         <form
