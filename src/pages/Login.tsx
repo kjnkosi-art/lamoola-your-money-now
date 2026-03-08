@@ -5,21 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import logoYellow from "@/assets/logo-yellow.png";
 import logoGreenDark from "@/assets/logo-green-dark.png";
-import logoBlack from "@/assets/logo-black.png";
-import logoGreenWhite from "@/assets/logo-green-white.png";
-import logoGreenDark2 from "@/assets/logo-green-dark2.png";
-import logoBlack2 from "@/assets/logo-black2.png";
-
-const logos = [
-  { src: logoGreenDark, label: "Option A – Green on dark text" },
-  { src: logoGreenDark2, label: "Option B – Green on dark text (alt)" },
-  { src: logoYellow, label: "Option C – Yellow accent" },
-  { src: logoBlack, label: "Option D – Black with faded elements" },
-  { src: logoBlack2, label: "Option E – Black with faded (alt)" },
-  { src: logoGreenWhite, label: "Option F – Green on white text", dark: true },
-];
 
 const Login = () => {
   const navigate = useNavigate();
