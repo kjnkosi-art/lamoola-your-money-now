@@ -86,14 +86,6 @@ export default function AddEmployer() {
     setStep3((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
   };
-    setStep1((prev) => ({ ...prev, [field]: value }));
-    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
-  };
-
-  const updateStep2 = (field: string, value: string) => {
-    setStep2((prev) => ({ ...prev, [field]: value }));
-    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
-  };
 
   const validateStep1 = () => {
     const e: Record<string, string> = {};
