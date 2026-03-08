@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Check } from "lucide-react";
+import Step3PolicyConfig, { Step3Data, defaultStep3, validateStep3 } from "@/components/employer/Step3PolicyConfig";
 
 const STEPS = [
   "Company Details",
@@ -68,6 +69,9 @@ export default function AddEmployer() {
     payroll_export_format: "",
   });
 
+  // Step 3 fields
+  const [step3, setStep3] = useState<Step3Data>(defaultStep3);
+
   const updateStep1 = (field: string, value: string) => {
     setStep1((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
@@ -75,6 +79,11 @@ export default function AddEmployer() {
 
   const updateStep2 = (field: string, value: string) => {
     setStep2((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
+  };
+
+  const updateStep3 = (field: string, value: string) => {
+    setStep3((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
@@ -142,8 +151,13 @@ export default function AddEmployer() {
         payroll_period_start: step2.payroll_period_start.trim() || null,
         payroll_period_end: step2.payroll_period_end.trim() || null,
         payroll_export_format: step2.payroll_export_format || null,
-        fee_flat_amount: 25.00,
-        fee_percent: 0,
+        employer_approval_mode: (step3.employer_approval_mode || "Auto-Approved") as any,
+        max_percent_earned: Number(step3.max_percent_earned) || 30,
+        max_per_transaction: Number(step3.max_per_transaction) || null,
+        max_per_pay_period: Number(step3.max_per_pay_period) || null,
+        cutoff_days: Number(step3.cutoff_days) ?? 3,
+        fee_percent: Number(step3.fee_percent) || 0,
+        fee_flat_amount: Number(step3.fee_flat_amount) || 25,
         status: "Draft" as const,
         onboarding_progress: progressLabel,
       };
@@ -393,8 +407,31 @@ export default function AddEmployer() {
           </Card>
         )}
 
-        {/* Placeholder for steps 3-5 */}
-        {currentStep > 2 && (
+        {/* ===== STEP 3 ===== */}
+        {currentStep === 3 && (
+          <Step3PolicyConfig
+            data={step3}
+            onChange={updateStep3}
+            errors={errors}
+            saving={saving}
+            onBack={() => { setErrors({}); setSearchParams({ step: "2" }); }}
+            onNext={async () => {
+              const e = validateStep3(step3);
+              setErrors(e);
+              if (Object.keys(e).length > 0) return;
+              const ok = await saveEmployer("3 of 5 steps complete");
+              if (ok) {
+                toast.success("Step 3 complete");
+                setErrors({});
+                setSearchParams({ step: "4" });
+              }
+            }}
+            onSaveDraft={handleSaveDraft}
+          />
+        )}
+
+        {/* Placeholder for steps 4-5 */}
+        {currentStep > 3 && (
           <Card>
             <CardContent className="py-16 text-center text-muted-foreground">
               <p className="text-lg font-medium">Step {currentStep}: {STEPS[currentStep - 1]}</p>
