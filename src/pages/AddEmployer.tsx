@@ -73,6 +73,9 @@ export default function AddEmployer() {
   // Step 3 fields
   const [step3, setStep3] = useState<Step3Data>(defaultStep3);
 
+  // Step 4 fields
+  const [step4, setStep4] = useState<Step4Data>(defaultStep4);
+
   const updateStep1 = (field: string, value: string) => {
     setStep1((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
