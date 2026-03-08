@@ -5,21 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import logoYellow from "@/assets/logo-yellow.png";
 import logoGreenDark from "@/assets/logo-green-dark.png";
-import logoBlack from "@/assets/logo-black.png";
-import logoGreenWhite from "@/assets/logo-green-white.png";
-import logoGreenDark2 from "@/assets/logo-green-dark2.png";
-import logoBlack2 from "@/assets/logo-black2.png";
-
-const logos = [
-  { src: logoGreenDark, label: "Option A – Green on dark text" },
-  { src: logoGreenDark2, label: "Option B – Green on dark text (alt)" },
-  { src: logoYellow, label: "Option C – Yellow accent" },
-  { src: logoBlack, label: "Option D – Black with faded elements" },
-  { src: logoBlack2, label: "Option E – Black with faded (alt)" },
-  { src: logoGreenWhite, label: "Option F – Green on white text", dark: true },
-];
 
 const Login = () => {
   const navigate = useNavigate();
@@ -86,33 +72,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-start bg-background px-4 py-8 font-nunito">
-      <h2 className="text-lg font-bold text-foreground mb-6">
-        Compare logo options — pick your favourite
-      </h2>
-
-      {/* Logo comparison grid */}
-      <div className="w-full max-w-5xl grid grid-cols-2 md:grid-cols-3 gap-4 mb-10">
-        {logos.map((logo) => (
-          <div
-            key={logo.label}
-            className={`rounded-xl border border-border p-6 flex flex-col items-center justify-center gap-3 shadow-sm ${
-              logo.dark ? "bg-secondary" : "bg-card"
-            }`}
-          >
-            <img
-              src={logo.src}
-              alt={logo.label}
-              className="h-14 w-auto object-contain"
-            />
-            <span className={`text-xs font-medium ${logo.dark ? "text-secondary-foreground/70" : "text-muted-foreground"}`}>
-              {logo.label}
-            </span>
-          </div>
-        ))}
-      </div>
-
-      {/* Login Card */}
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4 py-8 font-nunito">
       <div className="w-full max-w-md">
         <form
           onSubmit={handleLogin}
