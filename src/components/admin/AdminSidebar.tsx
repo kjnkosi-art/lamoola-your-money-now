@@ -99,7 +99,7 @@ export function AdminSidebar({ pendingApprovalsCount = 0 }: AdminSidebarProps) {
     <Sidebar collapsible="icon" className="border-r border-border bg-card">
       <SidebarHeader className="p-4 border-b border-border">
         {!collapsed && (
-          <img src={logoGreenDark} alt="Lamoola" className="h-8 w-auto" />
+          <img src={logoGreenDark} alt="Lamoola" className="h-8 w-auto object-contain" style={{ imageRendering: 'auto' }} />
         )}
       </SidebarHeader>
       <SidebarContent className="bg-card">
