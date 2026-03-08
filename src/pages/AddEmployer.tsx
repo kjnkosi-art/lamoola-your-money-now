@@ -12,6 +12,7 @@ import { toast } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Check } from "lucide-react";
 import Step3PolicyConfig, { Step3Data, defaultStep3, validateStep3 } from "@/components/employer/Step3PolicyConfig";
+import Step4Contacts, { Step4Data, defaultStep4, validateStep4 } from "@/components/employer/Step4Contacts";
 
 const STEPS = [
   "Company Details",
@@ -72,6 +73,9 @@ export default function AddEmployer() {
   // Step 3 fields
   const [step3, setStep3] = useState<Step3Data>(defaultStep3);
 
+  // Step 4 fields
+  const [step4, setStep4] = useState<Step4Data>(defaultStep4);
+
   const updateStep1 = (field: string, value: string) => {
     setStep1((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
@@ -85,6 +89,15 @@ export default function AddEmployer() {
   const updateStep3 = (field: string, value: string) => {
     setStep3((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
+  };
+
+  const updateStep4 = (section: "general" | "authorised", field: string, value: string) => {
+    setStep4((prev) => ({
+      ...prev,
+      [section]: { ...prev[section], [field]: value },
+    }));
+    const key = `${section}.${field}`;
+    if (errors[key]) setErrors((prev) => ({ ...prev, [key]: "" }));
   };
 
   const validateStep1 = () => {
@@ -430,8 +443,61 @@ export default function AddEmployer() {
           />
         )}
 
-        {/* Placeholder for steps 4-5 */}
-        {currentStep > 3 && (
+        {/* ===== STEP 4 ===== */}
+        {currentStep === 4 && (
+          <Step4Contacts
+            data={step4}
+            onChange={updateStep4}
+            errors={errors}
+            saving={saving}
+            onBack={() => { setErrors({}); setSearchParams({ step: "3" }); }}
+            onNext={async () => {
+              const e = validateStep4(step4);
+              setErrors(e);
+              if (Object.keys(e).length > 0) return;
+              // Save employer progress
+              const ok = await saveEmployer("4 of 5 steps complete");
+              if (!ok) return;
+              // Save contacts to employer_contacts table
+              try {
+                const contacts = [
+                  {
+                    employer_id: employerId!,
+                    contact_type: "general" as const,
+                    first_name: step4.general.first_name.trim(),
+                    last_name: step4.general.last_name.trim(),
+                    email: step4.general.email.trim(),
+                    cellphone: step4.general.cellphone.trim(),
+                    landline: step4.general.landline.trim() || null,
+                  },
+                  {
+                    employer_id: employerId!,
+                    contact_type: "authorised_representative" as const,
+                    role_title: step4.authorised.role_title.trim(),
+                    first_name: step4.authorised.first_name.trim(),
+                    last_name: step4.authorised.last_name.trim(),
+                    email: step4.authorised.email.trim(),
+                    cellphone: step4.authorised.cellphone.trim(),
+                    landline: step4.authorised.landline.trim() || null,
+                  },
+                ];
+                // Delete existing contacts for this employer, then insert fresh
+                await supabase.from("employer_contacts").delete().eq("employer_id", employerId!);
+                const { error } = await supabase.from("employer_contacts").insert(contacts);
+                if (error) throw error;
+                toast.success("Step 4 complete");
+                setErrors({});
+                setSearchParams({ step: "5" });
+              } catch (err: any) {
+                toast.error(err.message || "Failed to save contacts");
+              }
+            }}
+            onSaveDraft={handleSaveDraft}
+          />
+        )}
+
+        {/* Placeholder for step 5 */}
+        {currentStep > 4 && (
           <Card>
             <CardContent className="py-16 text-center text-muted-foreground">
               <p className="text-lg font-medium">Step {currentStep}: {STEPS[currentStep - 1]}</p>
