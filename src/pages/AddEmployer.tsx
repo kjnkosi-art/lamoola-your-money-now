@@ -69,7 +69,23 @@ export default function AddEmployer() {
     payroll_export_format: "",
   });
 
+  // Step 3 fields
+  const [step3, setStep3] = useState<Step3Data>(defaultStep3);
+
   const updateStep1 = (field: string, value: string) => {
+    setStep1((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
+  };
+
+  const updateStep2 = (field: string, value: string) => {
+    setStep2((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
+  };
+
+  const updateStep3 = (field: string, value: string) => {
+    setStep3((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
+  };
     setStep1((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
   };
