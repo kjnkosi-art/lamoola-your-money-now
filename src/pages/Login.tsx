@@ -72,15 +72,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-start bg-background px-4 py-8 font-nunito">
-      {/* Login Card */}
-      <div className="w-full max-w-md">
-            </span>
-          </div>
-        ))}
-      </div>
-
-      {/* Login Card */}
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4 py-8 font-nunito">
       <div className="w-full max-w-md">
         <form
           onSubmit={handleLogin}
