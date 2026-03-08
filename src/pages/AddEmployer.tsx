@@ -91,6 +91,15 @@ export default function AddEmployer() {
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
+  const updateStep4 = (section: "general" | "authorised", field: string, value: string) => {
+    setStep4((prev) => ({
+      ...prev,
+      [section]: { ...prev[section], [field]: value },
+    }));
+    const key = `${section}.${field}`;
+    if (errors[key]) setErrors((prev) => ({ ...prev, [key]: "" }));
+  };
+
   const validateStep1 = () => {
     const e: Record<string, string> = {};
     if (!step1.company_legal_name.trim()) e.company_legal_name = "Required";
