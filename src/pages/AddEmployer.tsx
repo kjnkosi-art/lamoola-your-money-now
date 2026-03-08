@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Check } from "lucide-react";
+import Step3PolicyConfig, { Step3Data, defaultStep3, validateStep3 } from "@/components/employer/Step3PolicyConfig";
 
 const STEPS = [
   "Company Details",
