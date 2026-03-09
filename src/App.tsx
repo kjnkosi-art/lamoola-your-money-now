@@ -13,6 +13,7 @@ import EmployeeProfile from "./pages/EmployeeProfile";
 import EmployeeDashboard from "./pages/EmployeeDashboard";
 import RequestSalaryAccess from "./pages/RequestSalaryAccess";
 import ApprovalQueue from "./pages/ApprovalQueue";
+import AdminDisbursements from "./pages/AdminDisbursements";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
           <Route path="/employee/request" element={<RequestSalaryAccess />} />
           <Route path="/admin/approvals" element={<ApprovalQueue />} />
+          <Route path="/admin/disbursements" element={<AdminDisbursements />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
