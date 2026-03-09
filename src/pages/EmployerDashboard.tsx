@@ -36,7 +36,7 @@ const EmployerDashboard = () => {
   const [recentPayoutsTotal, setRecentPayoutsTotal] = useState(0);
   const [activity, setActivity] = useState<RecentActivity[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const [showChangePw, setShowChangePw] = useState(false);
   useEffect(() => {
     const load = async () => {
       const { data: { user } } = await supabase.auth.getUser();
