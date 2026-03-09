@@ -162,7 +162,16 @@ export default function AdminDisbursements() {
     (r) => resolveStatus(r) === "Paid" && r.payout?.payout_completed_at && r.payout.payout_completed_at >= monthStart
   );
 
+  const failedRows = rows.filter((r) => resolveStatus(r) === "Failed");
+  const paidRows = rows.filter((r) => resolveStatus(r) === "Paid");
+
   const sumAmount = (arr: DisbursementRow[]) => arr.reduce((s, r) => s + r.amount_requested, 0);
+
+  const filteredRows = activeTab === "all" ? rows
+    : activeTab === "ready" ? readyToPay
+    : activeTab === "processing" ? processingRows
+    : activeTab === "paid" ? paidRows
+    : failedRows;
 
   const handlePayNow = async (row: DisbursementRow) => {
     setProcessing(row.request_id);
