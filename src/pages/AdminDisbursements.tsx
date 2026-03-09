@@ -70,6 +70,10 @@ export default function AdminDisbursements() {
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState<string | null>(null);
   const [batchProcessing, setBatchProcessing] = useState(false);
+  const [activeTab, setActiveTab] = useState<string>("all");
+  const [failModalOpen, setFailModalOpen] = useState(false);
+  const [failTarget, setFailTarget] = useState<DisbursementRow | null>(null);
+  const [failReason, setFailReason] = useState("");
 
   const fetchData = async () => {
     // Fetch approved/processed requests
