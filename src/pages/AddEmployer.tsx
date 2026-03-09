@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Check } from "lucide-react";
 import Step3PolicyConfig, { Step3Data, defaultStep3, validateStep3 } from "@/components/employer/Step3PolicyConfig";
 import Step4Contacts, { Step4Data, defaultStep4, validateStep4 } from "@/components/employer/Step4Contacts";
+import Step5ReviewConfirm from "@/components/employer/Step5ReviewConfirm";
 
 const STEPS = [
   "Company Details",
