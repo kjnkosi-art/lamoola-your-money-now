@@ -13,6 +13,7 @@ import EmployeeProfile from "./pages/EmployeeProfile";
 import EmployeeDashboard from "./pages/EmployeeDashboard";
 import RequestSalaryAccess from "./pages/RequestSalaryAccess";
 import ApprovalQueue from "./pages/ApprovalQueue";
+import AdminDisbursements from "./pages/AdminDisbursements";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
