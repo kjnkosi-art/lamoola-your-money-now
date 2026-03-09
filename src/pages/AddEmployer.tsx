@@ -495,6 +495,29 @@ export default function AddEmployer() {
                 await supabase.from("employer_contacts").delete().eq("employer_id", employerId!);
                 const { error } = await supabase.from("employer_contacts").insert(contacts);
                 if (error) throw error;
+
+                // Create auth account for general contact (employer_admin)
+                const contactEmail = step4.general.email.trim();
+                const tempPassword = generateTempPassword();
+                const { data: fnData, error: fnError } = await supabase.functions.invoke("create-user-account", {
+                  body: {
+                    email: contactEmail,
+                    password: tempPassword,
+                    first_name: step4.general.first_name.trim(),
+                    last_name: step4.general.last_name.trim(),
+                    role: "employer_admin",
+                    employer_id: employerId,
+                  },
+                });
+
+                if (fnError || fnData?.error) {
+                  toast.error("Contacts saved, but employer admin account creation failed: " + (fnData?.error || fnError?.message));
+                } else {
+                  toast.success("Step 4 complete — employer admin account created.");
+                  setTempPasswordModal({ open: true, email: contactEmail, password: tempPassword });
+                  return; // Don't advance yet — modal is open
+                }
+
                 toast.success("Step 4 complete");
                 setErrors({});
                 setSearchParams({ step: "5" });
