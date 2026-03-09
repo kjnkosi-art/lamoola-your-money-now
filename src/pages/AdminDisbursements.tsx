@@ -231,6 +231,68 @@ export default function AdminDisbursements() {
     setProcessing(null);
   };
 
+  const handleMarkPaid = async (row: DisbursementRow) => {
+    if (!row.payout) return;
+    setProcessing(row.request_id);
+    const { data: { user } } = await supabase.auth.getUser();
+
+    const { error } = await supabase
+      .from("payouts")
+      .update({
+        payout_status: "Paid",
+        payout_completed_at: new Date().toISOString(),
+      })
+      .eq("payout_id", row.payout.payout_id);
+
+    if (error) {
+      toast({ title: "Update failed", description: error.message, variant: "destructive" });
+    } else {
+      await supabase.from("audit_trail").insert({
+        user_id: user?.id,
+        action_type: "payout_completed" as const,
+        object_type: "payout",
+        object_id: row.payout.payout_id,
+        details: { amount: row.amount_requested },
+      });
+      toast({ title: "Payment confirmed", description: `${formatZAR(row.amount_requested)} marked as paid.` });
+      await fetchData();
+    }
+    setProcessing(null);
+  };
+
+  const handleMarkFailed = async () => {
+    if (!failTarget?.payout) return;
+    setProcessing(failTarget.request_id);
+    const { data: { user } } = await supabase.auth.getUser();
+
+    const { error } = await supabase
+      .from("payouts")
+      .update({
+        payout_status: "Failed",
+        payout_failed_at: new Date().toISOString(),
+        failure_reason: failReason || "No reason provided",
+      })
+      .eq("payout_id", failTarget.payout.payout_id);
+
+    if (error) {
+      toast({ title: "Update failed", description: error.message, variant: "destructive" });
+    } else {
+      await supabase.from("audit_trail").insert({
+        user_id: user?.id,
+        action_type: "payout_failed" as const,
+        object_type: "payout",
+        object_id: failTarget.payout.payout_id,
+        details: { amount: failTarget.amount_requested, failure_reason: failReason },
+      });
+      toast({ title: "Payout marked as failed", description: `Failure reason recorded.` });
+      await fetchData();
+    }
+    setProcessing(null);
+    setFailModalOpen(false);
+    setFailTarget(null);
+    setFailReason("");
+  };
+
   const handleProcessBatch = async () => {
     const ready = rows.filter((r) => resolveStatus(r) === "Approved");
     if (ready.length === 0) {
