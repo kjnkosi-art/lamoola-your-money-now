@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,23 +13,13 @@ import {
 } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import {
-  DollarSign,
-  Loader2,
-  CheckCircle,
-  RefreshCw,
-  Eye,
-  Zap,
-} from "lucide-react";
+import { DollarSign, Clock, CheckCircle, AlertTriangle, Loader2 } from "lucide-react";
 import { format, startOfMonth } from "date-fns";
 
-// ── types ──
 interface DisbursementRow {
   request_id: string;
   amount_requested: number;
   service_fee: number | null;
-  fee_percent_applied: number | null;
-  fee_flat_applied: number | null;
   amount_to_receive: number | null;
   request_status: string;
   created_at: string;
@@ -38,26 +28,30 @@ interface DisbursementRow {
   payout: {
     payout_id: string;
     payout_status: string;
-    payout_initiated_at: string | null;
     payout_completed_at: string | null;
+    retry_count: number | null;
   } | null;
 }
 
-// ── helpers ──
-const fmt = (n: number) =>
-  `R${n.toLocaleString("en-ZA", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-
-const statusConfig: Record<string, { label: string; classes: string }> = {
-  Approved: { label: "Approved", classes: "bg-accent/15 text-accent-foreground border-accent" },
-  Processing: { label: "Processing", classes: "bg-warning/15 text-warning-foreground border-warning" },
-  Paid: { label: "Paid", classes: "bg-accent/15 text-accent-foreground border-accent" },
-  Failed: { label: "Failed", classes: "bg-destructive/15 text-destructive border-destructive" },
-};
-
-function resolvedStatus(row: DisbursementRow): string {
-  if (row.payout) return row.payout.payout_status; // Processing | Paid | Failed
-  return row.request_status; // Approved
+function formatZAR(n: number) {
+  return `R${n.toLocaleString("en-ZA", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
+
+type ResolvedStatus = "Approved" | "Processing" | "Paid" | "Failed";
+
+function resolveStatus(row: DisbursementRow): ResolvedStatus {
+  if (row.payout) {
+    return row.payout.payout_status as ResolvedStatus;
+  }
+  return "Approved";
+}
+
+const statusConfig: Record<ResolvedStatus, { variant: "default" | "secondary" | "destructive" | "outline"; className: string }> = {
+  Approved: { variant: "default", className: "bg-accent text-accent-foreground" },
+  Processing: { variant: "secondary", className: "bg-amber-500 text-white" },
+  Paid: { variant: "default", className: "bg-accent text-accent-foreground" },
+  Failed: { variant: "destructive", className: "" },
+};
 
 export default function AdminDisbursements() {
   const { toast } = useToast();
@@ -66,13 +60,11 @@ export default function AdminDisbursements() {
   const [processing, setProcessing] = useState<string | null>(null);
   const [batchProcessing, setBatchProcessing] = useState(false);
 
-  const fetchData = useCallback(async () => {
-    // Fetch approved/processed requests with related payouts
+  const fetchData = async () => {
+    // Fetch approved/processed requests
     const { data: requests, error } = await supabase
       .from("requests")
-      .select(
-        "request_id, amount_requested, service_fee, fee_percent_applied, fee_flat_applied, amount_to_receive, request_status, created_at, employee:employees!requests_employee_id_fkey(first_name, last_name), employer:employers!requests_employer_id_fkey(company_legal_name)"
-      )
+      .select("request_id, amount_requested, service_fee, amount_to_receive, request_status, created_at, employee:employees!requests_employee_id_fkey(first_name, last_name), employer:employers!requests_employer_id_fkey(company_legal_name)")
       .in("request_status", ["Approved", "Declined"])
       .order("created_at", { ascending: false });
 
@@ -82,80 +74,111 @@ export default function AdminDisbursements() {
       return;
     }
 
-    // Only keep Approved requests for the disbursements view
+    // Only keep Approved requests (we need them for payouts)
     const approvedRequests = (requests || []).filter((r: any) => r.request_status === "Approved");
-
-    // Fetch all payouts
     const requestIds = approvedRequests.map((r: any) => r.request_id);
-    let payoutsMap: Record<string, any> = {};
 
+    // Fetch payouts for these requests
+    let payoutMap: Record<string, any> = {};
     if (requestIds.length > 0) {
       const { data: payouts } = await supabase
         .from("payouts")
-        .select("payout_id, payout_status, payout_initiated_at, payout_completed_at, request_id")
+        .select("payout_id, payout_status, payout_completed_at, retry_count, request_id")
         .in("request_id", requestIds);
 
-      (payouts || []).forEach((p: any) => {
-        payoutsMap[p.request_id] = p;
-      });
+      if (payouts) {
+        for (const p of payouts) {
+          payoutMap[p.request_id] = p;
+        }
+      }
     }
 
-    const mapped: DisbursementRow[] = approvedRequests.map((r: any) => ({
-      ...r,
-      employee: r.employee,
-      employer: r.employer,
-      payout: payoutsMap[r.request_id] || null,
-    }));
+    // Also fetch payouts that aren't in approved list (e.g. already have payout records)
+    const { data: allPayouts } = await supabase
+      .from("payouts")
+      .select("payout_id, payout_status, payout_completed_at, retry_count, request_id, request:requests!payouts_request_id_fkey(request_id, amount_requested, service_fee, amount_to_receive, request_status, created_at, employee:employees!requests_employee_id_fkey(first_name, last_name), employer:employers!requests_employer_id_fkey(company_legal_name))")
+      .order("payout_initiated_at", { ascending: false });
 
-    setRows(mapped);
+    // Build combined rows: approved without payout + all with payouts
+    const combinedMap: Record<string, DisbursementRow> = {};
+
+    for (const req of approvedRequests) {
+      combinedMap[req.request_id] = {
+        ...(req as any),
+        payout: payoutMap[req.request_id] || null,
+      };
+    }
+
+    if (allPayouts) {
+      for (const p of allPayouts) {
+        const req = (p as any).request;
+        if (req) {
+          combinedMap[req.request_id] = {
+            request_id: req.request_id,
+            amount_requested: req.amount_requested,
+            service_fee: req.service_fee,
+            amount_to_receive: req.amount_to_receive,
+            request_status: req.request_status,
+            created_at: req.created_at,
+            employee: req.employee,
+            employer: req.employer,
+            payout: {
+              payout_id: p.payout_id,
+              payout_status: p.payout_status,
+              payout_completed_at: p.payout_completed_at,
+              retry_count: p.retry_count,
+            },
+          };
+        }
+      }
+    }
+
+    setRows(Object.values(combinedMap));
     setLoading(false);
-  }, []);
+  };
 
-  useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => { fetchData(); }, []);
 
-  // ── stats ──
-  const readyRows = rows.filter((r) => resolvedStatus(r) === "Approved");
-  const processingRows = rows.filter((r) => resolvedStatus(r) === "Processing");
+  // Stats
+  const readyToPay = rows.filter((r) => resolveStatus(r) === "Approved");
+  const processingRows = rows.filter((r) => resolveStatus(r) === "Processing");
   const monthStart = startOfMonth(new Date()).toISOString();
-  const paidRows = rows.filter(
-    (r) => resolvedStatus(r) === "Paid" && r.payout?.payout_completed_at && r.payout.payout_completed_at >= monthStart
+  const paidThisMonth = rows.filter(
+    (r) => resolveStatus(r) === "Paid" && r.payout?.payout_completed_at && r.payout.payout_completed_at >= monthStart
   );
 
-  const readyTotal = readyRows.reduce((s, r) => s + r.amount_requested, 0);
-  const processingTotal = processingRows.reduce((s, r) => s + r.amount_requested, 0);
-  const paidTotal = paidRows.reduce((s, r) => s + r.amount_requested, 0);
+  const sumAmount = (arr: DisbursementRow[]) => arr.reduce((s, r) => s + r.amount_requested, 0);
 
-  // ── actions ──
-  const createPayout = async (requestId: string) => {
-    setProcessing(requestId);
+  const handlePayNow = async (row: DisbursementRow) => {
+    setProcessing(row.request_id);
     const { data: { user } } = await supabase.auth.getUser();
 
     const { error } = await supabase.from("payouts").insert({
-      request_id: requestId,
+      request_id: row.request_id,
       payout_status: "Processing",
       payout_initiated_at: new Date().toISOString(),
       payout_initiated_by: user?.id,
     });
 
     if (error) {
-      toast({ title: "Failed to create payout", description: error.message, variant: "destructive" });
+      toast({ title: "Payout failed", description: error.message, variant: "destructive" });
     } else {
       await supabase.from("audit_trail").insert({
         user_id: user?.id,
         action_type: "payout_initiated" as const,
-        object_type: "request",
-        object_id: requestId,
+        object_type: "payout",
+        object_id: row.request_id,
+        details: { amount: row.amount_requested },
       });
-      toast({ title: "Payout initiated", description: "The payout is now processing." });
+      toast({ title: "Payout initiated", description: `${formatZAR(row.amount_requested)} is now processing.` });
       await fetchData();
     }
     setProcessing(null);
   };
 
-  const retryPayout = async (row: DisbursementRow) => {
+  const handleRetry = async (row: DisbursementRow) => {
     if (!row.payout) return;
     setProcessing(row.request_id);
-    const { data: { user } } = await supabase.auth.getUser();
 
     const { error } = await supabase
       .from("payouts")
@@ -163,34 +186,38 @@ export default function AdminDisbursements() {
         payout_status: "Processing",
         payout_failed_at: null,
         failure_reason: null,
-        payout_initiated_at: new Date().toISOString(),
-        payout_initiated_by: user?.id,
-        retry_count: (row.payout as any).retry_count ? (row.payout as any).retry_count + 1 : 1,
+        retry_count: (row.payout.retry_count ?? 0) + 1,
       })
       .eq("payout_id", row.payout.payout_id);
 
     if (error) {
       toast({ title: "Retry failed", description: error.message, variant: "destructive" });
     } else {
+      const { data: { user } } = await supabase.auth.getUser();
       await supabase.from("audit_trail").insert({
         user_id: user?.id,
         action_type: "payout_retried" as const,
         object_type: "payout",
         object_id: row.payout.payout_id,
+        details: { amount: row.amount_requested, retry_count: (row.payout.retry_count ?? 0) + 1 },
       });
-      toast({ title: "Payout retried", description: "The payout is processing again." });
+      toast({ title: "Retry initiated", description: `Payout for ${formatZAR(row.amount_requested)} is being retried.` });
       await fetchData();
     }
     setProcessing(null);
   };
 
-  const processBatch = async () => {
-    if (readyRows.length === 0) return;
+  const handleProcessBatch = async () => {
+    const ready = rows.filter((r) => resolveStatus(r) === "Approved");
+    if (ready.length === 0) {
+      toast({ title: "No requests to process", description: "There are no approved requests ready for payout." });
+      return;
+    }
     setBatchProcessing(true);
     const { data: { user } } = await supabase.auth.getUser();
-    const batchId = `BATCH-${Date.now()}`;
+    const batchId = crypto.randomUUID();
 
-    const inserts = readyRows.map((r) => ({
+    const inserts = ready.map((r) => ({
       request_id: r.request_id,
       payout_status: "Processing" as const,
       payout_initiated_at: new Date().toISOString(),
@@ -203,68 +230,94 @@ export default function AdminDisbursements() {
     if (error) {
       toast({ title: "Batch processing failed", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Batch processed", description: `${readyRows.length} payout(s) initiated.` });
+      toast({ title: "Batch processed", description: `${ready.length} payout(s) initiated.` });
       await fetchData();
     }
     setBatchProcessing(false);
+  };
+
+  const renderActions = (row: DisbursementRow) => {
+    const status = resolveStatus(row);
+    const isProc = processing === row.request_id;
+
+    switch (status) {
+      case "Approved":
+        return (
+          <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90" disabled={isProc} onClick={() => handlePayNow(row)}>
+            {isProc ? <Loader2 className="h-4 w-4 animate-spin" /> : "Pay Now"}
+          </Button>
+        );
+      case "Processing":
+        return <Button size="sm" variant="outline" disabled>In Progress</Button>;
+      case "Paid":
+        return <Button size="sm" variant="outline">View</Button>;
+      case "Failed":
+        return (
+          <Button size="sm" variant="destructive" disabled={isProc} onClick={() => handleRetry(row)}>
+            {isProc ? <Loader2 className="h-4 w-4 animate-spin" /> : "Retry"}
+          </Button>
+        );
+      default:
+        return null;
+    }
   };
 
   return (
     <AdminLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-start justify-between flex-wrap gap-4">
+        <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-foreground">Disbursements</h1>
             <p className="text-muted-foreground">Process and monitor all salary access payouts.</p>
           </div>
           <Button
             className="bg-accent text-accent-foreground hover:bg-accent/90"
-            disabled={readyRows.length === 0 || batchProcessing}
-            onClick={processBatch}
+            disabled={batchProcessing || readyToPay.length === 0}
+            onClick={handleProcessBatch}
           >
-            {batchProcessing ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Zap className="h-4 w-4 mr-2" />}
-            Process Batch ({readyRows.length})
+            {batchProcessing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+            Process Batch ({readyToPay.length})
           </Button>
         </div>
 
-        {/* Stat cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {/* Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card>
             <CardContent className="p-5">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-lg bg-accent/15 flex items-center justify-center">
-                  <DollarSign className="h-5 w-5 text-accent" />
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Ready to Pay</p>
-                  <p className="text-xl font-bold text-foreground">{readyRows.length} · {fmt(readyTotal)}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-5">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-lg bg-warning/15 flex items-center justify-center">
-                  <Loader2 className="h-5 w-5 text-warning-foreground" />
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Processing</p>
-                  <p className="text-xl font-bold text-foreground">{processingRows.length} · {fmt(processingTotal)}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-5">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-lg bg-accent/15 flex items-center justify-center">
+                <div className="h-10 w-10 rounded-full bg-accent/10 flex items-center justify-center">
                   <CheckCircle className="h-5 w-5 text-accent" />
                 </div>
                 <div>
+                  <p className="text-sm text-muted-foreground">Ready to Pay</p>
+                  <p className="text-xl font-bold text-foreground">{readyToPay.length} · {formatZAR(sumAmount(readyToPay))}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-5">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-amber-500/10 flex items-center justify-center">
+                  <Clock className="h-5 w-5 text-amber-500" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Processing</p>
+                  <p className="text-xl font-bold text-foreground">{processingRows.length} · {formatZAR(sumAmount(processingRows))}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-5">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-accent/10 flex items-center justify-center">
+                  <DollarSign className="h-5 w-5 text-accent" />
+                </div>
+                <div>
                   <p className="text-sm text-muted-foreground">Paid This Month</p>
-                  <p className="text-xl font-bold text-foreground">{fmt(paidTotal)} · {paidRows.length} txns</p>
+                  <p className="text-xl font-bold text-foreground">{formatZAR(sumAmount(paidThisMonth))} · {paidThisMonth.length} txn{paidThisMonth.length !== 1 ? "s" : ""}</p>
                 </div>
               </div>
             </CardContent>
@@ -301,65 +354,19 @@ export default function AdminDisbursements() {
                 </TableHeader>
                 <TableBody>
                   {rows.map((row) => {
-                    const status = resolvedStatus(row);
-                    const cfg = statusConfig[status] || statusConfig.Approved;
-                    const isRowProcessing = processing === row.request_id;
-
+                    const status = resolveStatus(row);
+                    const config = statusConfig[status];
                     return (
                       <TableRow key={row.request_id}>
-                        <TableCell className="font-medium">
-                          {row.employee.first_name} {row.employee.last_name}
-                        </TableCell>
-                        <TableCell className="text-muted-foreground">
-                          {row.employer.company_legal_name}
-                        </TableCell>
-                        <TableCell className="text-right font-semibold">
-                          {fmt(row.amount_requested)}
-                        </TableCell>
-                        <TableCell className="text-right text-muted-foreground">
-                          {fmt(row.service_fee ?? 0)}
-                        </TableCell>
+                        <TableCell className="font-medium">{row.employee.first_name} {row.employee.last_name}</TableCell>
+                        <TableCell>{row.employer.company_legal_name}</TableCell>
+                        <TableCell className="text-right font-semibold">{formatZAR(row.amount_requested)}</TableCell>
+                        <TableCell className="text-right text-muted-foreground">{formatZAR(row.service_fee ?? 0)}</TableCell>
                         <TableCell>
-                          <Badge variant="outline" className={cfg.classes}>
-                            {cfg.label}
-                          </Badge>
+                          <Badge className={config.className}>{status}</Badge>
                         </TableCell>
-                        <TableCell className="text-muted-foreground text-sm">
-                          {format(new Date(row.created_at), "dd MMM yyyy")}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {status === "Approved" && (
-                            <Button
-                              size="sm"
-                              className="bg-accent text-accent-foreground hover:bg-accent/90"
-                              disabled={isRowProcessing}
-                              onClick={() => createPayout(row.request_id)}
-                            >
-                              {isRowProcessing ? <Loader2 className="h-4 w-4 animate-spin" /> : "Pay Now"}
-                            </Button>
-                          )}
-                          {status === "Processing" && (
-                            <Button size="sm" variant="outline" disabled>
-                              <Loader2 className="h-4 w-4 mr-1 animate-spin" /> In Progress
-                            </Button>
-                          )}
-                          {status === "Paid" && (
-                            <Button size="sm" variant="ghost">
-                              <Eye className="h-4 w-4 mr-1" /> View
-                            </Button>
-                          )}
-                          {status === "Failed" && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
-                              disabled={isRowProcessing}
-                              onClick={() => retryPayout(row)}
-                            >
-                              <RefreshCw className="h-4 w-4 mr-1" /> Retry
-                            </Button>
-                          )}
-                        </TableCell>
+                        <TableCell className="text-muted-foreground">{format(new Date(row.created_at), "dd MMM yyyy")}</TableCell>
+                        <TableCell className="text-right">{renderActions(row)}</TableCell>
                       </TableRow>
                     );
                   })}
