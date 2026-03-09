@@ -248,6 +248,16 @@ export default function EmployeeProfile() {
                       <Badge className={bankStatusColors[employee.bank_verification_status] || ""}>
                         {employee.bank_verification_status}
                       </Badge>
+                      {employee.bank_verification_status === "Pending" && (
+                        <>
+                          <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white" onClick={handleMarkVerified}>
+                            Mark as Verified
+                          </Button>
+                          <Button size="sm" variant="destructive" onClick={handleMarkFailed}>
+                            Mark as Failed
+                          </Button>
+                        </>
+                      )}
                       {employee.bank_verification_status === "Failed" && (
                         <Button variant="outline" size="sm" onClick={handleRetryVerification}>
                           <RefreshCw className="h-3 w-3 mr-1" /> Retry Verification
