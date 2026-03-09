@@ -34,6 +34,7 @@ const App = () => (
           <Route path="/admin/employees" element={<AdminEmployees />} />
           <Route path="/admin/employees/new" element={<AddEmployee />} />
           <Route path="/admin/employees/:id" element={<EmployeeProfile />} />
+          <Route path="/employer/dashboard" element={<EmployerDashboard />} />
           <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
           <Route path="/employee/request" element={<RequestSalaryAccess />} />
           <Route path="/admin/approvals" element={<ApprovalQueue />} />
