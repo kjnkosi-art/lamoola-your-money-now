@@ -3,11 +3,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { EmployerLayout } from "@/components/employer/EmployerLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { Users, Clock, Banknote } from "lucide-react";
+import { Users, Clock, Banknote, KeyRound } from "lucide-react";
 import { startOfMonth, format } from "date-fns";
+import { ChangePasswordModal } from "@/components/ChangePasswordModal";
 
 interface RecentActivity {
   employeeName: string;
@@ -34,7 +36,7 @@ const EmployerDashboard = () => {
   const [recentPayoutsTotal, setRecentPayoutsTotal] = useState(0);
   const [activity, setActivity] = useState<RecentActivity[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const [showChangePw, setShowChangePw] = useState(false);
   useEffect(() => {
     const load = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -206,7 +208,21 @@ const EmployerDashboard = () => {
             )}
           </CardContent>
         </Card>
+
+        {/* Change Password */}
+        <div className="flex justify-end">
+          <Button
+            variant="ghost"
+            onClick={() => setShowChangePw(true)}
+            className="text-muted-foreground hover:text-foreground gap-2"
+          >
+            <KeyRound className="h-4 w-4" />
+            Change Password
+          </Button>
+        </div>
       </div>
+
+      <ChangePasswordModal open={showChangePw} onClose={() => setShowChangePw(false)} />
     </EmployerLayout>
   );
 };
