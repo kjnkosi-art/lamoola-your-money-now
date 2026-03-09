@@ -3,11 +3,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { EmployerLayout } from "@/components/employer/EmployerLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { Users, Clock, Banknote } from "lucide-react";
+import { Users, Clock, Banknote, KeyRound } from "lucide-react";
 import { startOfMonth, format } from "date-fns";
+import { ChangePasswordModal } from "@/components/ChangePasswordModal";
 
 interface RecentActivity {
   employeeName: string;

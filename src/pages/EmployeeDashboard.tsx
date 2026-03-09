@@ -7,10 +7,12 @@ import { Badge } from "@/components/ui/badge";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { LogOut } from "lucide-react";
+import { LogOut, KeyRound } from "lucide-react";
 import { toast } from "sonner";
 import type { Tables } from "@/integrations/supabase/types";
 import logoGreenWhite from "@/assets/logo-green-white.png";
+import TermsAcceptance from "./TermsAcceptance";
+import { ChangePasswordModal } from "@/components/ChangePasswordModal";
 
 type Employee = Tables<"employees">;
 type Request = Tables<"requests">;
@@ -45,7 +47,6 @@ function getWorkingDaysElapsed(start: Date, today: Date): number {
 }
 
 function daysUntil(dateStr: string | null, periodEnd: string | null, cutoffDays: number): number {
-  // cutoff = payday - cutoffDays. If no payday, use period end
   const ref = dateStr || periodEnd;
   if (!ref) return 0;
   const target = new Date(ref);
@@ -62,48 +63,73 @@ export default function EmployeeDashboard() {
   const [employer, setEmployer] = useState<Tables<"employers"> | null>(null);
   const [requests, setRequests] = useState<Request[]>([]);
   const [loading, setLoading] = useState(true);
+  const [needsTcs, setNeedsTcs] = useState(false);
+  const [showChangePw, setShowChangePw] = useState(false);
 
-  useEffect(() => {
-    const load = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { navigate("/login"); return; }
+  const loadData = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { navigate("/login"); return; }
 
-      const { data: emp } = await supabase
-        .from("employees")
-        .select("*")
-        .eq("user_id", user.id)
-        .single();
+    const { data: emp } = await supabase
+      .from("employees")
+      .select("*")
+      .eq("user_id", user.id)
+      .single();
 
-      if (!emp) {
-        toast.error("Employee record not found");
-        setLoading(false);
-        return;
-      }
-      setEmployee(emp);
-
-      const { data: er } = await supabase
-        .from("employers")
-        .select("*")
-        .eq("employer_id", emp.employer_id)
-        .single();
-      if (er) setEmployer(er);
-
-      const { data: reqs } = await supabase
-        .from("requests")
-        .select("*")
-        .eq("employee_id", emp.employee_id)
-        .order("created_at", { ascending: false })
-        .limit(10);
-      setRequests(reqs || []);
+    if (!emp) {
+      toast.error("Employee record not found");
       setLoading(false);
-    };
-    load();
-  }, [navigate]);
+      return;
+    }
+
+    // Check T&Cs
+    if (!emp.tcs_accepted) {
+      setEmployee(emp);
+      setNeedsTcs(true);
+      setLoading(false);
+      return;
+    }
+
+    setEmployee(emp);
+    setNeedsTcs(false);
+
+    const { data: er } = await supabase
+      .from("employers")
+      .select("*")
+      .eq("employer_id", emp.employer_id)
+      .single();
+    if (er) setEmployer(er);
+
+    const { data: reqs } = await supabase
+      .from("requests")
+      .select("*")
+      .eq("employee_id", emp.employee_id)
+      .order("created_at", { ascending: false })
+      .limit(10);
+    setRequests(reqs || []);
+    setLoading(false);
+  };
+
+  useEffect(() => { loadData(); }, [navigate]);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     navigate("/login");
   };
+
+  // If T&Cs not accepted, show acceptance screen
+  if (!loading && needsTcs && employee) {
+    return (
+      <TermsAcceptance
+        employeeId={employee.employee_id}
+        bankVerified={employee.bank_verification_status === "Verified"}
+        onAccepted={() => {
+          setLoading(true);
+          loadData();
+        }}
+      />
+    );
+  }
 
   // Calculations
   const grossSalary = Number(employee?.gross_salary || 0);
@@ -145,7 +171,6 @@ export default function EmployeeDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Top bar */}
       <header className="bg-secondary px-4 py-3 flex items-center justify-between border-b border-accent/30">
         <img src={logoGreenWhite} alt="Lamoola" className="h-8" />
         <Button
@@ -159,15 +184,13 @@ export default function EmployeeDashboard() {
         </Button>
       </header>
 
-      {/* Content */}
       <main className="mx-auto max-w-[420px] px-4 py-6 space-y-5">
-        {/* Greeting */}
         <h1 className="text-xl font-bold text-foreground">
           Welcome back, {employee?.first_name} 👋
         </h1>
 
         {/* Balance Card */}
-        <div className="rounded-2xl p-6 text-secondary-foreground" style={{ backgroundColor: "hsl(214, 55%, 15%)" }}>
+        <div className="rounded-2xl p-6 text-secondary-foreground bg-secondary">
           <p className="text-sm opacity-80 mb-1">Available to access</p>
           <p className="text-4xl font-extrabold tracking-tight mb-3">
             {formatR(available)}
@@ -244,7 +267,19 @@ export default function EmployeeDashboard() {
             )}
           </CardContent>
         </Card>
+
+        {/* Change Password */}
+        <Button
+          variant="ghost"
+          onClick={() => setShowChangePw(true)}
+          className="w-full text-muted-foreground hover:text-foreground gap-2"
+        >
+          <KeyRound className="h-4 w-4" />
+          Change Password
+        </Button>
       </main>
+
+      <ChangePasswordModal open={showChangePw} onClose={() => setShowChangePw(false)} />
     </div>
   );
 }
