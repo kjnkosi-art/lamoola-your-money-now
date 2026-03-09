@@ -105,11 +105,19 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
+function generateTempPassword(): string {
+  const chars = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$";
+  let pw = "";
+  for (let i = 0; i < 12; i++) pw += chars[Math.floor(Math.random() * chars.length)];
+  return pw;
+}
+
 export default function AddEmployee() {
   const navigate = useNavigate();
   const [employers, setEmployers] = useState<Employer[]>([]);
   const [loading, setLoading] = useState(false);
   const [idDocType, setIdDocType] = useState<"sa_id" | "passport" | null>(null);
+  const [tempPasswordModal, setTempPasswordModal] = useState<{ open: boolean; email: string; password: string }>({ open: false, email: "", password: "" });
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
