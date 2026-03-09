@@ -13,8 +13,19 @@ import {
 } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { DollarSign, Clock, CheckCircle, AlertTriangle, Loader2 } from "lucide-react";
+import { DollarSign, Clock, CheckCircle, AlertTriangle, Loader2, XCircle } from "lucide-react";
 import { format, startOfMonth } from "date-fns";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
 interface DisbursementRow {
   request_id: string;
@@ -59,6 +70,10 @@ export default function AdminDisbursements() {
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState<string | null>(null);
   const [batchProcessing, setBatchProcessing] = useState(false);
+  const [activeTab, setActiveTab] = useState<string>("all");
+  const [failModalOpen, setFailModalOpen] = useState(false);
+  const [failTarget, setFailTarget] = useState<DisbursementRow | null>(null);
+  const [failReason, setFailReason] = useState("");
 
   const fetchData = async () => {
     // Fetch approved/processed requests
@@ -147,7 +162,16 @@ export default function AdminDisbursements() {
     (r) => resolveStatus(r) === "Paid" && r.payout?.payout_completed_at && r.payout.payout_completed_at >= monthStart
   );
 
+  const failedRows = rows.filter((r) => resolveStatus(r) === "Failed");
+  const paidRows = rows.filter((r) => resolveStatus(r) === "Paid");
+
   const sumAmount = (arr: DisbursementRow[]) => arr.reduce((s, r) => s + r.amount_requested, 0);
+
+  const filteredRows = activeTab === "all" ? rows
+    : activeTab === "ready" ? readyToPay
+    : activeTab === "processing" ? processingRows
+    : activeTab === "paid" ? paidRows
+    : failedRows;
 
   const handlePayNow = async (row: DisbursementRow) => {
     setProcessing(row.request_id);
@@ -207,6 +231,68 @@ export default function AdminDisbursements() {
     setProcessing(null);
   };
 
+  const handleMarkPaid = async (row: DisbursementRow) => {
+    if (!row.payout) return;
+    setProcessing(row.request_id);
+    const { data: { user } } = await supabase.auth.getUser();
+
+    const { error } = await supabase
+      .from("payouts")
+      .update({
+        payout_status: "Paid",
+        payout_completed_at: new Date().toISOString(),
+      })
+      .eq("payout_id", row.payout.payout_id);
+
+    if (error) {
+      toast({ title: "Update failed", description: error.message, variant: "destructive" });
+    } else {
+      await supabase.from("audit_trail").insert({
+        user_id: user?.id,
+        action_type: "payout_completed" as const,
+        object_type: "payout",
+        object_id: row.payout.payout_id,
+        details: { amount: row.amount_requested },
+      });
+      toast({ title: "Payment confirmed", description: `${formatZAR(row.amount_requested)} marked as paid.` });
+      await fetchData();
+    }
+    setProcessing(null);
+  };
+
+  const handleMarkFailed = async () => {
+    if (!failTarget?.payout) return;
+    setProcessing(failTarget.request_id);
+    const { data: { user } } = await supabase.auth.getUser();
+
+    const { error } = await supabase
+      .from("payouts")
+      .update({
+        payout_status: "Failed",
+        payout_failed_at: new Date().toISOString(),
+        failure_reason: failReason || "No reason provided",
+      })
+      .eq("payout_id", failTarget.payout.payout_id);
+
+    if (error) {
+      toast({ title: "Update failed", description: error.message, variant: "destructive" });
+    } else {
+      await supabase.from("audit_trail").insert({
+        user_id: user?.id,
+        action_type: "payout_failed" as const,
+        object_type: "payout",
+        object_id: failTarget.payout.payout_id,
+        details: { amount: failTarget.amount_requested, failure_reason: failReason },
+      });
+      toast({ title: "Payout marked as failed", description: `Failure reason recorded.` });
+      await fetchData();
+    }
+    setProcessing(null);
+    setFailModalOpen(false);
+    setFailTarget(null);
+    setFailReason("");
+  };
+
   const handleProcessBatch = async () => {
     const ready = rows.filter((r) => resolveStatus(r) === "Approved");
     if (ready.length === 0) {
@@ -248,7 +334,16 @@ export default function AdminDisbursements() {
           </Button>
         );
       case "Processing":
-        return <Button size="sm" variant="outline" disabled>In Progress</Button>;
+        return (
+          <div className="flex gap-2 justify-end">
+            <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90" disabled={isProc} onClick={() => handleMarkPaid(row)}>
+              {isProc ? <Loader2 className="h-4 w-4 animate-spin" /> : "Mark as Paid"}
+            </Button>
+            <Button size="sm" variant="destructive" disabled={isProc} onClick={() => { setFailTarget(row); setFailReason(""); setFailModalOpen(true); }}>
+              Mark as Failed
+            </Button>
+          </div>
+        );
       case "Paid":
         return <Button size="sm" variant="outline">View</Button>;
       case "Failed":
@@ -324,12 +419,23 @@ export default function AdminDisbursements() {
           </Card>
         </div>
 
+        {/* Filter Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList>
+            <TabsTrigger value="all">All ({rows.length})</TabsTrigger>
+            <TabsTrigger value="ready">Ready to Pay ({readyToPay.length})</TabsTrigger>
+            <TabsTrigger value="processing">Processing ({processingRows.length})</TabsTrigger>
+            <TabsTrigger value="paid">Paid ({paidRows.length})</TabsTrigger>
+            <TabsTrigger value="failed">Failed ({failedRows.length})</TabsTrigger>
+          </TabsList>
+        </Tabs>
+
         {/* Table */}
         {loading ? (
           <div className="flex justify-center py-12">
             <div className="animate-spin h-8 w-8 border-4 border-accent border-t-transparent rounded-full" />
           </div>
-        ) : rows.length === 0 ? (
+        ) : filteredRows.length === 0 ? (
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-16 text-muted-foreground">
               <DollarSign className="h-12 w-12 mb-4 text-accent" />
@@ -353,7 +459,7 @@ export default function AdminDisbursements() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {rows.map((row) => {
+                  {filteredRows.map((row) => {
                     const status = resolveStatus(row);
                     const config = statusConfig[status];
                     return (
@@ -376,6 +482,36 @@ export default function AdminDisbursements() {
           </Card>
         )}
       </div>
+
+      {/* Failure Reason Modal */}
+      <Dialog open={failModalOpen} onOpenChange={(open) => { if (!open) { setFailModalOpen(false); setFailTarget(null); setFailReason(""); } }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Mark Payout as Failed</DialogTitle>
+            <DialogDescription>
+              Please provide a reason for the payment failure for {failTarget?.employee.first_name} {failTarget?.employee.last_name} — {failTarget ? formatZAR(failTarget.amount_requested) : ""}.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="fail-reason">Failure Reason</Label>
+            <Textarea
+              id="fail-reason"
+              placeholder="e.g. Invalid bank account, insufficient funds..."
+              value={failReason}
+              onChange={(e) => setFailReason(e.target.value)}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setFailModalOpen(false); setFailTarget(null); setFailReason(""); }}>
+              Cancel
+            </Button>
+            <Button variant="destructive" disabled={!failReason.trim() || processing === failTarget?.request_id} onClick={handleMarkFailed}>
+              {processing === failTarget?.request_id ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              Confirm Failed
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 }
