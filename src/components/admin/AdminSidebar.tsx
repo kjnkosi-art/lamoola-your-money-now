@@ -36,7 +36,7 @@ const mainItems = [
 const onboardingItems = [
   { title: "Employers", url: "/admin/employers", icon: Building2 },
   { title: "Add Employer", url: "/admin/employers/new", icon: PlusCircle },
-  { title: "Employees", url: "/employees", icon: Users },
+  { title: "Employees", url: "/admin/employees", icon: Users },
 ];
 
 const operationsItems = [
