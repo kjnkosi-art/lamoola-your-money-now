@@ -25,11 +25,6 @@ export default function TermsAcceptance({ employeeId, bankVerified, onAccepted }
       tcs_accepted_date: new Date().toISOString(),
     };
 
-    // Auto-activate if bank is also verified
-    if (bankVerified) {
-      updateFields.status = "Active";
-    }
-
     console.log("[TCS] Attempting employee update", { employeeId, updateFields });
 
     const { data, error } = await supabase
