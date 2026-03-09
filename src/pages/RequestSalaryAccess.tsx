@@ -120,7 +120,7 @@ export default function RequestSalaryAccess() {
 
     const isAuto = calc.approvalMode === "Auto-Approved";
 
-    const { error } = await supabase.from("requests").insert({
+    const { error } = await supabase.from("requests").insert([{
       employee_id: employee.employee_id,
       employer_id: employee.employer_id,
       amount_requested: amount,
@@ -130,11 +130,11 @@ export default function RequestSalaryAccess() {
       amount_to_receive: amountToReceive,
       earned_salary_at_request: calc.earnedToDate,
       available_balance_at_request: calc.availableBalance,
-      approval_mode_applied: calc.approvalMode,
-      request_status: isAuto ? "Approved" : "Pending",
+      approval_mode_applied: calc.approvalMode as "Auto-Approved" | "Supervisor Approval" | "HR Approval",
+      request_status: isAuto ? "Approved" as const : "Pending" as const,
       approved_at: isAuto ? new Date().toISOString() : null,
       bank_account_masked: calc.bankLabel,
-    });
+    }]);
 
     if (error) {
       toast.error(error.message);
