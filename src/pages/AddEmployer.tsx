@@ -576,6 +576,17 @@ export default function AddEmployer() {
             }}
           />
         )}
+      <TempPasswordModal
+        open={tempPasswordModal.open}
+        onClose={() => {
+          setTempPasswordModal({ open: false, email: "", password: "" });
+          setErrors({});
+          setSearchParams({ step: "5" });
+        }}
+        email={tempPasswordModal.email}
+        password={tempPasswordModal.password}
+        role="employer admin"
+      />
       </div>
     </AdminLayout>
   );
