@@ -14,6 +14,7 @@ import { Check } from "lucide-react";
 import Step3PolicyConfig, { Step3Data, defaultStep3, validateStep3 } from "@/components/employer/Step3PolicyConfig";
 import Step4Contacts, { Step4Data, defaultStep4, validateStep4 } from "@/components/employer/Step4Contacts";
 import Step5ReviewConfirm from "@/components/employer/Step5ReviewConfirm";
+import TempPasswordModal from "@/components/TempPasswordModal";
 
 const STEPS = [
   "Company Details",
@@ -40,6 +41,13 @@ const PAYROLL_FORMATS = [
   "Standard Lamoola CSV", "Sage Pastel", "VIP Payroll", "SARS EMP201", "Custom CSV",
 ] as const;
 
+function generateTempPassword(): string {
+  const chars = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$";
+  let pw = "";
+  for (let i = 0; i < 12; i++) pw += chars[Math.floor(Math.random() * chars.length)];
+  return pw;
+}
+
 export default function AddEmployer() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -48,6 +56,7 @@ export default function AddEmployer() {
   const [saving, setSaving] = useState(false);
   const [employerId, setEmployerId] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [tempPasswordModal, setTempPasswordModal] = useState<{ open: boolean; email: string; password: string }>({ open: false, email: "", password: "" });
 
   // Step 1 fields
   const [step1, setStep1] = useState({
@@ -486,6 +495,29 @@ export default function AddEmployer() {
                 await supabase.from("employer_contacts").delete().eq("employer_id", employerId!);
                 const { error } = await supabase.from("employer_contacts").insert(contacts);
                 if (error) throw error;
+
+                // Create auth account for general contact (employer_admin)
+                const contactEmail = step4.general.email.trim();
+                const tempPassword = generateTempPassword();
+                const { data: fnData, error: fnError } = await supabase.functions.invoke("create-user-account", {
+                  body: {
+                    email: contactEmail,
+                    password: tempPassword,
+                    first_name: step4.general.first_name.trim(),
+                    last_name: step4.general.last_name.trim(),
+                    role: "employer_admin",
+                    employer_id: employerId,
+                  },
+                });
+
+                if (fnError || fnData?.error) {
+                  toast.error("Contacts saved, but employer admin account creation failed: " + (fnData?.error || fnError?.message));
+                } else {
+                  toast.success("Step 4 complete — employer admin account created.");
+                  setTempPasswordModal({ open: true, email: contactEmail, password: tempPassword });
+                  return; // Don't advance yet — modal is open
+                }
+
                 toast.success("Step 4 complete");
                 setErrors({});
                 setSearchParams({ step: "5" });
@@ -544,6 +576,17 @@ export default function AddEmployer() {
             }}
           />
         )}
+      <TempPasswordModal
+        open={tempPasswordModal.open}
+        onClose={() => {
+          setTempPasswordModal({ open: false, email: "", password: "" });
+          setErrors({});
+          setSearchParams({ step: "5" });
+        }}
+        email={tempPasswordModal.email}
+        password={tempPasswordModal.password}
+        role="employer admin"
+      />
       </div>
     </AdminLayout>
   );

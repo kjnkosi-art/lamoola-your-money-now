@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
+import TempPasswordModal from "@/components/TempPasswordModal";
 import {
   Form,
   FormControl,
@@ -104,11 +105,19 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
+function generateTempPassword(): string {
+  const chars = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$";
+  let pw = "";
+  for (let i = 0; i < 12; i++) pw += chars[Math.floor(Math.random() * chars.length)];
+  return pw;
+}
+
 export default function AddEmployee() {
   const navigate = useNavigate();
   const [employers, setEmployers] = useState<Employer[]>([]);
   const [loading, setLoading] = useState(false);
   const [idDocType, setIdDocType] = useState<"sa_id" | "passport" | null>(null);
+  const [tempPasswordModal, setTempPasswordModal] = useState<{ open: boolean; email: string; password: string }>({ open: false, email: "", password: "" });
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -170,7 +179,7 @@ export default function AddEmployee() {
     setLoading(true);
 
     try {
-      const { error } = await supabase.from("employees").insert({
+      const { data: empData, error } = await supabase.from("employees").insert({
         employer_id: values.employer_id,
         employee_number: values.employee_number,
         first_name: values.first_name,
@@ -192,15 +201,41 @@ export default function AddEmployee() {
         supervisor_name: values.supervisor_name || null,
         status,
         import_source: "Manual",
-      });
+      }).select("employee_id").single();
 
       if (error) throw error;
 
-      toast.success(
-        status === "Pending Invite"
-          ? "Employee added successfully. Invite will be sent."
-          : "Employee saved as draft."
-      );
+      // Create auth account if email is provided and status is not Draft
+      const email = values.email_address?.trim();
+      if (email && status === "Pending Invite" && empData) {
+        const tempPassword = generateTempPassword();
+        const { data: fnData, error: fnError } = await supabase.functions.invoke("create-user-account", {
+          body: {
+            email,
+            password: tempPassword,
+            first_name: values.first_name,
+            last_name: values.last_name,
+            role: "employee",
+            employer_id: values.employer_id,
+            employee_id: empData.employee_id,
+          },
+        });
+
+        if (fnError || fnData?.error) {
+          toast.error("Employee saved, but account creation failed: " + (fnData?.error || fnError?.message));
+        } else {
+          toast.success("Employee added and account created.");
+          setTempPasswordModal({ open: true, email, password: tempPassword });
+          return; // Don't navigate yet — modal is open
+        }
+      } else {
+        toast.success(
+          status === "Pending Invite"
+            ? "Employee added successfully."
+            : "Employee saved as draft."
+        );
+      }
+
       navigate("/admin/employees");
     } catch (err: any) {
       toast.error(err.message || "Failed to save employee");
@@ -593,6 +628,16 @@ export default function AddEmployee() {
           </form>
         </Form>
       </div>
+      <TempPasswordModal
+        open={tempPasswordModal.open}
+        onClose={() => {
+          setTempPasswordModal({ open: false, email: "", password: "" });
+          navigate("/admin/employees");
+        }}
+        email={tempPasswordModal.email}
+        password={tempPasswordModal.password}
+        role="employee"
+      />
     </AdminLayout>
   );
 }
