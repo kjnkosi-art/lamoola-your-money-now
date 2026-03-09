@@ -419,12 +419,23 @@ export default function AdminDisbursements() {
           </Card>
         </div>
 
+        {/* Filter Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList>
+            <TabsTrigger value="all">All ({rows.length})</TabsTrigger>
+            <TabsTrigger value="ready">Ready to Pay ({readyToPay.length})</TabsTrigger>
+            <TabsTrigger value="processing">Processing ({processingRows.length})</TabsTrigger>
+            <TabsTrigger value="paid">Paid ({paidRows.length})</TabsTrigger>
+            <TabsTrigger value="failed">Failed ({failedRows.length})</TabsTrigger>
+          </TabsList>
+        </Tabs>
+
         {/* Table */}
         {loading ? (
           <div className="flex justify-center py-12">
             <div className="animate-spin h-8 w-8 border-4 border-accent border-t-transparent rounded-full" />
           </div>
-        ) : rows.length === 0 ? (
+        ) : filteredRows.length === 0 ? (
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-16 text-muted-foreground">
               <DollarSign className="h-12 w-12 mb-4 text-accent" />
@@ -448,7 +459,7 @@ export default function AdminDisbursements() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {rows.map((row) => {
+                  {filteredRows.map((row) => {
                     const status = resolveStatus(row);
                     const config = statusConfig[status];
                     return (
@@ -471,6 +482,36 @@ export default function AdminDisbursements() {
           </Card>
         )}
       </div>
+
+      {/* Failure Reason Modal */}
+      <Dialog open={failModalOpen} onOpenChange={(open) => { if (!open) { setFailModalOpen(false); setFailTarget(null); setFailReason(""); } }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Mark Payout as Failed</DialogTitle>
+            <DialogDescription>
+              Please provide a reason for the payment failure for {failTarget?.employee.first_name} {failTarget?.employee.last_name} — {failTarget ? formatZAR(failTarget.amount_requested) : ""}.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="fail-reason">Failure Reason</Label>
+            <Textarea
+              id="fail-reason"
+              placeholder="e.g. Invalid bank account, insufficient funds..."
+              value={failReason}
+              onChange={(e) => setFailReason(e.target.value)}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setFailModalOpen(false); setFailTarget(null); setFailReason(""); }}>
+              Cancel
+            </Button>
+            <Button variant="destructive" disabled={!failReason.trim() || processing === failTarget?.request_id} onClick={handleMarkFailed}>
+              {processing === failTarget?.request_id ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              Confirm Failed
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 }
