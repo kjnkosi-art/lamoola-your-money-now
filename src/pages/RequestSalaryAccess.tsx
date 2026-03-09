@@ -78,8 +78,8 @@ export default function RequestSalaryAccess() {
         .single();
 
       if (!emp) {
-        toast.error("Employee record not found");
-        navigate("/employee/dashboard");
+        toast.error("Employee record not found for this user");
+        setLoading(false);
         return;
       }
       setEmployee(emp);
