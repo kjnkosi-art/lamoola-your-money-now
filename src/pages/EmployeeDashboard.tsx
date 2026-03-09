@@ -124,6 +124,7 @@ export default function EmployeeDashboard() {
         employeeId={employee.employee_id}
         bankVerified={employee.bank_verification_status === "Verified"}
         onAccepted={() => {
+          setNeedsTcs(false);
           setLoading(true);
           loadData();
         }}
