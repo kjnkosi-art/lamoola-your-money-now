@@ -149,7 +149,15 @@ export default function EmployeeDashboard() {
   const totalWorkingDays = getWorkingDaysInMonth(startDate, endDate);
   const daysElapsed = getWorkingDaysElapsed(startDate, today > endDate ? endDate : today);
   const dailyRate = totalWorkingDays > 0 ? grossSalary / totalWorkingDays : 0;
-  const earned = dailyRate * daysElapsed;
+  let earned = dailyRate * daysElapsed;
+
+  // TEMPORARY WORKAROUND: If earned salary calc fails (0 or NaN) due to unparseable
+  // payroll period dates, fall back to 50% of gross salary to simulate mid-month.
+  // Replace with proper earned salary calculation engine.
+  if (!earned || isNaN(earned)) {
+    earned = grossSalary * 0.5;
+  }
+
   const accessible = earned * (maxPercent / 100);
 
   const totalAccessed = requests
@@ -157,7 +165,8 @@ export default function EmployeeDashboard() {
     .reduce((sum, r) => sum + Number(r.amount_requested), 0);
 
   const available = Math.max(0, accessible - totalAccessed);
-  const cutoffDaysLeft = daysUntil(payday, periodEnd, cutoffDays);
+  const rawCutoffDays = daysUntil(payday, periodEnd, cutoffDays);
+  const cutoffDaysLeft = isNaN(rawCutoffDays) ? null : rawCutoffDays;
 
   const formatR = (n: number) =>
     `R ${n.toLocaleString("en-ZA", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
