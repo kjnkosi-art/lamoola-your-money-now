@@ -206,7 +206,7 @@ export default function EmployeeDashboard() {
             {formatR(available)}
           </p>
           <p className="text-xs opacity-70">
-            Based on {maxPercent}% of {formatR(earned)} earned so far · {cutoffDaysLeft} day{cutoffDaysLeft !== 1 ? "s" : ""} until cut-off
+            Based on {maxPercent}% of {formatR(earned)} earned so far · {cutoffDaysLeft !== null ? `${cutoffDaysLeft} day${cutoffDaysLeft !== 1 ? "s" : ""} until cut-off` : "Available"}
           </p>
         </div>
 
