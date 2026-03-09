@@ -9,6 +9,7 @@ import AdminEmployers from "./pages/AdminEmployers";
 import AddEmployer from "./pages/AddEmployer";
 import AdminEmployees from "./pages/AdminEmployees";
 import AddEmployee from "./pages/AddEmployee";
+import EmployeeProfile from "./pages/EmployeeProfile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
