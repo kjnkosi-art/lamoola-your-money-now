@@ -208,7 +208,21 @@ const EmployerDashboard = () => {
             )}
           </CardContent>
         </Card>
+
+        {/* Change Password */}
+        <div className="flex justify-end">
+          <Button
+            variant="ghost"
+            onClick={() => setShowChangePw(true)}
+            className="text-muted-foreground hover:text-foreground gap-2"
+          >
+            <KeyRound className="h-4 w-4" />
+            Change Password
+          </Button>
+        </div>
       </div>
+
+      <ChangePasswordModal open={showChangePw} onClose={() => setShowChangePw(false)} />
     </EmployerLayout>
   );
 };
