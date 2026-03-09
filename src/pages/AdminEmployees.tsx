@@ -191,7 +191,7 @@ export default function AdminEmployees() {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => navigate(`/employees/${emp.employee_id}`)}
+                            onClick={() => navigate(`/admin/employees/${emp.employee_id}`)}
                             className="gap-1.5 text-xs"
                           >
                             <Eye className="h-3.5 w-3.5" />
