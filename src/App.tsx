@@ -11,6 +11,7 @@ import AdminEmployees from "./pages/AdminEmployees";
 import AddEmployee from "./pages/AddEmployee";
 import EmployeeProfile from "./pages/EmployeeProfile";
 import EmployeeDashboard from "./pages/EmployeeDashboard";
+import EmployerDashboard from "./pages/EmployerDashboard";
 import RequestSalaryAccess from "./pages/RequestSalaryAccess";
 import ApprovalQueue from "./pages/ApprovalQueue";
 import AdminDisbursements from "./pages/AdminDisbursements";
@@ -33,6 +34,7 @@ const App = () => (
           <Route path="/admin/employees" element={<AdminEmployees />} />
           <Route path="/admin/employees/new" element={<AddEmployee />} />
           <Route path="/admin/employees/:id" element={<EmployeeProfile />} />
+          <Route path="/employer/dashboard" element={<EmployerDashboard />} />
           <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
           <Route path="/employee/request" element={<RequestSalaryAccess />} />
           <Route path="/admin/approvals" element={<ApprovalQueue />} />
