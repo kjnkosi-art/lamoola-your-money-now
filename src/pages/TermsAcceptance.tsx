@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -14,10 +13,8 @@ interface TermsAcceptanceProps {
 }
 
 export default function TermsAcceptance({ employeeId, bankVerified, onAccepted }: TermsAcceptanceProps) {
-  const navigate = useNavigate();
   const [accepted, setAccepted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [showDashboardCta, setShowDashboardCta] = useState(false);
 
   const handleAccept = async () => {
     if (!accepted) return;
@@ -33,10 +30,16 @@ export default function TermsAcceptance({ employeeId, bankVerified, onAccepted }
       updateFields.status = "Active";
     }
 
-    const { error } = await supabase
+    console.log("[TCS] Attempting employee update", { employeeId, updateFields });
+
+    const { data, error } = await supabase
       .from("employees")
       .update(updateFields)
-      .eq("employee_id", employeeId);
+      .eq("employee_id", employeeId)
+      .select("employee_id, tcs_accepted, tcs_accepted_date")
+      .single();
+
+    console.log("[TCS] Employee update result", { employeeId, data, error });
 
     if (error) {
       toast.error("Failed to save acceptance. Please try again.");
@@ -46,7 +49,7 @@ export default function TermsAcceptance({ employeeId, bankVerified, onAccepted }
 
     toast.success("Terms accepted successfully!");
     setSubmitting(false);
-    setShowDashboardCta(true);
+    onAccepted();
   };
 
   return (
@@ -113,28 +116,17 @@ export default function TermsAcceptance({ employeeId, bankVerified, onAccepted }
               </label>
             </div>
 
-            {showDashboardCta ? (
-              <Button
-                onClick={() => {
-                  onAccepted();
-                  navigate("/employee/dashboard");
-                }}
-                className="w-full h-14 text-lg font-bold bg-accent text-accent-foreground hover:bg-accent/90 rounded-xl"
-              >
-                Go to Dashboard
-              </Button>
-            ) : (
-              <Button
-                onClick={handleAccept}
-                disabled={!accepted || submitting}
-                className="w-full h-12 text-base font-bold bg-accent text-accent-foreground hover:bg-accent/90 rounded-xl"
-              >
-                {submitting ? "Saving…" : "Accept & Continue"}
-              </Button>
-            )}
+            <Button
+              onClick={handleAccept}
+              disabled={!accepted || submitting}
+              className="w-full h-12 text-base font-bold bg-accent text-accent-foreground hover:bg-accent/90 rounded-xl"
+            >
+              {submitting ? "Saving…" : "Accept & Continue"}
+            </Button>
           </CardContent>
         </Card>
       </main>
     </div>
   );
 }
+
