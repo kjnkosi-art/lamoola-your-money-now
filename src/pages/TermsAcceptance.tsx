@@ -12,7 +12,7 @@ interface TermsAcceptanceProps {
   onAccepted: () => void;
 }
 
-export default function TermsAcceptance({ employeeId, bankVerified, onAccepted }: TermsAcceptanceProps) {
+export default function TermsAcceptance({ employeeId, bankVerified: _bankVerified, onAccepted }: TermsAcceptanceProps) {
   const [accepted, setAccepted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
