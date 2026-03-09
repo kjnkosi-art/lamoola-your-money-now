@@ -126,6 +126,41 @@ export default function EmployeeProfile() {
     setTerminating(false);
   };
 
+  const handleMarkVerified = async () => {
+    if (!employee) return;
+    const updates: Record<string, string> = { bank_verification_status: "Verified" };
+    const shouldActivate = employee.tcs_accepted && employee.status !== "Active";
+    if (shouldActivate) updates.status = "Active";
+
+    const { error } = await supabase
+      .from("employees")
+      .update(updates)
+      .eq("employee_id", employee.employee_id);
+
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+      return;
+    }
+    const updatedEmployee = { ...employee, bank_verification_status: "Verified" as const, ...(shouldActivate ? { status: "Active" as const } : {}) };
+    setEmployee(updatedEmployee);
+    toast({ title: "Bank verified", description: shouldActivate ? "Employee status set to Active." : "Bank verification status updated." });
+  };
+
+  const handleMarkFailed = async () => {
+    if (!employee) return;
+    const { error } = await supabase
+      .from("employees")
+      .update({ bank_verification_status: "Failed" })
+      .eq("employee_id", employee.employee_id);
+
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+      return;
+    }
+    setEmployee({ ...employee, bank_verification_status: "Failed" as const });
+    toast({ title: "Bank verification failed", description: "Status set to Failed." });
+  };
+
   const handleRetryVerification = async () => {
     if (!employee) return;
     const { error } = await supabase
@@ -248,6 +283,16 @@ export default function EmployeeProfile() {
                       <Badge className={bankStatusColors[employee.bank_verification_status] || ""}>
                         {employee.bank_verification_status}
                       </Badge>
+                      {employee.bank_verification_status === "Pending" && (
+                        <>
+                          <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white" onClick={handleMarkVerified}>
+                            Mark as Verified
+                          </Button>
+                          <Button size="sm" variant="destructive" onClick={handleMarkFailed}>
+                            Mark as Failed
+                          </Button>
+                        </>
+                      )}
                       {employee.bank_verification_status === "Failed" && (
                         <Button variant="outline" size="sm" onClick={handleRetryVerification}>
                           <RefreshCw className="h-3 w-3 mr-1" /> Retry Verification
