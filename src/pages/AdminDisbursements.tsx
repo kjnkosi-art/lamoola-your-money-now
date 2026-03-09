@@ -272,7 +272,16 @@ export default function AdminDisbursements() {
           </Button>
         );
       case "Processing":
-        return <Button size="sm" variant="outline" disabled>In Progress</Button>;
+        return (
+          <div className="flex gap-2 justify-end">
+            <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90" disabled={isProc} onClick={() => handleMarkPaid(row)}>
+              {isProc ? <Loader2 className="h-4 w-4 animate-spin" /> : "Mark as Paid"}
+            </Button>
+            <Button size="sm" variant="destructive" disabled={isProc} onClick={() => { setFailTarget(row); setFailReason(""); setFailModalOpen(true); }}>
+              Mark as Failed
+            </Button>
+          </div>
+        );
       case "Paid":
         return <Button size="sm" variant="outline">View</Button>;
       case "Failed":
