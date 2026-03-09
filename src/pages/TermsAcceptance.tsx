@@ -113,13 +113,25 @@ export default function TermsAcceptance({ employeeId, bankVerified, onAccepted }
               </label>
             </div>
 
-            <Button
-              onClick={handleAccept}
-              disabled={!accepted || submitting}
-              className="w-full h-12 text-base font-bold bg-accent text-accent-foreground hover:bg-accent/90 rounded-xl"
-            >
-              {submitting ? "Saving…" : "Accept & Continue"}
-            </Button>
+            {showDashboardCta ? (
+              <Button
+                onClick={() => {
+                  onAccepted();
+                  navigate("/employee/dashboard");
+                }}
+                className="w-full h-14 text-lg font-bold bg-accent text-accent-foreground hover:bg-accent/90 rounded-xl"
+              >
+                Go to Dashboard
+              </Button>
+            ) : (
+              <Button
+                onClick={handleAccept}
+                disabled={!accepted || submitting}
+                className="w-full h-12 text-base font-bold bg-accent text-accent-foreground hover:bg-accent/90 rounded-xl"
+              >
+                {submitting ? "Saving…" : "Accept & Continue"}
+              </Button>
+            )}
           </CardContent>
         </Card>
       </main>
