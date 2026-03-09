@@ -41,6 +41,7 @@ const onboardingItems = [
 
 const operationsItems = [
   { title: "Approvals", url: "/approvals", icon: CheckSquare, hasBadge: true },
+  { title: "Approvals", url: "/admin/approvals", icon: CheckSquare, hasBadge: true },
   { title: "Disbursements", url: "/admin/disbursements", icon: Banknote },
 ];
 
