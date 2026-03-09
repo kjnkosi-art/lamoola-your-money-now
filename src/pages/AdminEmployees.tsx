@@ -164,7 +164,7 @@ export default function AdminEmployees() {
                     <TableRow key={emp.employee_id}>
                       <TableCell>
                         <button
-                          onClick={() => navigate(`/employees/${emp.employee_id}`)}
+                          onClick={() => navigate(`/admin/employees/${emp.employee_id}`)}
                           className="font-semibold text-secondary hover:text-primary hover:underline transition-colors text-left"
                         >
                           {emp.first_name} {emp.last_name}
