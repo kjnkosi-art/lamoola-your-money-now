@@ -17,31 +17,10 @@ import { LogOut, ArrowLeft, CheckCircle2, Clock, PartyPopper } from "lucide-reac
 import { toast } from "sonner";
 import type { Tables } from "@/integrations/supabase/types";
 import logoGreenWhite from "@/assets/logo-green-white.png";
+import { calculateSalary, formatR, type SalaryCalcResult } from "@/lib/salary-calculations";
 
 type Employee = Tables<"employees">;
 type Employer = Tables<"employers">;
-
-/* ── helpers ── */
-
-function getWorkingDaysInRange(start: Date, end: Date): number {
-  let count = 0;
-  const cur = new Date(start);
-  while (cur <= end) {
-    const d = cur.getDay();
-    if (d !== 0 && d !== 6) count++;
-    cur.setDate(cur.getDate() + 1);
-  }
-  return count;
-}
-
-function maskAccount(bank: string | null, acc: string | null) {
-  const bankLabel = bank || "Bank";
-  if (!acc || acc.length < 4) return `${bankLabel} ••••`;
-  return `${bankLabel} ••••${acc.slice(-4)}`;
-}
-
-const formatR = (n: number) =>
-  `R ${n.toLocaleString("en-ZA", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 /* ── component ── */
 
@@ -52,7 +31,7 @@ export default function RequestSalaryAccess() {
 
   const [employee, setEmployee] = useState<Employee | null>(null);
   const [employer, setEmployer] = useState<Employer | null>(null);
-  const [totalAccessed, setTotalAccessed] = useState(0);
+  const [approvedTotal, setApprovedTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
@@ -101,70 +80,17 @@ export default function RequestSalaryAccess() {
         (s, r) => s + Number(r.amount_requested),
         0
       );
-      setTotalAccessed(accessed);
+      setApprovedTotal(accessed);
       setLoading(false);
     };
     load();
   }, [navigate]);
 
-  /* ── calculations ── */
-  const calc = useMemo(() => {
+  /* ── Use shared salary calculation engine ── */
+  const calc: SalaryCalcResult | null = useMemo(() => {
     if (!employee || !employer) return null;
-
-    const grossSalary = Number(employee.gross_salary || 0);
-    const maxPercent =
-      employee.access_limit_override_percent ?? employer.max_percent_earned ?? 50;
-    const maxPerTx = Number(employee.max_transaction_override ?? employer.max_per_transaction ?? 999999);
-    const feePercent = Number(employer.fee_percent ?? 0);
-    const feeFlat = Number(employer.fee_flat_amount ?? 0);
-    const cutoffDays = employer.cutoff_days ?? 0;
-
-    const periodStart =
-      employee.payroll_period_start || employer.payroll_period_start;
-    const periodEnd = employee.payroll_period_end || employer.payroll_period_end;
-
-    const startDate = periodStart
-      ? new Date(periodStart)
-      : new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-    const endDate = periodEnd
-      ? new Date(periodEnd)
-      : new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const totalWorkingDays = getWorkingDaysInRange(startDate, endDate);
-    const daysElapsed = getWorkingDaysInRange(
-      startDate,
-      today > endDate ? endDate : today
-    );
-    const dailyRate = totalWorkingDays > 0 ? grossSalary / totalWorkingDays : 0;
-    const earned = dailyRate * daysElapsed;
-    const accessible = earned * (maxPercent / 100);
-    const available = Math.max(0, accessible - totalAccessed);
-
-    // Effective approval mode
-    const approvalMode =
-      employee.approval_mode || employer.employer_approval_mode;
-
-    // Bank info
-    const bankLabel = maskAccount(employee.bank_name, employee.bank_account_number);
-    const bankVerified = employee.bank_verification_status === "Verified";
-
-    return {
-      grossSalary,
-      maxPercent,
-      maxPerTx,
-      feePercent,
-      feeFlat,
-      cutoffDays,
-      earned,
-      available,
-      approvalMode,
-      bankLabel,
-      bankVerified,
-    };
-  }, [employee, employer, totalAccessed]);
+    return calculateSalary(employee, employer, approvedTotal);
+  }, [employee, employer, approvedTotal]);
 
   /* ── derived fee values ── */
   const serviceFee = calc
@@ -173,10 +99,10 @@ export default function RequestSalaryAccess() {
   const amountToReceive = amount - serviceFee;
 
   const maxSlider = calc
-    ? Math.floor(Math.min(calc.available, calc.maxPerTx) / 100) * 100
+    ? Math.floor(Math.min(calc.availableBalance, calc.maxPerTransaction) / 100) * 100
     : 0;
-  const exceedsBalance = calc ? amount > calc.available : false;
-  const exceedsMaxTx = calc ? amount > calc.maxPerTx : false;
+  const exceedsBalance = calc ? amount > calc.availableBalance : false;
+  const exceedsMaxTx = calc ? amount > calc.maxPerTransaction : false;
   const hasWarning = exceedsBalance || exceedsMaxTx;
 
   const feeLabel = useMemo(() => {
@@ -202,8 +128,8 @@ export default function RequestSalaryAccess() {
       fee_percent_applied: calc.feePercent,
       fee_flat_applied: calc.feeFlat,
       amount_to_receive: amountToReceive,
-      earned_salary_at_request: calc.earned,
-      available_balance_at_request: calc.available,
+      earned_salary_at_request: calc.earnedToDate,
+      available_balance_at_request: calc.availableBalance,
       approval_mode_applied: calc.approvalMode,
       request_status: isAuto ? "Approved" : "Pending",
       approved_at: isAuto ? new Date().toISOString() : null,
@@ -244,7 +170,7 @@ export default function RequestSalaryAccess() {
           Available
         </p>
         <p className="text-2xl font-extrabold text-secondary-foreground">
-          {formatR(calc.available)}
+          {formatR(calc.availableBalance)}
         </p>
       </div>
 
@@ -292,12 +218,12 @@ export default function RequestSalaryAccess() {
       {/* Warnings */}
       {exceedsBalance && (
         <p className="text-sm text-destructive text-center font-medium">
-          Amount exceeds your available balance of {formatR(calc.available)}
+          Amount exceeds your available balance of {formatR(calc.availableBalance)}
         </p>
       )}
       {exceedsMaxTx && !exceedsBalance && (
         <p className="text-sm text-destructive text-center font-medium">
-          Maximum per transaction is {formatR(calc.maxPerTx)}
+          Maximum per transaction is {formatR(calc.maxPerTransaction)}
         </p>
       )}
 
@@ -499,7 +425,7 @@ export default function RequestSalaryAccess() {
                   <span className="font-bold text-accent">
                     {formatR(Math.max(0, amountToReceive))}
                   </span>{" "}
-                  in your bank account shortly.
+                  in your bank account.
                 </>
               ) : (
                 <>
@@ -507,15 +433,14 @@ export default function RequestSalaryAccess() {
                   <span className="font-bold text-foreground">
                     {formatR(amount)}
                   </span>{" "}
-                  is pending approval. You will be notified once it has been
-                  reviewed.
+                  has been submitted and is pending approval.
                 </>
               )}
             </DialogDescription>
           </DialogHeader>
           <Button
             onClick={() => navigate("/employee/dashboard")}
-            className="w-full mt-4 bg-accent text-accent-foreground hover:bg-accent/90 font-bold rounded-xl h-12"
+            className="w-full mt-4 bg-accent text-accent-foreground hover:bg-accent/90 rounded-xl"
           >
             Back to Dashboard
           </Button>

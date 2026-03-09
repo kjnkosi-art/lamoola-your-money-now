@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,6 +13,7 @@ import type { Tables } from "@/integrations/supabase/types";
 import logoGreenWhite from "@/assets/logo-green-white.png";
 import TermsAcceptance from "./TermsAcceptance";
 import { ChangePasswordModal } from "@/components/ChangePasswordModal";
+import { calculateSalary, formatR } from "@/lib/salary-calculations";
 
 type Employee = Tables<"employees">;
 type Request = Tables<"requests">;
@@ -22,40 +23,6 @@ const STATUS_CHIP: Record<string, string> = {
   Approved: "bg-accent/15 text-accent-foreground border-accent",
   Declined: "bg-destructive/15 text-destructive border-destructive",
 };
-
-function getWorkingDaysInMonth(start: Date, end: Date): number {
-  let count = 0;
-  const cur = new Date(start);
-  while (cur <= end) {
-    const day = cur.getDay();
-    if (day !== 0 && day !== 6) count++;
-    cur.setDate(cur.getDate() + 1);
-  }
-  return count;
-}
-
-function getWorkingDaysElapsed(start: Date, today: Date): number {
-  let count = 0;
-  const cur = new Date(start);
-  const end = today < start ? start : today;
-  while (cur <= end) {
-    const day = cur.getDay();
-    if (day !== 0 && day !== 6) count++;
-    cur.setDate(cur.getDate() + 1);
-  }
-  return count;
-}
-
-function daysUntil(dateStr: string | null, periodEnd: string | null, cutoffDays: number): number {
-  const ref = dateStr || periodEnd;
-  if (!ref) return 0;
-  const target = new Date(ref);
-  target.setDate(target.getDate() - cutoffDays);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const diff = Math.ceil((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-  return Math.max(0, diff);
-}
 
 export default function EmployeeDashboard() {
   const navigate = useNavigate();
@@ -82,7 +49,6 @@ export default function EmployeeDashboard() {
       return;
     }
 
-    // Check T&Cs
     if (!emp.tcs_accepted) {
       setEmployee(emp);
       setNeedsTcs(true);
@@ -132,44 +98,20 @@ export default function EmployeeDashboard() {
     );
   }
 
-  // Calculations
-  const grossSalary = Number(employee?.gross_salary || 0);
-  const maxPercent = employee?.access_limit_override_percent ?? employer?.max_percent_earned ?? 50;
-  const cutoffDays = employer?.cutoff_days ?? 0;
-
-  const periodStart = employee?.payroll_period_start || employer?.payroll_period_start;
-  const periodEnd = employee?.payroll_period_end || employer?.payroll_period_end;
-  const payday = employee?.payday || employer?.payday;
-
-  const startDate = periodStart ? new Date(periodStart) : new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-  const endDate = periodEnd ? new Date(periodEnd) : new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const totalWorkingDays = getWorkingDaysInMonth(startDate, endDate);
-  const daysElapsed = getWorkingDaysElapsed(startDate, today > endDate ? endDate : today);
-  const dailyRate = totalWorkingDays > 0 ? grossSalary / totalWorkingDays : 0;
-  let earned = dailyRate * daysElapsed;
-
-  // TEMPORARY WORKAROUND: If earned salary calc fails (0 or NaN) due to unparseable
-  // payroll period dates, fall back to 50% of gross salary to simulate mid-month.
-  // Replace with proper earned salary calculation engine.
-  if (!earned || isNaN(earned)) {
-    earned = grossSalary * 0.5;
-  }
-
-  const accessible = earned * (maxPercent / 100);
-
-  const totalAccessed = requests
+  // Use shared salary calculation engine
+  const approvedTotal = requests
     .filter((r) => r.request_status === "Approved")
     .reduce((sum, r) => sum + Number(r.amount_requested), 0);
 
-  const available = Math.max(0, accessible - totalAccessed);
-  const rawCutoffDays = daysUntil(payday, periodEnd, cutoffDays);
-  const cutoffDaysLeft = isNaN(rawCutoffDays) ? null : rawCutoffDays;
+  const calc = employee && employer
+    ? calculateSalary(employee, employer, approvedTotal)
+    : null;
 
-  const formatR = (n: number) =>
-    `R ${n.toLocaleString("en-ZA", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const earned = calc?.earnedToDate ?? 0;
+  const available = calc?.availableBalance ?? 0;
+  const maxPercent = calc?.maxPercent ?? 50;
+  const paydayText = calc?.paydayText ?? employee?.payday ?? employer?.payday ?? null;
+  const cutoffDaysLeft = calc?.daysUntilCutoff ?? null;
 
   if (loading) {
     return (
@@ -218,11 +160,11 @@ export default function EmployeeDashboard() {
           </div>
           <div className="rounded-xl bg-card border border-border p-3 text-center">
             <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider mb-1">Accessed</p>
-            <p className="text-sm font-bold text-foreground">{formatR(totalAccessed)}</p>
+            <p className="text-sm font-bold text-foreground">{formatR(approvedTotal)}</p>
           </div>
           <div className="rounded-xl bg-card border border-border p-3 text-center">
             <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider mb-1">Payday</p>
-            <p className="text-sm font-bold text-foreground">{payday || "—"}</p>
+            <p className="text-sm font-bold text-foreground">{paydayText || "—"}</p>
           </div>
         </div>
 
