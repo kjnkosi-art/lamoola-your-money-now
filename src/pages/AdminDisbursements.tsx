@@ -13,8 +13,19 @@ import {
 } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { DollarSign, Clock, CheckCircle, AlertTriangle, Loader2 } from "lucide-react";
+import { DollarSign, Clock, CheckCircle, AlertTriangle, Loader2, XCircle } from "lucide-react";
 import { format, startOfMonth } from "date-fns";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
 interface DisbursementRow {
   request_id: string;
