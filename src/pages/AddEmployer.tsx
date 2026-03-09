@@ -13,7 +13,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Check } from "lucide-react";
 import Step3PolicyConfig, { Step3Data, defaultStep3, validateStep3 } from "@/components/employer/Step3PolicyConfig";
 import Step4Contacts, { Step4Data, defaultStep4, validateStep4 } from "@/components/employer/Step4Contacts";
-import Step5ReviewConfirm from "@/components/employer/Step5ReviewConfirm";
 
 const STEPS = [
   "Company Details",
@@ -497,43 +496,14 @@ export default function AddEmployer() {
           />
         )}
 
-        {/* ===== STEP 5 ===== */}
-        {currentStep === 5 && (
-          <Step5ReviewConfirm
-            step1={step1}
-            step2={step2}
-            step3={step3}
-            step4={step4}
-            saving={saving}
-            onEdit={(step) => { setErrors({}); setSearchParams({ step: String(step) }); }}
-            onBack={() => { setErrors({}); setSearchParams({ step: "4" }); }}
-            onConfirm={async () => {
-              if (!employerId) return;
-              setSaving(true);
-              try {
-                const user = await getUser();
-                if (!user) return;
-                const { error } = await supabase
-                  .from("employers")
-                  .update({ status: "Active" as const, onboarding_progress: "5 of 5 steps complete" })
-                  .eq("employer_id", employerId);
-                if (error) throw error;
-                await supabase.from("audit_trail").insert({
-                  user_id: user.id,
-                  action_type: "employer_activated" as const,
-                  object_type: "employer",
-                  object_id: employerId,
-                  details: { company_legal_name: step1.company_legal_name },
-                });
-                toast.success("Employer successfully activated. You can now begin employee onboarding.");
-                navigate("/admin/employers");
-              } catch (err: any) {
-                toast.error(err.message || "Failed to activate employer");
-              } finally {
-                setSaving(false);
-              }
-            }}
-          />
+        {/* Placeholder for step 5 */}
+        {currentStep > 4 && (
+          <Card>
+            <CardContent className="py-16 text-center text-muted-foreground">
+              <p className="text-lg font-medium">Step {currentStep}: {STEPS[currentStep - 1]}</p>
+              <p className="text-sm mt-2">Coming soon.</p>
+            </CardContent>
+          </Card>
         )}
       </div>
     </AdminLayout>
