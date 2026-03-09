@@ -189,32 +189,36 @@ export default function EmployeeDashboard() {
             ) : (
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead>Amount</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead className="text-right">Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {requests.map((req) => (
-                    <TableRow key={req.request_id}>
-                      <TableCell className="font-semibold text-sm">
-                        {formatR(Number(req.amount_requested))}
-                      </TableCell>
-                      <TableCell className="text-xs text-muted-foreground">
-                        {new Date(req.created_at).toLocaleDateString("en-ZA")}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Badge
-                          variant="outline"
-                          className={`text-xs font-semibold ${STATUS_CHIP[req.request_status] || ""}`}
-                        >
-                          {req.request_status}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
+                   <TableRow>
+                     <TableHead>Received</TableHead>
+                     <TableHead>Advance</TableHead>
+                     <TableHead>Date</TableHead>
+                     <TableHead className="text-right">Status</TableHead>
+                   </TableRow>
+                 </TableHeader>
+                 <TableBody>
+                   {requests.map((req) => (
+                     <TableRow key={req.request_id}>
+                       <TableCell className="font-semibold text-sm">
+                         {formatR(Number(req.amount_to_receive ?? req.amount_requested))}
+                       </TableCell>
+                       <TableCell className="text-xs text-muted-foreground">
+                         {formatR(Number(req.amount_requested))}
+                       </TableCell>
+                       <TableCell className="text-xs text-muted-foreground">
+                         {new Date(req.created_at).toLocaleDateString("en-ZA")}
+                       </TableCell>
+                       <TableCell className="text-right">
+                         <Badge
+                           variant="outline"
+                           className={`text-xs font-semibold ${STATUS_CHIP[req.request_status] || ""}`}
+                         >
+                           {req.request_status}
+                         </Badge>
+                       </TableCell>
+                     </TableRow>
+                   ))}
+                 </TableBody>
               </Table>
             )}
           </CardContent>
