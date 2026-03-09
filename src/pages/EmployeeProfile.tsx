@@ -174,6 +174,31 @@ export default function EmployeeProfile() {
     }
   };
 
+  const handleAcceptTCs = async () => {
+    if (!employee) return;
+    const now = new Date().toISOString();
+    const updates: Record<string, unknown> = { tcs_accepted: true, tcs_accepted_date: now };
+    const shouldActivate = employee.bank_verification_status === "Verified" && employee.status !== "Active";
+    if (shouldActivate) updates.status = "Active";
+
+    const { error } = await supabase
+      .from("employees")
+      .update(updates)
+      .eq("employee_id", employee.employee_id);
+
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+      return;
+    }
+    setEmployee({
+      ...employee,
+      tcs_accepted: true,
+      tcs_accepted_date: now,
+      ...(shouldActivate ? { status: "Active" as const } : {}),
+    });
+    toast({ title: "T&Cs accepted", description: shouldActivate ? "Employee status set to Active." : "Terms acceptance recorded." });
+  };
+
   if (loading) {
     return (
       <AdminLayout>
