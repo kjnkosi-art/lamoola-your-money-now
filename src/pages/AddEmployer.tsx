@@ -41,6 +41,13 @@ const PAYROLL_FORMATS = [
   "Standard Lamoola CSV", "Sage Pastel", "VIP Payroll", "SARS EMP201", "Custom CSV",
 ] as const;
 
+function generateTempPassword(): string {
+  const chars = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$";
+  let pw = "";
+  for (let i = 0; i < 12; i++) pw += chars[Math.floor(Math.random() * chars.length)];
+  return pw;
+}
+
 export default function AddEmployer() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -49,6 +56,7 @@ export default function AddEmployer() {
   const [saving, setSaving] = useState(false);
   const [employerId, setEmployerId] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [tempPasswordModal, setTempPasswordModal] = useState<{ open: boolean; email: string; password: string }>({ open: false, email: "", password: "" });
 
   // Step 1 fields
   const [step1, setStep1] = useState({
