@@ -54,9 +54,10 @@ export default function AddEmployer() {
   const currentStep = Number(searchParams.get("step") || "1");
 
   const [saving, setSaving] = useState(false);
-  const [employerId, setEmployerId] = useState<string | null>(null);
+  const [employerId, setEmployerId] = useState<string | null>(searchParams.get("employer") || null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [tempPasswordModal, setTempPasswordModal] = useState<{ open: boolean; email: string; password: string }>({ open: false, email: "", password: "" });
+  const [draftLoaded, setDraftLoaded] = useState(!searchParams.get("employer")); // false if we need to load
 
   // Step 1 fields
   const [step1, setStep1] = useState({
@@ -85,6 +86,97 @@ export default function AddEmployer() {
 
   // Step 4 fields
   const [step4, setStep4] = useState<Step4Data>(defaultStep4);
+
+  // Load draft employer data when resuming
+  useEffect(() => {
+    const resumeId = searchParams.get("employer");
+    if (!resumeId) return;
+
+    const loadDraft = async () => {
+      console.log("[AddEmployer] Loading draft employer:", resumeId);
+
+      const [employerRes, contactsRes] = await Promise.all([
+        supabase.from("employers").select("*").eq("employer_id", resumeId).single(),
+        supabase.from("employer_contacts").select("*").eq("employer_id", resumeId),
+      ]);
+
+      if (employerRes.error) {
+        console.error("[AddEmployer] Failed to fetch employer:", employerRes.error);
+        toast.error("Failed to load employer data");
+        setDraftLoaded(true);
+        return;
+      }
+
+      const emp = employerRes.data;
+      const contacts = contactsRes.data || [];
+      console.log("[AddEmployer] Fetched employer:", emp);
+      console.log("[AddEmployer] Fetched contacts:", contacts);
+
+      // Populate Step 1
+      setStep1({
+        company_legal_name: emp.company_legal_name || "",
+        registration_number: emp.registration_number || "",
+        vat_number: emp.vat_number || "",
+        industry_sector: emp.industry_sector || "",
+        physical_address: emp.physical_address || "",
+      });
+
+      // Populate Step 2
+      setStep2({
+        payroll_contact_first_name: emp.payroll_contact_first_name || "",
+        payroll_contact_last_name: emp.payroll_contact_last_name || "",
+        payroll_contact_email: emp.payroll_contact_email || "",
+        payroll_contact_phone: emp.payroll_contact_phone || "",
+        pay_cycle: emp.pay_cycle || "",
+        payday: emp.payday || "",
+        payroll_period_start: emp.payroll_period_start || "",
+        payroll_period_end: emp.payroll_period_end || "",
+        payroll_export_format: emp.payroll_export_format || "",
+      });
+
+      // Populate Step 3
+      setStep3({
+        employer_approval_mode: emp.employer_approval_mode || "Auto-Approved",
+        max_percent_earned: String(emp.max_percent_earned ?? 30),
+        max_per_transaction: emp.max_per_transaction ? String(emp.max_per_transaction) : "",
+        max_per_pay_period: emp.max_per_pay_period ? String(emp.max_per_pay_period) : "",
+        cutoff_days: String(emp.cutoff_days ?? 3),
+        fee_percent: String(emp.fee_percent ?? 0),
+        fee_flat_amount: String(emp.fee_flat_amount ?? 25),
+      });
+
+      // Populate Step 4 from contacts
+      const generalContacts = contacts.filter((c) => c.contact_type === "general");
+      const authRep = contacts.find((c) => c.contact_type === "authorised_representative");
+
+      setStep4({
+        systemUsers: generalContacts.length > 0
+          ? generalContacts.map((c) => ({
+              role_title: c.role_title || "",
+              first_name: c.first_name || "",
+              last_name: c.last_name || "",
+              email: c.email || "",
+              cellphone: c.cellphone || "",
+              landline: c.landline || "",
+            }))
+          : [{ role_title: "", first_name: "", last_name: "", email: "", cellphone: "", landline: "" }],
+        authorised: authRep
+          ? {
+              role_title: authRep.role_title || "",
+              first_name: authRep.first_name || "",
+              last_name: authRep.last_name || "",
+              email: authRep.email || "",
+              cellphone: authRep.cellphone || "",
+              landline: authRep.landline || "",
+            }
+          : { role_title: "", first_name: "", last_name: "", email: "", cellphone: "", landline: "" },
+      });
+
+      setDraftLoaded(true);
+    };
+
+    loadDraft();
+  }, []);
 
   const updateStep1 = (field: string, value: string) => {
     setStep1((prev) => ({ ...prev, [field]: value }));
