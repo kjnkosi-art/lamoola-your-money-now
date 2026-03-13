@@ -15,7 +15,7 @@ import Step3PolicyConfig, { Step3Data, defaultStep3, validateStep3 } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Step4Contacts, { Step4Data, defaultStep4, validateStep4 } from "@/components/employer/Step4Contacts";
 import Step5ReviewConfirm from "@/components/employer/Step5ReviewConfirm";
-import TempPasswordModal from "@/components/TempPasswordModal";
+import TempPasswordModal, { CredentialEntry } from "@/components/TempPasswordModal";
 
 const STEPS = [
   "Company Details",
@@ -57,7 +57,7 @@ export default function AddEmployer() {
   const [saving, setSaving] = useState(false);
   const [employerId, setEmployerId] = useState<string | null>(searchParams.get("employer") || null);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [tempPasswordModal, setTempPasswordModal] = useState<{ open: boolean; email: string; password: string }>({ open: false, email: "", password: "" });
+  const [tempPasswordModal, setTempPasswordModal] = useState<{ open: boolean; credentials: CredentialEntry[] }>({ open: false, credentials: [] });
   const [draftLoaded, setDraftLoaded] = useState(!searchParams.get("employer")); // false if we need to load
 
   // Step 1 fields
@@ -710,32 +710,92 @@ export default function AddEmployer() {
                   }
                 }
 
-                // Create auth account for first Employer System Admin
-                const adminUser = step4.systemUsers.find((u) => u.role_title === "Employer System Admin");
-                if (adminUser) {
-                  const contactEmail = adminUser.email.trim();
+                // Role mapping: UI role → auth role
+                const ROLE_MAP: Record<string, string | null> = {
+                  "Employer System Admin": "employer_admin",
+                  "HR Manager": "hr_approver",
+                  "Supervisor": "supervisor",
+                  "Finance Manager": null, // contact-only, no login
+                };
+
+                // Collect all users that need auth accounts
+                const usersToProvision: { email: string; first_name: string; last_name: string; authRole: string; displayRole: string }[] = [];
+
+                for (const user of step4.systemUsers) {
+                  const authRole = ROLE_MAP[user.role_title];
+                  if (authRole) {
+                    usersToProvision.push({
+                      email: user.email.trim(),
+                      first_name: user.first_name.trim(),
+                      last_name: user.last_name.trim(),
+                      authRole,
+                      displayRole: user.role_title,
+                    });
+                  }
+                }
+
+                // Also provision Payroll Contact from Step 2 as employer_admin
+                if (step2.payroll_contact_email.trim()) {
+                  // Avoid duplicate if payroll contact email matches an existing system user
+                  const alreadyIncluded = usersToProvision.some(
+                    (u) => u.email.toLowerCase() === step2.payroll_contact_email.trim().toLowerCase()
+                  );
+                  if (!alreadyIncluded) {
+                    usersToProvision.push({
+                      email: step2.payroll_contact_email.trim(),
+                      first_name: step2.payroll_contact_first_name.trim(),
+                      last_name: step2.payroll_contact_last_name.trim(),
+                      authRole: "employer_admin",
+                      displayRole: "Payroll Contact",
+                    });
+                  }
+                }
+
+                // Create accounts for all provisioned users
+                const collectedCredentials: CredentialEntry[] = [];
+                let hasErrors = false;
+
+                for (const user of usersToProvision) {
                   const tempPassword = generateTempPassword();
                   const { data: fnData, error: fnError } = await supabase.functions.invoke("create-user-account", {
                     body: {
-                      email: contactEmail,
+                      email: user.email,
                       password: tempPassword,
-                      first_name: adminUser.first_name.trim(),
-                      last_name: adminUser.last_name.trim(),
-                      role: "employer_admin",
+                      first_name: user.first_name,
+                      last_name: user.last_name,
+                      role: user.authRole,
                       employer_id: employerId,
                     },
                   });
 
                   if (fnError || fnData?.error) {
-                    toast.error("Contacts saved, but employer admin account creation failed: " + (fnData?.error || fnError?.message));
+                    toast.error(`Account creation failed for ${user.email}: ${fnData?.error || fnError?.message}`);
+                    hasErrors = true;
                   } else if (fnData?.already_existed) {
-                    toast.info(`${contactEmail} is already registered — linked to existing account.`);
-                    goToStep(5);
+                    collectedCredentials.push({
+                      email: user.email,
+                      password: "",
+                      role: user.displayRole,
+                      alreadyExisted: true,
+                    });
+                  } else {
+                    collectedCredentials.push({
+                      email: user.email,
+                      password: tempPassword,
+                      role: user.displayRole,
+                      alreadyExisted: false,
+                    });
+                  }
+                }
+
+                if (collectedCredentials.length > 0) {
+                  const newCount = collectedCredentials.filter((c) => !c.alreadyExisted).length;
+                  if (newCount > 0) {
+                    toast.success(`Step 4 complete — ${newCount} account${newCount !== 1 ? "s" : ""} created.`);
+                    setTempPasswordModal({ open: true, credentials: collectedCredentials });
                     return;
                   } else {
-                    toast.success("Step 4 complete — employer admin account created.");
-                    setTempPasswordModal({ open: true, email: contactEmail, password: tempPassword });
-                    return;
+                    toast.info("All users already have existing accounts.");
                   }
                 }
 
@@ -802,13 +862,11 @@ export default function AddEmployer() {
       <TempPasswordModal
         open={tempPasswordModal.open}
         onClose={() => {
-          setTempPasswordModal({ open: false, email: "", password: "" });
+          setTempPasswordModal({ open: false, credentials: [] });
           setErrors({});
           setSearchParams({ step: "5" });
         }}
-        email={tempPasswordModal.email}
-        password={tempPasswordModal.password}
-        role="employer admin"
+        credentials={tempPasswordModal.credentials}
       />
       </div>
     </AdminLayout>

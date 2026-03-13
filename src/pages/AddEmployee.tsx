@@ -119,7 +119,7 @@ export default function AddEmployee() {
   const [supervisors, setSupervisors] = useState<EmployerContact[]>([]);
   const [loading, setLoading] = useState(false);
   const [idDocType, setIdDocType] = useState<"sa_id" | "passport" | null>(null);
-  const [tempPasswordModal, setTempPasswordModal] = useState<{ open: boolean; email: string; password: string }>({ open: false, email: "", password: "" });
+  const [tempPasswordModal, setTempPasswordModal] = useState<{ open: boolean; credentials: import("@/components/TempPasswordModal").CredentialEntry[] }>({ open: false, credentials: [] });
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -264,7 +264,7 @@ export default function AddEmployee() {
           toast.info(`${email} is already registered — linked to existing account.`);
         } else {
           toast.success("Employee added and account created.");
-          setTempPasswordModal({ open: true, email, password: tempPassword });
+          setTempPasswordModal({ open: true, credentials: [{ email, password: tempPassword, role: "Employee", alreadyExisted: false }] });
           return; // Don't navigate yet — modal is open
         }
       } else {
@@ -693,12 +693,10 @@ export default function AddEmployee() {
       <TempPasswordModal
         open={tempPasswordModal.open}
         onClose={() => {
-          setTempPasswordModal({ open: false, email: "", password: "" });
+          setTempPasswordModal({ open: false, credentials: [] });
           navigate("/admin/employees");
         }}
-        email={tempPasswordModal.email}
-        password={tempPasswordModal.password}
-        role="employee"
+        credentials={tempPasswordModal.credentials}
       />
     </AdminLayout>
   );
