@@ -57,29 +57,40 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Create auth user
-    const { data: newUser, error: createError } = await adminClient.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: true,
-      user_metadata: { first_name, last_name },
-    });
+    // Check if user already exists
+    let userId: string;
+    let alreadyExisted = false;
 
-    if (createError) {
-      return new Response(JSON.stringify({ error: createError.message }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+    const { data: existingUsers, error: listError } = await adminClient.auth.admin.listUsers();
+    const existingUser = listError ? null : existingUsers?.users?.find((u: any) => u.email === email);
+
+    if (existingUser) {
+      userId = existingUser.id;
+      alreadyExisted = true;
+      console.log(`[create-user-account] User already exists: ${email}, id: ${userId}`);
+    } else {
+      // Create auth user
+      const { data: newUser, error: createError } = await adminClient.auth.admin.createUser({
+        email,
+        password,
+        email_confirm: true,
+        user_metadata: { first_name, last_name },
       });
+
+      if (createError) {
+        return new Response(JSON.stringify({ error: createError.message }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      userId = newUser.user.id;
     }
 
-    const userId = newUser.user.id;
-
-    // Insert user_roles
-    const { error: roleError } = await adminClient.from("user_roles").insert({
-      user_id: userId,
-      role,
-      employer_id: employer_id || null,
-    });
+    // Insert user_roles (upsert-style: skip if already exists)
+    const { error: roleError } = await adminClient.from("user_roles").upsert(
+      { user_id: userId, role, employer_id: employer_id || null },
+      { onConflict: "user_id,role" }
+    );
 
     if (roleError) {
       console.error("Role insert error:", roleError);
@@ -96,7 +107,7 @@ Deno.serve(async (req) => {
       }
     }
 
-    return new Response(JSON.stringify({ user_id: userId }), {
+    return new Response(JSON.stringify({ user_id: userId, already_existed: alreadyExisted }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
