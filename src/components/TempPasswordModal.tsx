@@ -63,10 +63,10 @@ export default function TempPasswordModal({ open, onClose, credentials, title, d
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Key className="h-5 w-5 text-primary" />
-            Accounts Created
+            {title || "Accounts Created"}
           </DialogTitle>
           <DialogDescription>
-            {newAccounts.length} new account{newAccounts.length !== 1 ? "s" : ""} created. Share the temporary passwords below — users should change them on first login.
+            {description || `${newAccounts.length} new account${newAccounts.length !== 1 ? "s" : ""} created. Share the temporary passwords below — users should change them on first login.`}
           </DialogDescription>
         </DialogHeader>
 

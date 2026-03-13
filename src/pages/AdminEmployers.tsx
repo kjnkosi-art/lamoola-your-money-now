@@ -21,9 +21,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { PlusCircle, Eye, Play, Trash2, RotateCcw } from "lucide-react";
+import { PlusCircle, Eye, Play, Trash2, RotateCcw, Key } from "lucide-react";
 import { toast } from "sonner";
 import type { Tables } from "@/integrations/supabase/types";
+import TempPasswordModal, { CredentialEntry } from "@/components/TempPasswordModal";
+import ReshareLoginsModal from "@/components/admin/ReshareLoginsModal";
 
 type Employer = Tables<"employers">;
 type EmployerStatus = Employer["status"];
