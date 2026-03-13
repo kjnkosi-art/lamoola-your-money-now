@@ -59,7 +59,7 @@ export default function TempPasswordModal({ open, onClose, credentials, title, d
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-xl">
+      <DialogContent className="sm:max-w-3xl min-w-[600px] max-w-[95vw] overflow-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Key className="h-5 w-5 text-primary" />
