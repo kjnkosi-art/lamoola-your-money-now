@@ -135,9 +135,27 @@ export default function AddEmployee() {
       bank_name: "",
       bank_account_number: "",
       department: "",
-      supervisor_name: "",
+      supervisor_contact_id: "",
     },
   });
+
+  const selectedEmployerId = form.watch("employer_id");
+
+  useEffect(() => {
+    if (!selectedEmployerId) {
+      setSupervisors([]);
+      return;
+    }
+    const fetchSupervisors = async () => {
+      const { data } = await supabase
+        .from("employer_contacts")
+        .select("*")
+        .eq("employer_id", selectedEmployerId)
+        .eq("role_title", "Supervisor");
+      setSupervisors(data || []);
+    };
+    fetchSupervisors();
+  }, [selectedEmployerId]);
 
   useEffect(() => {
     const fetchEmployers = async () => {
