@@ -147,6 +147,7 @@ export type Database = {
           payroll_period_start: string | null
           sa_id_or_passport: string | null
           status: Database["public"]["Enums"]["employee_status"]
+          supervisor_contact_id: string | null
           supervisor_name: string | null
           tcs_accepted: boolean | null
           tcs_accepted_date: string | null
@@ -186,6 +187,7 @@ export type Database = {
           payroll_period_start?: string | null
           sa_id_or_passport?: string | null
           status?: Database["public"]["Enums"]["employee_status"]
+          supervisor_contact_id?: string | null
           supervisor_name?: string | null
           tcs_accepted?: boolean | null
           tcs_accepted_date?: string | null
@@ -225,6 +227,7 @@ export type Database = {
           payroll_period_start?: string | null
           sa_id_or_passport?: string | null
           status?: Database["public"]["Enums"]["employee_status"]
+          supervisor_contact_id?: string | null
           supervisor_name?: string | null
           tcs_accepted?: boolean | null
           tcs_accepted_date?: string | null
@@ -238,6 +241,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "employers"
             referencedColumns: ["employer_id"]
+          },
+          {
+            foreignKeyName: "employees_supervisor_contact_id_fkey"
+            columns: ["supervisor_contact_id"]
+            isOneToOne: false
+            referencedRelation: "employer_contacts"
+            referencedColumns: ["contact_id"]
           },
         ]
       }
