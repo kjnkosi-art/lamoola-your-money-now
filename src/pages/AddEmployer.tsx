@@ -665,9 +665,7 @@ export default function AddEmployer() {
                   }
                 }
 
-                toast.success("Step 4 complete");
-                setErrors({});
-                setSearchParams({ step: "5" });
+                goToStep(5);
               } catch (err: any) {
                 toast.error(err.message || "Failed to save contacts");
               }
