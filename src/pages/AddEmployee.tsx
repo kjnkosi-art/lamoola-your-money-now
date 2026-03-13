@@ -218,7 +218,12 @@ export default function AddEmployee() {
         bank_account_number: values.bank_account_number,
         account_type: values.account_type || null,
         department: values.department || null,
-        supervisor_name: values.supervisor_name || null,
+        supervisor_name: values.supervisor_contact_id
+          ? supervisors.find((s) => s.contact_id === values.supervisor_contact_id)
+            ? `${supervisors.find((s) => s.contact_id === values.supervisor_contact_id)!.first_name} ${supervisors.find((s) => s.contact_id === values.supervisor_contact_id)!.last_name}`
+            : null
+          : null,
+        supervisor_contact_id: values.supervisor_contact_id || null,
         status,
         import_source: "Manual",
       }).select("employee_id").single();
