@@ -64,21 +64,28 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Find user by email using listUsers with filter
-    const { data: listData, error: listError } = await adminClient.auth.admin.listUsers({
-      page: 1,
-      perPage: 1,
-      filter: email,
-    } as any);
-
-    if (listError) {
-      return new Response(JSON.stringify({ error: "Failed to list users" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+    // Find user by email — paginate through all users
+    let existingUser: any = null;
+    let page = 1;
+    const perPage = 100;
+    while (!existingUser) {
+      const { data: listData, error: listError } = await adminClient.auth.admin.listUsers({
+        page,
+        perPage,
       });
+      if (listError) {
+        return new Response(JSON.stringify({ error: "Failed to list users" }), {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const users = listData?.users || [];
+      existingUser = users.find((u: any) => u.email === email);
+      if (existingUser) break;
+      if (users.length < perPage) break; // no more pages
+      page++;
     }
 
-    const existingUser = listData?.users?.find((u: any) => u.email === email);
     if (!existingUser) {
       return new Response(JSON.stringify({ error: `No auth account found for ${email}` }), {
         status: 404,
