@@ -38,6 +38,7 @@ import { cn } from "@/lib/utils";
 import type { Tables, Database } from "@/integrations/supabase/types";
 
 type Employer = Tables<"employers">;
+type EmployerContact = Tables<"employer_contacts">;
 type EmploymentType = Database["public"]["Enums"]["employment_type"];
 type AccountType = Database["public"]["Enums"]["account_type"];
 
