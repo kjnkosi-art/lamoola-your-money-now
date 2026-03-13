@@ -21,9 +21,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { PlusCircle, Eye, Play, Trash2, RotateCcw } from "lucide-react";
+import { PlusCircle, Eye, Play, Trash2, RotateCcw, Key } from "lucide-react";
 import { toast } from "sonner";
 import type { Tables } from "@/integrations/supabase/types";
+import TempPasswordModal, { CredentialEntry } from "@/components/TempPasswordModal";
+import ReshareLoginsModal from "@/components/admin/ReshareLoginsModal";
 
 type Employer = Tables<"employers">;
 type EmployerStatus = Employer["status"];
@@ -51,6 +53,9 @@ export default function AdminEmployers() {
   const [loading, setLoading] = useState(true);
   const [discardTarget, setDiscardTarget] = useState<Employer | null>(null);
   const [discarding, setDiscarding] = useState(false);
+  const [reshareTarget, setReshareTarget] = useState<Employer | null>(null);
+  const [reshareCredentials, setReshareCredentials] = useState<CredentialEntry[]>([]);
+  const [showReshareCredentials, setShowReshareCredentials] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
@@ -234,19 +239,30 @@ export default function AdminEmployers() {
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-2">
                           {employer.status === "Active" && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() =>
-                                navigate(
-                                  `/admin/employers/${employer.employer_id}`
-                                )
-                              }
-                              className="gap-1.5 text-xs"
-                            >
-                              <Eye className="h-3.5 w-3.5" />
-                              View
-                            </Button>
+                            <>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() =>
+                                  navigate(
+                                    `/admin/employers/${employer.employer_id}`
+                                  )
+                                }
+                                className="gap-1.5 text-xs"
+                              >
+                                <Eye className="h-3.5 w-3.5" />
+                                View
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setReshareTarget(employer)}
+                                className="gap-1.5 text-xs"
+                              >
+                                <Key className="h-3.5 w-3.5" />
+                                Reshare Logins
+                              </Button>
+                            </>
                           )}
                           {employer.status === "Draft" && (
                             <>
@@ -331,6 +347,29 @@ export default function AdminEmployers() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Reshare Logins Modal */}
+      <ReshareLoginsModal
+        open={!!reshareTarget}
+        onClose={() => setReshareTarget(null)}
+        employer={reshareTarget}
+        onCredentialsReady={(creds) => {
+          setReshareCredentials(creds);
+          setShowReshareCredentials(true);
+        }}
+      />
+
+      {/* Reshare Credentials Result */}
+      <TempPasswordModal
+        open={showReshareCredentials}
+        onClose={() => {
+          setShowReshareCredentials(false);
+          setReshareCredentials([]);
+        }}
+        credentials={reshareCredentials}
+        title="Password Reset"
+        description="New temporary passwords have been generated. Share them securely — users should change them on first login."
+      />
     </AdminLayout>
   );
 }

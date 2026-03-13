@@ -30,9 +30,11 @@ interface TempPasswordModalProps {
   open: boolean;
   onClose: () => void;
   credentials: CredentialEntry[];
+  title?: string;
+  description?: string;
 }
 
-export default function TempPasswordModal({ open, onClose, credentials }: TempPasswordModalProps) {
+export default function TempPasswordModal({ open, onClose, credentials, title, description }: TempPasswordModalProps) {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [copiedAll, setCopiedAll] = useState(false);
 
@@ -61,10 +63,10 @@ export default function TempPasswordModal({ open, onClose, credentials }: TempPa
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Key className="h-5 w-5 text-primary" />
-            Accounts Created
+            {title || "Accounts Created"}
           </DialogTitle>
           <DialogDescription>
-            {newAccounts.length} new account{newAccounts.length !== 1 ? "s" : ""} created. Share the temporary passwords below — users should change them on first login.
+            {description || `${newAccounts.length} new account${newAccounts.length !== 1 ? "s" : ""} created. Share the temporary passwords below — users should change them on first login.`}
           </DialogDescription>
         </DialogHeader>
 
