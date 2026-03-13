@@ -609,11 +609,8 @@ export default function AddEmployer() {
             onChangeAuthorised={updateAuthorised}
             errors={errors}
             saving={saving}
-            onBack={() => { setErrors({}); setSearchParams({ step: "3" }); }}
+            onBack={() => goToStep(3)}
             onNext={async () => {
-              const e = validateStep4(step4);
-              setErrors(e);
-              if (Object.keys(e).length > 0) return;
               const ok = await saveEmployer("4 of 5 steps complete");
               if (!ok) return;
               try {
