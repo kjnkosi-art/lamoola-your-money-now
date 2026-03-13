@@ -101,12 +101,35 @@ export default function AddEmployer() {
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
-  const updateStep4 = (section: "general" | "authorised", field: string, value: string) => {
+  const updateSystemUser = (index: number, field: string, value: string) => {
     setStep4((prev) => ({
       ...prev,
-      [section]: { ...prev[section], [field]: value },
+      systemUsers: prev.systemUsers.map((u, i) => i === index ? { ...u, [field]: value } : u),
     }));
-    const key = `${section}.${field}`;
+    const key = `systemUsers.${index}.${field}`;
+    if (errors[key]) setErrors((prev) => ({ ...prev, [key]: "" }));
+  };
+
+  const addSystemUser = () => {
+    setStep4((prev) => ({
+      ...prev,
+      systemUsers: [...prev.systemUsers, { role_title: "", first_name: "", last_name: "", email: "", cellphone: "", landline: "" }],
+    }));
+  };
+
+  const removeSystemUser = (index: number) => {
+    setStep4((prev) => ({
+      ...prev,
+      systemUsers: prev.systemUsers.filter((_, i) => i !== index),
+    }));
+  };
+
+  const updateAuthorised = (field: string, value: string) => {
+    setStep4((prev) => ({
+      ...prev,
+      authorised: { ...prev.authorised, [field]: value },
+    }));
+    const key = `authorised.${field}`;
     if (errors[key]) setErrors((prev) => ({ ...prev, [key]: "" }));
   };
 
