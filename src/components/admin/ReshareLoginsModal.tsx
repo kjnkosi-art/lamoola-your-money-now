@@ -142,20 +142,32 @@ export default function ReshareLoginsModal({
     const credentials: CredentialEntry[] = [];
 
     for (const email of emails) {
-      const { data, error } = await supabase.functions.invoke("reset-user-password", {
-        body: { email },
-      });
-
-      if (error || data?.error) {
-        toast.error(`Failed to reset ${email}: ${data?.error || error?.message}`);
-      } else {
-        const user = users.find((u) => u.email === email);
-        credentials.push({
-          email: data.email,
-          password: data.password,
-          role: user?.displayRole || "",
-          alreadyExisted: false,
+      try {
+        const { data, error } = await supabase.functions.invoke("reset-user-password", {
+          body: { email },
         });
+
+        if (error) {
+          // Parse error body from FunctionsHttpError
+          let msg = error.message;
+          try {
+            const ctx = await (error as any).context?.json?.();
+            if (ctx?.error) msg = ctx.error;
+          } catch { /* ignore parse errors */ }
+          toast.error(`Failed to reset ${email}: ${msg}`);
+        } else if (data?.error) {
+          toast.error(`Failed to reset ${email}: ${data.error}`);
+        } else {
+          const user = users.find((u) => u.email === email);
+          credentials.push({
+            email: data.email,
+            password: data.password,
+            role: user?.displayRole || "",
+            alreadyExisted: false,
+          });
+        }
+      } catch (err: any) {
+        toast.error(`Failed to reset ${email}: ${err?.message || "Unknown error"}`);
       }
     }
 
