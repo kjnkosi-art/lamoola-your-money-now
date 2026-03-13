@@ -57,7 +57,7 @@ export default function AddEmployer() {
   const [saving, setSaving] = useState(false);
   const [employerId, setEmployerId] = useState<string | null>(searchParams.get("employer") || null);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [tempPasswordModal, setTempPasswordModal] = useState<{ open: boolean; email: string; password: string }>({ open: false, email: "", password: "" });
+  const [tempPasswordModal, setTempPasswordModal] = useState<{ open: boolean; credentials: CredentialEntry[] }>({ open: false, credentials: [] });
   const [draftLoaded, setDraftLoaded] = useState(!searchParams.get("employer")); // false if we need to load
 
   // Step 1 fields
