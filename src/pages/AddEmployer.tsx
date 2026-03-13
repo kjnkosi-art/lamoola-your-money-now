@@ -590,17 +590,10 @@ export default function AddEmployer() {
             onChange={updateStep3}
             errors={errors}
             saving={saving}
-            onBack={() => { setErrors({}); setSearchParams({ step: "2" }); }}
+            onBack={() => goToStep(2)}
             onNext={async () => {
-              const e = validateStep3(step3);
-              setErrors(e);
-              if (Object.keys(e).length > 0) return;
               const ok = await saveEmployer("3 of 5 steps complete");
-              if (ok) {
-                toast.success("Step 3 complete");
-                setErrors({});
-                setSearchParams({ step: "4" });
-              }
+              if (ok) goToStep(4);
             }}
             onSaveDraft={handleSaveDraft}
           />
