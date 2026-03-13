@@ -174,10 +174,27 @@ export default function ReshareLoginsModal({
       }
     }
 
+    // Build credential entries for failed users so admin can create accounts
+    for (const email of failedEmails) {
+      const user = users.find((u) => u.email === email);
+      const authRole = user ? ROLE_MAP[user.displayRole] : null;
+      credentials.push({
+        email,
+        password: "",
+        role: user?.displayRole || "",
+        alreadyExisted: false,
+        noAuthAccount: true,
+        firstName: user?.first_name || "",
+        lastName: user?.last_name || "",
+        employerId: employer?.employer_id || "",
+        authRole: authRole || "employer_admin",
+      });
+    }
+
     setResettingEmails(new Set());
 
     if (failedEmails.length > 0) {
-      toast.error(`Reset ${credentials.length} of ${emails.length} — ${failedEmails.length} user(s) have no auth account`);
+      toast.error(`Reset ${credentials.length - failedEmails.length} of ${emails.length} — ${failedEmails.length} user(s) have no auth account`);
     }
 
     if (credentials.length > 0) {
