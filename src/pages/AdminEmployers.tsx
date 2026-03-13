@@ -239,19 +239,30 @@ export default function AdminEmployers() {
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-2">
                           {employer.status === "Active" && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() =>
-                                navigate(
-                                  `/admin/employers/${employer.employer_id}`
-                                )
-                              }
-                              className="gap-1.5 text-xs"
-                            >
-                              <Eye className="h-3.5 w-3.5" />
-                              View
-                            </Button>
+                            <>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() =>
+                                  navigate(
+                                    `/admin/employers/${employer.employer_id}`
+                                  )
+                                }
+                                className="gap-1.5 text-xs"
+                              >
+                                <Eye className="h-3.5 w-3.5" />
+                                View
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setReshareTarget(employer)}
+                                className="gap-1.5 text-xs"
+                              >
+                                <Key className="h-3.5 w-3.5" />
+                                Reshare Logins
+                              </Button>
+                            </>
                           )}
                           {employer.status === "Draft" && (
                             <>
