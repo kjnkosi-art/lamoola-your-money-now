@@ -101,7 +101,7 @@ const formSchema = z.object({
   bank_account_number: z.string().min(1, "Bank account number is required"),
   account_type: z.enum(["Cheque", "Savings", "Transmission"]).optional(),
   department: z.string().optional(),
-  supervisor_name: z.string().optional(),
+  supervisor_contact_id: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
