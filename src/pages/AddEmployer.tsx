@@ -10,8 +10,9 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { Check } from "lucide-react";
+import { Check, AlertCircle } from "lucide-react";
 import Step3PolicyConfig, { Step3Data, defaultStep3, validateStep3 } from "@/components/employer/Step3PolicyConfig";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import Step4Contacts, { Step4Data, defaultStep4, validateStep4 } from "@/components/employer/Step4Contacts";
 import Step5ReviewConfirm from "@/components/employer/Step5ReviewConfirm";
 import TempPasswordModal from "@/components/TempPasswordModal";
@@ -225,40 +226,72 @@ export default function AddEmployer() {
     if (errors[key]) setErrors((prev) => ({ ...prev, [key]: "" }));
   };
 
-  const validateStep1 = () => {
+  const getStep1Errors = (): Record<string, string> => {
     const e: Record<string, string> = {};
-    if (!step1.company_legal_name.trim()) e.company_legal_name = "Required";
+    if (!step1.company_legal_name.trim()) e.company_legal_name = "Company Legal Name is required";
     if (!step1.registration_number.trim()) {
-      e.registration_number = "Required";
+      e.registration_number = "Registration Number is required";
     } else if (!/^\d{4}\/\d{7}\/\d{2}$/.test(step1.registration_number.trim())) {
-      e.registration_number = "Format: YYYY/NNNNNNN/NN";
+      e.registration_number = "Registration Number format: YYYY/NNNNNNN/NN";
     }
-    if (!step1.industry_sector) e.industry_sector = "Required";
-    if (!step1.physical_address.trim()) e.physical_address = "Required";
+    if (!step1.industry_sector) e.industry_sector = "Industry / Sector is required";
+    if (!step1.physical_address.trim()) e.physical_address = "Physical Address is required";
+    return e;
+  };
+
+  const getStep2Errors = (): Record<string, string> => {
+    const e: Record<string, string> = {};
+    if (!step2.payroll_contact_first_name.trim()) e.payroll_contact_first_name = "Payroll Contact First Name is required";
+    if (!step2.payroll_contact_last_name.trim()) e.payroll_contact_last_name = "Payroll Contact Last Name is required";
+    if (!step2.payroll_contact_email.trim()) {
+      e.payroll_contact_email = "Payroll Contact Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(step2.payroll_contact_email.trim())) {
+      e.payroll_contact_email = "Payroll Contact Email is invalid";
+    }
+    if (!step2.payroll_contact_phone.trim()) {
+      e.payroll_contact_phone = "Payroll Contact Phone is required";
+    } else if (!/^0[6-8]\d{8}$/.test(step2.payroll_contact_phone.trim())) {
+      e.payroll_contact_phone = "Payroll Contact Phone: SA mobile 10 digits starting 06/07/08";
+    }
+    if (!step2.pay_cycle) e.pay_cycle = "Pay Cycle is required";
+    if (!step2.payday) e.payday = "Payday is required";
+    if (!step2.payroll_period_start.trim()) e.payroll_period_start = "Payroll Period Start is required";
+    if (!step2.payroll_period_end.trim()) e.payroll_period_end = "Payroll Period End is required";
+    return e;
+  };
+
+  const validateStep1 = () => {
+    const e = getStep1Errors();
     setErrors(e);
     return Object.keys(e).length === 0;
   };
 
   const validateStep2 = () => {
-    const e: Record<string, string> = {};
-    if (!step2.payroll_contact_first_name.trim()) e.payroll_contact_first_name = "Required";
-    if (!step2.payroll_contact_last_name.trim()) e.payroll_contact_last_name = "Required";
-    if (!step2.payroll_contact_email.trim()) {
-      e.payroll_contact_email = "Required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(step2.payroll_contact_email.trim())) {
-      e.payroll_contact_email = "Invalid email";
-    }
-    if (!step2.payroll_contact_phone.trim()) {
-      e.payroll_contact_phone = "Required";
-    } else if (!/^0[6-8]\d{8}$/.test(step2.payroll_contact_phone.trim())) {
-      e.payroll_contact_phone = "SA mobile: 10 digits starting 06/07/08";
-    }
-    if (!step2.pay_cycle) e.pay_cycle = "Required";
-    if (!step2.payday) e.payday = "Required";
-    if (!step2.payroll_period_start.trim()) e.payroll_period_start = "Required";
-    if (!step2.payroll_period_end.trim()) e.payroll_period_end = "Required";
+    const e = getStep2Errors();
     setErrors(e);
     return Object.keys(e).length === 0;
+  };
+
+  // Check which steps are valid (for stepper icons)
+  const stepValidation = {
+    1: Object.keys(getStep1Errors()).length === 0,
+    2: Object.keys(getStep2Errors()).length === 0,
+    3: Object.keys(validateStep3(step3)).length === 0,
+    4: Object.keys(validateStep4(step4)).length === 0,
+  };
+
+  // Full cross-step validation for activation
+  const getAllValidationErrors = (): { step: number; label: string; messages: string[] }[] => {
+    const result: { step: number; label: string; messages: string[] }[] = [];
+    const s1 = getStep1Errors();
+    if (Object.keys(s1).length > 0) result.push({ step: 1, label: "Company Details", messages: Object.values(s1) });
+    const s2 = getStep2Errors();
+    if (Object.keys(s2).length > 0) result.push({ step: 2, label: "Payroll & Pay Cycle", messages: Object.values(s2) });
+    const s3 = validateStep3(step3);
+    if (Object.keys(s3).length > 0) result.push({ step: 3, label: "Policy Configuration", messages: Object.values(s3) });
+    const s4 = validateStep4(step4);
+    if (Object.keys(s4).length > 0) result.push({ step: 4, label: "Contacts", messages: Object.values(s4) });
+    return result;
   };
 
   const getUser = async () => {
@@ -331,28 +364,21 @@ export default function AddEmployer() {
     }
   };
 
-  const handleStep1Next = async () => {
-    if (!validateStep1()) return;
-    const ok = await saveEmployer("1 of 5 steps complete");
-    if (ok) {
-      setErrors({});
-      setSearchParams({ step: "2" });
-    }
+  const goToStep = (step: number) => {
+    setErrors({});
+    setSearchParams({ ...(employerId ? { employer: employerId } : {}), step: String(step) });
   };
 
-  const handleStep2Back = () => {
-    setErrors({});
-    setSearchParams({ step: "1" });
+  const handleStep1Next = async () => {
+    const ok = await saveEmployer("1 of 5 steps complete");
+    if (ok) goToStep(2);
   };
+
+  const handleStep2Back = () => goToStep(1);
 
   const handleStep2Next = async () => {
-    if (!validateStep2()) return;
     const ok = await saveEmployer("2 of 5 steps complete");
-    if (ok) {
-      toast.success("Step 2 complete");
-      setErrors({});
-      setSearchParams({ step: "3" });
-    }
+    if (ok) goToStep(3);
   };
 
   const FieldError = ({ field }: { field: string }) =>
@@ -371,36 +397,39 @@ export default function AddEmployer() {
           {STEPS.map((label, i) => {
             const stepNum = i + 1;
             const isActive = stepNum === currentStep;
-            const isComplete = stepNum < currentStep;
-            const canNavigate = !!employerId; // allow jumping if resuming a draft
+            // Steps 1-4 show validation status; step 5 has no fields
+            const isValid = stepNum <= 4 ? stepValidation[stepNum as 1|2|3|4] : true;
             return (
               <div key={label} className="flex items-center flex-1 last:flex-none">
                 <div
-                  className={`flex items-center gap-2 min-w-0 ${canNavigate ? "cursor-pointer" : ""}`}
-                  onClick={() => {
-                    if (canNavigate) {
-                      setErrors({});
-                      setSearchParams({ ...(employerId ? { employer: employerId } : {}), step: String(stepNum) });
-                    }
-                  }}
+                  className="flex items-center gap-2 min-w-0 cursor-pointer"
+                  onClick={() => goToStep(stepNum)}
                 >
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold shrink-0 ${
-                      isComplete
-                        ? "bg-accent text-accent-foreground"
-                        : isActive
+                      isActive
                         ? "bg-primary text-primary-foreground"
+                        : stepNum <= 4 && isValid
+                        ? "bg-[#6AE809]/20 text-[#6AE809] border-2 border-[#6AE809]"
+                        : stepNum <= 4 && !isValid
+                        ? "bg-destructive/10 text-destructive border-2 border-destructive"
                         : "bg-muted text-muted-foreground"
                     }`}
                   >
-                    {isComplete ? <Check className="w-4 h-4" /> : stepNum}
+                    {stepNum <= 4 && isValid && !isActive ? (
+                      <Check className="w-4 h-4" />
+                    ) : stepNum <= 4 && !isValid && !isActive ? (
+                      <AlertCircle className="w-4 h-4" />
+                    ) : (
+                      stepNum
+                    )}
                   </div>
                   <span className={`text-xs font-medium truncate hidden sm:block ${isActive ? "text-foreground" : "text-muted-foreground"}`}>
                     {label}
                   </span>
                 </div>
                 {i < STEPS.length - 1 && (
-                  <div className={`h-0.5 flex-1 mx-2 rounded ${isComplete ? "bg-accent" : "bg-muted"}`} />
+                  <div className={`h-0.5 flex-1 mx-2 rounded bg-muted`} />
                 )}
               </div>
             );
@@ -561,17 +590,10 @@ export default function AddEmployer() {
             onChange={updateStep3}
             errors={errors}
             saving={saving}
-            onBack={() => { setErrors({}); setSearchParams({ step: "2" }); }}
+            onBack={() => goToStep(2)}
             onNext={async () => {
-              const e = validateStep3(step3);
-              setErrors(e);
-              if (Object.keys(e).length > 0) return;
               const ok = await saveEmployer("3 of 5 steps complete");
-              if (ok) {
-                toast.success("Step 3 complete");
-                setErrors({});
-                setSearchParams({ step: "4" });
-              }
+              if (ok) goToStep(4);
             }}
             onSaveDraft={handleSaveDraft}
           />
@@ -587,11 +609,8 @@ export default function AddEmployer() {
             onChangeAuthorised={updateAuthorised}
             errors={errors}
             saving={saving}
-            onBack={() => { setErrors({}); setSearchParams({ step: "3" }); }}
+            onBack={() => goToStep(3)}
             onNext={async () => {
-              const e = validateStep4(step4);
-              setErrors(e);
-              if (Object.keys(e).length > 0) return;
               const ok = await saveEmployer("4 of 5 steps complete");
               if (!ok) return;
               try {
@@ -646,9 +665,7 @@ export default function AddEmployer() {
                   }
                 }
 
-                toast.success("Step 4 complete");
-                setErrors({});
-                setSearchParams({ step: "5" });
+                goToStep(5);
               } catch (err: any) {
                 toast.error(err.message || "Failed to save contacts");
               }
@@ -665,11 +682,17 @@ export default function AddEmployer() {
             step3={step3}
             step4={step4}
             saving={saving}
-            onBack={() => { setErrors({}); setSearchParams({ step: "4" }); }}
-            onEdit={(step) => { setErrors({}); setSearchParams({ step: String(step) }); }}
+            validationErrors={getAllValidationErrors()}
+            onBack={() => goToStep(4)}
+            onEdit={(step) => goToStep(step)}
             onConfirm={async () => {
+              const allErrors = getAllValidationErrors();
+              if (allErrors.length > 0) {
+                toast.error("Please complete all required fields before activating.");
+                return;
+              }
               if (!employerId) {
-                toast.error("Employer record not found. Please complete previous steps first.");
+                toast.error("Employer record not found. Please save the employer first.");
                 return;
               }
               setSaving(true);
@@ -677,14 +700,12 @@ export default function AddEmployer() {
                 const user = await getUser();
                 if (!user) return;
 
-                // Update status to Active
                 const { error: updateError } = await supabase
                   .from("employers")
                   .update({ status: "Active" as const, onboarding_progress: "5 of 5 steps complete" })
                   .eq("employer_id", employerId);
                 if (updateError) throw updateError;
 
-                // Write audit trail
                 const { error: auditError } = await supabase.from("audit_trail").insert({
                   user_id: user.id,
                   action_type: "employer_activated" as const,
