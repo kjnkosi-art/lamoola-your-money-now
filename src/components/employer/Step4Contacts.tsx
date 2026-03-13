@@ -48,6 +48,27 @@ export const defaultStep4: Step4Data = {
 export function validateStep4(data: Step4Data): Record<string, string> {
   const e: Record<string, string> = {};
   
+  // Collect all emails and phones for intra-form duplicate detection
+  const allEntries: { email: string; cellphone: string; label: string; emailKey: string; phoneKey: string }[] = [];
+  
+  data.systemUsers.forEach((user, i) => {
+    allEntries.push({
+      email: user.email.trim().toLowerCase(),
+      cellphone: user.cellphone.trim(),
+      label: `User ${i + 1}`,
+      emailKey: `systemUsers.${i}.email`,
+      phoneKey: `systemUsers.${i}.cellphone`,
+    });
+  });
+  
+  allEntries.push({
+    email: data.authorised.email.trim().toLowerCase(),
+    cellphone: data.authorised.cellphone.trim(),
+    label: "Authorised Rep",
+    emailKey: "authorised.email",
+    phoneKey: "authorised.cellphone",
+  });
+
   // Validate each system user
   data.systemUsers.forEach((user, i) => {
     if (!user.role_title) e[`systemUsers.${i}.role_title`] = "Required";
@@ -79,6 +100,31 @@ export function validateStep4(data: Step4Data): Record<string, string> {
   } else if (!/^0[6-8]\d{8}$/.test(data.authorised.cellphone.trim())) {
     e["authorised.cellphone"] = "SA mobile: 10 digits starting 06/07/08";
   }
+
+  // Intra-form duplicate email detection
+  for (let i = 0; i < allEntries.length; i++) {
+    const entry = allEntries[i];
+    if (!entry.email || e[entry.emailKey]) continue; // skip empty or already errored
+    for (let j = 0; j < i; j++) {
+      if (allEntries[j].email === entry.email) {
+        e[entry.emailKey] = "This email is already used by another user above";
+        break;
+      }
+    }
+  }
+
+  // Intra-form duplicate phone detection
+  for (let i = 0; i < allEntries.length; i++) {
+    const entry = allEntries[i];
+    if (!entry.cellphone || e[entry.phoneKey]) continue;
+    for (let j = 0; j < i; j++) {
+      if (allEntries[j].cellphone === entry.cellphone) {
+        e[entry.phoneKey] = "This phone number is already used by another user above";
+        break;
+      }
+    }
+  }
+
   return e;
 }
 

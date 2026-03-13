@@ -249,7 +249,7 @@ export default function AddEmployee() {
         if (fnError || fnData?.error) {
           toast.error("Employee saved, but account creation failed: " + (fnData?.error || fnError?.message));
         } else if (fnData?.already_existed) {
-          toast.info("This email is already registered — linked to existing account.");
+          toast.info(`${email} is already registered — linked to existing account.`);
         } else {
           toast.success("Employee added and account created.");
           setTempPasswordModal({ open: true, email, password: tempPassword });
