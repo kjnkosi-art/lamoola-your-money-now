@@ -140,6 +140,7 @@ export default function ReshareLoginsModal({
   const resetPasswords = async (emails: string[]) => {
     setResettingEmails((prev) => new Set([...prev, ...emails]));
     const credentials: CredentialEntry[] = [];
+    const failedEmails: string[] = [];
 
     for (const email of emails) {
       try {
@@ -148,15 +149,16 @@ export default function ReshareLoginsModal({
         });
 
         if (error) {
-          // Parse error body from FunctionsHttpError
           let msg = error.message;
           try {
             const ctx = await (error as any).context?.json?.();
             if (ctx?.error) msg = ctx.error;
           } catch { /* ignore parse errors */ }
-          toast.error(`Failed to reset ${email}: ${msg}`);
+          failedEmails.push(email);
+          console.warn(`Failed to reset ${email}: ${msg}`);
         } else if (data?.error) {
-          toast.error(`Failed to reset ${email}: ${data.error}`);
+          failedEmails.push(email);
+          console.warn(`Failed to reset ${email}: ${data.error}`);
         } else {
           const user = users.find((u) => u.email === email);
           credentials.push({
@@ -167,11 +169,16 @@ export default function ReshareLoginsModal({
           });
         }
       } catch (err: any) {
-        toast.error(`Failed to reset ${email}: ${err?.message || "Unknown error"}`);
+        failedEmails.push(email);
+        console.warn(`Failed to reset ${email}: ${err?.message || "Unknown error"}`);
       }
     }
 
     setResettingEmails(new Set());
+
+    if (failedEmails.length > 0) {
+      toast.error(`Reset ${credentials.length} of ${emails.length} — ${failedEmails.length} user(s) have no auth account`);
+    }
 
     if (credentials.length > 0) {
       onClose();
