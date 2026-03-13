@@ -120,10 +120,6 @@ export default function AddEmployer() {
 
       // Populate Step 2
       setStep2({
-        payroll_contact_first_name: emp.payroll_contact_first_name || "",
-        payroll_contact_last_name: emp.payroll_contact_last_name || "",
-        payroll_contact_email: emp.payroll_contact_email || "",
-        payroll_contact_phone: emp.payroll_contact_phone || "",
         pay_cycle: emp.pay_cycle || "",
         payday: emp.payday || "",
         payroll_period_start: emp.payroll_period_start || "",
