@@ -53,6 +53,9 @@ export default function AdminEmployers() {
   const [loading, setLoading] = useState(true);
   const [discardTarget, setDiscardTarget] = useState<Employer | null>(null);
   const [discarding, setDiscarding] = useState(false);
+  const [reshareTarget, setReshareTarget] = useState<Employer | null>(null);
+  const [reshareCredentials, setReshareCredentials] = useState<CredentialEntry[]>([]);
+  const [showReshareCredentials, setShowReshareCredentials] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
