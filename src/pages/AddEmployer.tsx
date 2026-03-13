@@ -682,32 +682,65 @@ export default function AddEmployer() {
               try {
                 await saveContacts(employerId!);
 
-                // DB-level duplicate checks for all system users + auth rep phones
+                // DB-level duplicate checks for all system users + auth rep phones AND emails
+                let hasDuplicates = false;
                 const allContacts = [...step4.systemUsers, step4.authorised];
                 for (const contact of allContacts) {
                   const phone = contact.cellphone.trim();
-                  if (!phone) continue;
-                  
-                  // Check employer_contacts (exclude current employer)
-                  const { data: existingContacts } = await supabase
-                    .from("employer_contacts")
-                    .select("cellphone")
-                    .eq("cellphone", phone)
-                    .neq("employer_id", employerId!)
-                    .limit(1);
-                  if (existingContacts && existingContacts.length > 0) {
-                    toast.info(`Phone number ${phone} is already registered — linked to existing account.`);
+                  const email = contact.email.trim().toLowerCase();
+
+                  // Phone duplicate checks
+                  if (phone) {
+                    const { data: existingContacts } = await supabase
+                      .from("employer_contacts")
+                      .select("cellphone")
+                      .eq("cellphone", phone)
+                      .neq("employer_id", employerId!)
+                      .limit(1);
+                    if (existingContacts && existingContacts.length > 0) {
+                      toast.error(`Phone number ${phone} is already registered — linked to existing account.`);
+                      hasDuplicates = true;
+                    }
+
+                    const { data: existingEmployees } = await supabase
+                      .from("employees")
+                      .select("mobile_number")
+                      .eq("mobile_number", phone)
+                      .limit(1);
+                    if (existingEmployees && existingEmployees.length > 0) {
+                      toast.error(`Phone number ${phone} is already registered — linked to existing employee.`);
+                      hasDuplicates = true;
+                    }
                   }
-                  
-                  // Check employees table
-                  const { data: existingEmployees } = await supabase
-                    .from("employees")
-                    .select("mobile_number")
-                    .eq("mobile_number", phone)
-                    .limit(1);
-                  if (existingEmployees && existingEmployees.length > 0) {
-                    toast.info(`Phone number ${phone} is already registered — linked to existing employee.`);
+
+                  // Email duplicate checks
+                  if (email) {
+                    const { data: existingContactEmails } = await supabase
+                      .from("employer_contacts")
+                      .select("email")
+                      .eq("email", email)
+                      .neq("employer_id", employerId!)
+                      .limit(1);
+                    if (existingContactEmails && existingContactEmails.length > 0) {
+                      toast.error(`Email ${email} is already registered — linked to existing account.`);
+                      hasDuplicates = true;
+                    }
+
+                    const { data: existingEmployeeEmails } = await supabase
+                      .from("employees")
+                      .select("email_address")
+                      .eq("email_address", email)
+                      .limit(1);
+                    if (existingEmployeeEmails && existingEmployeeEmails.length > 0) {
+                      toast.error(`Email ${email} is already registered — linked to existing employee.`);
+                      hasDuplicates = true;
+                    }
                   }
+                }
+
+                if (hasDuplicates) {
+                  toast.error("Please resolve duplicate contacts before proceeding.");
+                  return;
                 }
 
                 // Role mapping: UI role → auth role
