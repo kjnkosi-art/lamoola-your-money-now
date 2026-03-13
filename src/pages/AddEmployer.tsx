@@ -15,7 +15,7 @@ import Step3PolicyConfig, { Step3Data, defaultStep3, validateStep3 } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Step4Contacts, { Step4Data, defaultStep4, validateStep4 } from "@/components/employer/Step4Contacts";
 import Step5ReviewConfirm from "@/components/employer/Step5ReviewConfirm";
-import TempPasswordModal from "@/components/TempPasswordModal";
+import TempPasswordModal, { CredentialEntry } from "@/components/TempPasswordModal";
 
 const STEPS = [
   "Company Details",
