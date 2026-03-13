@@ -673,31 +673,7 @@ export default function AddEmployer() {
               const ok = await saveEmployer("4 of 5 steps complete");
               if (!ok) return;
               try {
-                // Build contacts array: all system users + authorised rep
-                const contacts: any[] = step4.systemUsers.map((u) => ({
-                  employer_id: employerId!,
-                  contact_type: "general" as const,
-                  role_title: u.role_title,
-                  first_name: u.first_name.trim(),
-                  last_name: u.last_name.trim(),
-                  email: u.email.trim(),
-                  cellphone: u.cellphone.trim(),
-                  landline: u.landline.trim() || null,
-                }));
-                contacts.push({
-                  employer_id: employerId!,
-                  contact_type: "authorised_representative" as const,
-                  role_title: step4.authorised.role_title.trim(),
-                  first_name: step4.authorised.first_name.trim(),
-                  last_name: step4.authorised.last_name.trim(),
-                  email: step4.authorised.email.trim(),
-                  cellphone: step4.authorised.cellphone.trim(),
-                  landline: step4.authorised.landline.trim() || null,
-                });
-                // Delete existing contacts for this employer, then insert fresh
-                await supabase.from("employer_contacts").delete().eq("employer_id", employerId!);
-                const { error } = await supabase.from("employer_contacts").insert(contacts);
-                if (error) throw error;
+                await saveContacts(employerId!);
 
                 // Create auth account for first Employer System Admin
                 const adminUser = step4.systemUsers.find((u) => u.role_title === "Employer System Admin");
