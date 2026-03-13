@@ -31,24 +31,23 @@ Deno.serve(async (req) => {
     const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-    // Verify caller
+    // Verify caller using getUser
     const callerClient = createClient(supabaseUrl, anonKey, {
       global: { headers: { Authorization: authHeader } },
     });
 
-    const token = authHeader.replace("Bearer ", "");
-    const { data: claimsData, error: claimsError } = await callerClient.auth.getClaims(token);
-    if (claimsError || !claimsData?.claims) {
+    const { data: { user: caller }, error: userError } = await callerClient.auth.getUser();
+    if (userError || !caller) {
+      console.error("Auth failed:", userError?.message);
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const callerId = claimsData.claims.sub as string;
     const adminClient = createClient(supabaseUrl, serviceRoleKey);
 
-    const { data: isStaff } = await adminClient.rpc("is_lamoola_staff", { _user_id: callerId });
+    const { data: isStaff } = await adminClient.rpc("is_lamoola_staff", { _user_id: caller.id });
     if (!isStaff) {
       return new Response(JSON.stringify({ error: "Forbidden — only Lamoola staff can reset passwords" }), {
         status: 403,
