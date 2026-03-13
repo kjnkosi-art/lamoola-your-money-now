@@ -116,6 +116,7 @@ function generateTempPassword(): string {
 export default function AddEmployee() {
   const navigate = useNavigate();
   const [employers, setEmployers] = useState<Employer[]>([]);
+  const [supervisors, setSupervisors] = useState<EmployerContact[]>([]);
   const [loading, setLoading] = useState(false);
   const [idDocType, setIdDocType] = useState<"sa_id" | "passport" | null>(null);
   const [tempPasswordModal, setTempPasswordModal] = useState<{ open: boolean; email: string; password: string }>({ open: false, email: "", password: "" });
