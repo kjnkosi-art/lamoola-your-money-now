@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Building2, CalendarDays, ShieldCheck, Users, Pencil } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Building2, CalendarDays, ShieldCheck, Users, Pencil, AlertCircle } from "lucide-react";
 import type { Step3Data } from "./Step3PolicyConfig";
 import type { Step4Data } from "./Step4Contacts";
 
@@ -24,12 +25,19 @@ interface Step2Data {
   payroll_export_format: string;
 }
 
+interface ValidationError {
+  step: number;
+  label: string;
+  messages: string[];
+}
+
 interface Props {
   step1: Step1Data;
   step2: Step2Data;
   step3: Step3Data;
   step4: Step4Data;
   saving: boolean;
+  validationErrors: ValidationError[];
   onBack: () => void;
   onEdit: (step: number) => void;
   onConfirm: () => void;
@@ -52,11 +60,39 @@ function feeLabel(pct: string, flat: string) {
   return `R${f.toFixed(2)} flat`;
 }
 
-export default function Step5ReviewConfirm({ step1, step2, step3, step4, saving, onBack, onEdit, onConfirm }: Props) {
+export default function Step5ReviewConfirm({ step1, step2, step3, step4, saving, validationErrors, onBack, onEdit, onConfirm }: Props) {
+  const hasErrors = validationErrors.length > 0;
+
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-semibold font-nunito text-foreground">Step 5: Review & Confirm</h2>
       <p className="text-sm text-muted-foreground">Review all details before activating this employer.</p>
+
+      {/* Validation Summary */}
+      {hasErrors && (
+        <Alert variant="destructive" className="border-destructive/50 bg-destructive/5">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription className="ml-2">
+            <p className="font-semibold mb-2">Complete all required fields to activate</p>
+            {validationErrors.map((group) => (
+              <div key={group.step} className="mb-2">
+                <button
+                  type="button"
+                  onClick={() => onEdit(group.step)}
+                  className="text-sm font-medium text-destructive underline underline-offset-2 hover:text-destructive/80"
+                >
+                  Step {group.step} — {group.label}
+                </button>
+                <ul className="list-disc list-inside text-sm text-destructive/80 mt-0.5">
+                  {group.messages.map((msg, i) => (
+                    <li key={i}>{msg}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </AlertDescription>
+        </Alert>
+      )}
 
       {/* Card 1: Company Details */}
       <Card>
@@ -153,13 +189,18 @@ export default function Step5ReviewConfirm({ step1, step2, step3, step4, saving,
       {/* Actions */}
       <div className="flex justify-between pt-4 border-t">
         <Button variant="outline" onClick={onBack} disabled={saving}>← Back</Button>
-        <Button
-          onClick={onConfirm}
-          disabled={saving}
-          className="bg-[#6AE809] hover:bg-[#5bd007] text-[#062247] font-semibold"
-        >
-          {saving ? "Activating…" : "Confirm & Activate Employer"}
-        </Button>
+        <div className="flex items-center gap-3">
+          {hasErrors && (
+            <span className="text-xs text-destructive font-medium">Complete all required fields to activate</span>
+          )}
+          <Button
+            onClick={onConfirm}
+            disabled={saving || hasErrors}
+            className="bg-[#6AE809] hover:bg-[#5bd007] text-[#062247] font-semibold"
+          >
+            {saving ? "Activating…" : "Confirm & Activate Employer"}
+          </Button>
+        </div>
       </div>
     </div>
   );
