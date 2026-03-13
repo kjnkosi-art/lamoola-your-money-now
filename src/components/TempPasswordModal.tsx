@@ -30,6 +30,8 @@ interface TempPasswordModalProps {
   open: boolean;
   onClose: () => void;
   credentials: CredentialEntry[];
+  title?: string;
+  description?: string;
 }
 
 export default function TempPasswordModal({ open, onClose, credentials }: TempPasswordModalProps) {
