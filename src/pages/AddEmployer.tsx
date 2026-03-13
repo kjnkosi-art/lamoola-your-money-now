@@ -364,13 +364,14 @@ export default function AddEmployer() {
     }
   };
 
+  const goToStep = (step: number) => {
+    setErrors({});
+    setSearchParams({ ...(employerId ? { employer: employerId } : {}), step: String(step) });
+  };
+
   const handleStep1Next = async () => {
-    if (!validateStep1()) return;
     const ok = await saveEmployer("1 of 5 steps complete");
-    if (ok) {
-      setErrors({});
-      setSearchParams({ step: "2" });
-    }
+    if (ok) goToStep(2);
   };
 
   const handleStep2Back = () => {
