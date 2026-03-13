@@ -150,7 +150,7 @@ export default function AddEmployer() {
       const generalContacts = contacts.filter((c) => c.contact_type === "general");
       const authRep = contacts.find((c) => c.contact_type === "authorised_representative");
 
-      setStep4({
+      const resumedStep4: Step4Data = {
         systemUsers: generalContacts.length > 0
           ? generalContacts.map((c) => ({
               role_title: c.role_title || "",
@@ -171,7 +171,10 @@ export default function AddEmployer() {
               landline: authRep.landline || "",
             }
           : { role_title: "", first_name: "", last_name: "", email: "", cellphone: "", landline: "" },
-      });
+      };
+      console.log("[AddEmployer] Resumed Step 4 system users:", resumedStep4.systemUsers);
+      console.log("[AddEmployer] Resumed Step 4 authorised rep:", resumedStep4.authorised);
+      setStep4(resumedStep4);
 
       setDraftLoaded(true);
     };
