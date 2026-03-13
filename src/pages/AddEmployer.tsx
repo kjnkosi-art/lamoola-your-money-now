@@ -374,19 +374,11 @@ export default function AddEmployer() {
     if (ok) goToStep(2);
   };
 
-  const handleStep2Back = () => {
-    setErrors({});
-    setSearchParams({ step: "1" });
-  };
+  const handleStep2Back = () => goToStep(1);
 
   const handleStep2Next = async () => {
-    if (!validateStep2()) return;
     const ok = await saveEmployer("2 of 5 steps complete");
-    if (ok) {
-      toast.success("Step 2 complete");
-      setErrors({});
-      setSearchParams({ step: "3" });
-    }
+    if (ok) goToStep(3);
   };
 
   const FieldError = ({ field }: { field: string }) =>
