@@ -372,9 +372,18 @@ export default function AddEmployer() {
             const stepNum = i + 1;
             const isActive = stepNum === currentStep;
             const isComplete = stepNum < currentStep;
+            const canNavigate = !!employerId; // allow jumping if resuming a draft
             return (
               <div key={label} className="flex items-center flex-1 last:flex-none">
-                <div className="flex items-center gap-2 min-w-0">
+                <div
+                  className={`flex items-center gap-2 min-w-0 ${canNavigate ? "cursor-pointer" : ""}`}
+                  onClick={() => {
+                    if (canNavigate) {
+                      setErrors({});
+                      setSearchParams({ ...(employerId ? { employer: employerId } : {}), step: String(stepNum) });
+                    }
+                  }}
+                >
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold shrink-0 ${
                       isComplete
