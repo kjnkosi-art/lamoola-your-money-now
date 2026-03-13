@@ -419,6 +419,8 @@ export default function AddEmployer() {
   };
 
   const goToStep = (step: number) => {
+    console.log("[AddEmployer] Navigating to step", step);
+    console.log("[AddEmployer] Step 4 state at navigation:", JSON.stringify(step4));
     setErrors({});
     setSearchParams({ ...(employerId ? { employer: employerId } : {}), step: String(step) });
   };
