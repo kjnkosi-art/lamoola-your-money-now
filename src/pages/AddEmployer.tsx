@@ -397,36 +397,39 @@ export default function AddEmployer() {
           {STEPS.map((label, i) => {
             const stepNum = i + 1;
             const isActive = stepNum === currentStep;
-            const isComplete = stepNum < currentStep;
-            const canNavigate = !!employerId; // allow jumping if resuming a draft
+            // Steps 1-4 show validation status; step 5 has no fields
+            const isValid = stepNum <= 4 ? stepValidation[stepNum as 1|2|3|4] : true;
             return (
               <div key={label} className="flex items-center flex-1 last:flex-none">
                 <div
-                  className={`flex items-center gap-2 min-w-0 ${canNavigate ? "cursor-pointer" : ""}`}
-                  onClick={() => {
-                    if (canNavigate) {
-                      setErrors({});
-                      setSearchParams({ ...(employerId ? { employer: employerId } : {}), step: String(stepNum) });
-                    }
-                  }}
+                  className="flex items-center gap-2 min-w-0 cursor-pointer"
+                  onClick={() => goToStep(stepNum)}
                 >
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold shrink-0 ${
-                      isComplete
-                        ? "bg-accent text-accent-foreground"
-                        : isActive
+                      isActive
                         ? "bg-primary text-primary-foreground"
+                        : stepNum <= 4 && isValid
+                        ? "bg-[#6AE809]/20 text-[#6AE809] border-2 border-[#6AE809]"
+                        : stepNum <= 4 && !isValid
+                        ? "bg-destructive/10 text-destructive border-2 border-destructive"
                         : "bg-muted text-muted-foreground"
                     }`}
                   >
-                    {isComplete ? <Check className="w-4 h-4" /> : stepNum}
+                    {stepNum <= 4 && isValid && !isActive ? (
+                      <Check className="w-4 h-4" />
+                    ) : stepNum <= 4 && !isValid && !isActive ? (
+                      <AlertCircle className="w-4 h-4" />
+                    ) : (
+                      stepNum
+                    )}
                   </div>
                   <span className={`text-xs font-medium truncate hidden sm:block ${isActive ? "text-foreground" : "text-muted-foreground"}`}>
                     {label}
                   </span>
                 </div>
                 {i < STEPS.length - 1 && (
-                  <div className={`h-0.5 flex-1 mx-2 rounded ${isComplete ? "bg-accent" : "bg-muted"}`} />
+                  <div className={`h-0.5 flex-1 mx-2 rounded bg-muted`} />
                 )}
               </div>
             );
