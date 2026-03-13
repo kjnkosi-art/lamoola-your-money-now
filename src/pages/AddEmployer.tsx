@@ -71,10 +71,6 @@ export default function AddEmployer() {
 
   // Step 2 fields
   const [step2, setStep2] = useState({
-    payroll_contact_first_name: "",
-    payroll_contact_last_name: "",
-    payroll_contact_email: "",
-    payroll_contact_phone: "",
     pay_cycle: "",
     payday: "",
     payroll_period_start: "",
