@@ -347,6 +347,29 @@ export default function AdminEmployers() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Reshare Logins Modal */}
+      <ReshareLoginsModal
+        open={!!reshareTarget}
+        onClose={() => setReshareTarget(null)}
+        employer={reshareTarget}
+        onCredentialsReady={(creds) => {
+          setReshareCredentials(creds);
+          setShowReshareCredentials(true);
+        }}
+      />
+
+      {/* Reshare Credentials Result */}
+      <TempPasswordModal
+        open={showReshareCredentials}
+        onClose={() => {
+          setShowReshareCredentials(false);
+          setReshareCredentials([]);
+        }}
+        credentials={reshareCredentials}
+        title="Password Reset"
+        description="New temporary passwords have been generated. Share them securely — users should change them on first login."
+      />
     </AdminLayout>
   );
 }
