@@ -226,40 +226,72 @@ export default function AddEmployer() {
     if (errors[key]) setErrors((prev) => ({ ...prev, [key]: "" }));
   };
 
-  const validateStep1 = () => {
+  const getStep1Errors = (): Record<string, string> => {
     const e: Record<string, string> = {};
-    if (!step1.company_legal_name.trim()) e.company_legal_name = "Required";
+    if (!step1.company_legal_name.trim()) e.company_legal_name = "Company Legal Name is required";
     if (!step1.registration_number.trim()) {
-      e.registration_number = "Required";
+      e.registration_number = "Registration Number is required";
     } else if (!/^\d{4}\/\d{7}\/\d{2}$/.test(step1.registration_number.trim())) {
-      e.registration_number = "Format: YYYY/NNNNNNN/NN";
+      e.registration_number = "Registration Number format: YYYY/NNNNNNN/NN";
     }
-    if (!step1.industry_sector) e.industry_sector = "Required";
-    if (!step1.physical_address.trim()) e.physical_address = "Required";
+    if (!step1.industry_sector) e.industry_sector = "Industry / Sector is required";
+    if (!step1.physical_address.trim()) e.physical_address = "Physical Address is required";
+    return e;
+  };
+
+  const getStep2Errors = (): Record<string, string> => {
+    const e: Record<string, string> = {};
+    if (!step2.payroll_contact_first_name.trim()) e.payroll_contact_first_name = "Payroll Contact First Name is required";
+    if (!step2.payroll_contact_last_name.trim()) e.payroll_contact_last_name = "Payroll Contact Last Name is required";
+    if (!step2.payroll_contact_email.trim()) {
+      e.payroll_contact_email = "Payroll Contact Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(step2.payroll_contact_email.trim())) {
+      e.payroll_contact_email = "Payroll Contact Email is invalid";
+    }
+    if (!step2.payroll_contact_phone.trim()) {
+      e.payroll_contact_phone = "Payroll Contact Phone is required";
+    } else if (!/^0[6-8]\d{8}$/.test(step2.payroll_contact_phone.trim())) {
+      e.payroll_contact_phone = "Payroll Contact Phone: SA mobile 10 digits starting 06/07/08";
+    }
+    if (!step2.pay_cycle) e.pay_cycle = "Pay Cycle is required";
+    if (!step2.payday) e.payday = "Payday is required";
+    if (!step2.payroll_period_start.trim()) e.payroll_period_start = "Payroll Period Start is required";
+    if (!step2.payroll_period_end.trim()) e.payroll_period_end = "Payroll Period End is required";
+    return e;
+  };
+
+  const validateStep1 = () => {
+    const e = getStep1Errors();
     setErrors(e);
     return Object.keys(e).length === 0;
   };
 
   const validateStep2 = () => {
-    const e: Record<string, string> = {};
-    if (!step2.payroll_contact_first_name.trim()) e.payroll_contact_first_name = "Required";
-    if (!step2.payroll_contact_last_name.trim()) e.payroll_contact_last_name = "Required";
-    if (!step2.payroll_contact_email.trim()) {
-      e.payroll_contact_email = "Required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(step2.payroll_contact_email.trim())) {
-      e.payroll_contact_email = "Invalid email";
-    }
-    if (!step2.payroll_contact_phone.trim()) {
-      e.payroll_contact_phone = "Required";
-    } else if (!/^0[6-8]\d{8}$/.test(step2.payroll_contact_phone.trim())) {
-      e.payroll_contact_phone = "SA mobile: 10 digits starting 06/07/08";
-    }
-    if (!step2.pay_cycle) e.pay_cycle = "Required";
-    if (!step2.payday) e.payday = "Required";
-    if (!step2.payroll_period_start.trim()) e.payroll_period_start = "Required";
-    if (!step2.payroll_period_end.trim()) e.payroll_period_end = "Required";
+    const e = getStep2Errors();
     setErrors(e);
     return Object.keys(e).length === 0;
+  };
+
+  // Check which steps are valid (for stepper icons)
+  const stepValidation = {
+    1: Object.keys(getStep1Errors()).length === 0,
+    2: Object.keys(getStep2Errors()).length === 0,
+    3: Object.keys(validateStep3(step3)).length === 0,
+    4: Object.keys(validateStep4(step4)).length === 0,
+  };
+
+  // Full cross-step validation for activation
+  const getAllValidationErrors = (): { step: number; label: string; messages: string[] }[] => {
+    const result: { step: number; label: string; messages: string[] }[] = [];
+    const s1 = getStep1Errors();
+    if (Object.keys(s1).length > 0) result.push({ step: 1, label: "Company Details", messages: Object.values(s1) });
+    const s2 = getStep2Errors();
+    if (Object.keys(s2).length > 0) result.push({ step: 2, label: "Payroll & Pay Cycle", messages: Object.values(s2) });
+    const s3 = validateStep3(step3);
+    if (Object.keys(s3).length > 0) result.push({ step: 3, label: "Policy Configuration", messages: Object.values(s3) });
+    const s4 = validateStep4(step4);
+    if (Object.keys(s4).length > 0) result.push({ step: 4, label: "Contacts", messages: Object.values(s4) });
+    return result;
   };
 
   const getUser = async () => {
