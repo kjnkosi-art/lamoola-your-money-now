@@ -150,7 +150,7 @@ export default function AddEmployer() {
       const generalContacts = contacts.filter((c) => c.contact_type === "general");
       const authRep = contacts.find((c) => c.contact_type === "authorised_representative");
 
-      setStep4({
+      const resumedStep4: Step4Data = {
         systemUsers: generalContacts.length > 0
           ? generalContacts.map((c) => ({
               role_title: c.role_title || "",
@@ -171,7 +171,10 @@ export default function AddEmployer() {
               landline: authRep.landline || "",
             }
           : { role_title: "", first_name: "", last_name: "", email: "", cellphone: "", landline: "" },
-      });
+      };
+      console.log("[AddEmployer] Resumed Step 4 system users:", resumedStep4.systemUsers);
+      console.log("[AddEmployer] Resumed Step 4 authorised rep:", resumedStep4.authorised);
+      setStep4(resumedStep4);
 
       setDraftLoaded(true);
     };
@@ -351,6 +354,52 @@ export default function AddEmployer() {
     }
   };
 
+  const saveContacts = async (eid: string) => {
+    console.log("[AddEmployer] Saving contacts for employer:", eid);
+    console.log("[AddEmployer] System users to save:", step4.systemUsers);
+    console.log("[AddEmployer] Authorised rep to save:", step4.authorised);
+
+    const contacts: any[] = step4.systemUsers.map((u) => ({
+      employer_id: eid,
+      contact_type: "general" as const,
+      role_title: u.role_title,
+      first_name: u.first_name.trim(),
+      last_name: u.last_name.trim(),
+      email: u.email.trim(),
+      cellphone: u.cellphone.trim(),
+      landline: u.landline.trim() || null,
+    }));
+
+    // Only add authorised rep if at least first_name is filled
+    if (step4.authorised.first_name.trim()) {
+      contacts.push({
+        employer_id: eid,
+        contact_type: "authorised_representative" as const,
+        role_title: step4.authorised.role_title.trim(),
+        first_name: step4.authorised.first_name.trim(),
+        last_name: step4.authorised.last_name.trim(),
+        email: step4.authorised.email.trim(),
+        cellphone: step4.authorised.cellphone.trim(),
+        landline: step4.authorised.landline.trim() || null,
+      });
+    }
+
+    // Only save if there's meaningful data
+    const hasData = contacts.some((c) => c.first_name || c.last_name || c.email);
+    if (!hasData) {
+      console.log("[AddEmployer] No contact data to save, skipping");
+      return;
+    }
+
+    await supabase.from("employer_contacts").delete().eq("employer_id", eid);
+    const { error } = await supabase.from("employer_contacts").insert(contacts);
+    if (error) {
+      console.error("[AddEmployer] Failed to save contacts:", error);
+      throw error;
+    }
+    console.log("[AddEmployer] Contacts saved successfully:", contacts.length, "records");
+  };
+
   const handleSaveDraft = async () => {
     if (!step1.company_legal_name.trim()) {
       setErrors({ company_legal_name: "Company name required to save draft" });
@@ -359,12 +408,22 @@ export default function AddEmployer() {
     const stepLabel = `${currentStep} of 5 steps complete`;
     const ok = await saveEmployer(stepLabel);
     if (ok) {
+      try {
+        const eid = employerId || searchParams.get("employer");
+        if (eid) {
+          await saveContacts(eid);
+        }
+      } catch (err: any) {
+        console.error("[AddEmployer] Contact save error during draft:", err);
+      }
       toast.success("Employer saved as draft");
       navigate("/admin/employers");
     }
   };
 
   const goToStep = (step: number) => {
+    console.log("[AddEmployer] Navigating to step", step);
+    console.log("[AddEmployer] Step 4 state at navigation:", JSON.stringify(step4));
     setErrors({});
     setSearchParams({ ...(employerId ? { employer: employerId } : {}), step: String(step) });
   };
@@ -614,31 +673,7 @@ export default function AddEmployer() {
               const ok = await saveEmployer("4 of 5 steps complete");
               if (!ok) return;
               try {
-                // Build contacts array: all system users + authorised rep
-                const contacts: any[] = step4.systemUsers.map((u) => ({
-                  employer_id: employerId!,
-                  contact_type: "general" as const,
-                  role_title: u.role_title,
-                  first_name: u.first_name.trim(),
-                  last_name: u.last_name.trim(),
-                  email: u.email.trim(),
-                  cellphone: u.cellphone.trim(),
-                  landline: u.landline.trim() || null,
-                }));
-                contacts.push({
-                  employer_id: employerId!,
-                  contact_type: "authorised_representative" as const,
-                  role_title: step4.authorised.role_title.trim(),
-                  first_name: step4.authorised.first_name.trim(),
-                  last_name: step4.authorised.last_name.trim(),
-                  email: step4.authorised.email.trim(),
-                  cellphone: step4.authorised.cellphone.trim(),
-                  landline: step4.authorised.landline.trim() || null,
-                });
-                // Delete existing contacts for this employer, then insert fresh
-                await supabase.from("employer_contacts").delete().eq("employer_id", employerId!);
-                const { error } = await supabase.from("employer_contacts").insert(contacts);
-                if (error) throw error;
+                await saveContacts(employerId!);
 
                 // Create auth account for first Employer System Admin
                 const adminUser = step4.systemUsers.find((u) => u.role_title === "Employer System Admin");
