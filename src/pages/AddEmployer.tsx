@@ -101,12 +101,35 @@ export default function AddEmployer() {
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
-  const updateStep4 = (section: "general" | "authorised", field: string, value: string) => {
+  const updateSystemUser = (index: number, field: string, value: string) => {
     setStep4((prev) => ({
       ...prev,
-      [section]: { ...prev[section], [field]: value },
+      systemUsers: prev.systemUsers.map((u, i) => i === index ? { ...u, [field]: value } : u),
     }));
-    const key = `${section}.${field}`;
+    const key = `systemUsers.${index}.${field}`;
+    if (errors[key]) setErrors((prev) => ({ ...prev, [key]: "" }));
+  };
+
+  const addSystemUser = () => {
+    setStep4((prev) => ({
+      ...prev,
+      systemUsers: [...prev.systemUsers, { role_title: "", first_name: "", last_name: "", email: "", cellphone: "", landline: "" }],
+    }));
+  };
+
+  const removeSystemUser = (index: number) => {
+    setStep4((prev) => ({
+      ...prev,
+      systemUsers: prev.systemUsers.filter((_, i) => i !== index),
+    }));
+  };
+
+  const updateAuthorised = (field: string, value: string) => {
+    setStep4((prev) => ({
+      ...prev,
+      authorised: { ...prev.authorised, [field]: value },
+    }));
+    const key = `authorised.${field}`;
     if (errors[key]) setErrors((prev) => ({ ...prev, [key]: "" }));
   };
 
@@ -457,7 +480,10 @@ export default function AddEmployer() {
         {currentStep === 4 && (
           <Step4Contacts
             data={step4}
-            onChange={updateStep4}
+            onChangeSystemUser={updateSystemUser}
+            onAddSystemUser={addSystemUser}
+            onRemoveSystemUser={removeSystemUser}
+            onChangeAuthorised={updateAuthorised}
             errors={errors}
             saving={saving}
             onBack={() => { setErrors({}); setSearchParams({ step: "3" }); }}
@@ -465,57 +491,58 @@ export default function AddEmployer() {
               const e = validateStep4(step4);
               setErrors(e);
               if (Object.keys(e).length > 0) return;
-              // Save employer progress
               const ok = await saveEmployer("4 of 5 steps complete");
               if (!ok) return;
-              // Save contacts to employer_contacts table
               try {
-                const contacts = [
-                  {
-                    employer_id: employerId!,
-                    contact_type: "general" as const,
-                    first_name: step4.general.first_name.trim(),
-                    last_name: step4.general.last_name.trim(),
-                    email: step4.general.email.trim(),
-                    cellphone: step4.general.cellphone.trim(),
-                    landline: step4.general.landline.trim() || null,
-                  },
-                  {
-                    employer_id: employerId!,
-                    contact_type: "authorised_representative" as const,
-                    role_title: step4.authorised.role_title.trim(),
-                    first_name: step4.authorised.first_name.trim(),
-                    last_name: step4.authorised.last_name.trim(),
-                    email: step4.authorised.email.trim(),
-                    cellphone: step4.authorised.cellphone.trim(),
-                    landline: step4.authorised.landline.trim() || null,
-                  },
-                ];
+                // Build contacts array: all system users + authorised rep
+                const contacts: any[] = step4.systemUsers.map((u) => ({
+                  employer_id: employerId!,
+                  contact_type: "general" as const,
+                  role_title: u.role_title,
+                  first_name: u.first_name.trim(),
+                  last_name: u.last_name.trim(),
+                  email: u.email.trim(),
+                  cellphone: u.cellphone.trim(),
+                  landline: u.landline.trim() || null,
+                }));
+                contacts.push({
+                  employer_id: employerId!,
+                  contact_type: "authorised_representative" as const,
+                  role_title: step4.authorised.role_title.trim(),
+                  first_name: step4.authorised.first_name.trim(),
+                  last_name: step4.authorised.last_name.trim(),
+                  email: step4.authorised.email.trim(),
+                  cellphone: step4.authorised.cellphone.trim(),
+                  landline: step4.authorised.landline.trim() || null,
+                });
                 // Delete existing contacts for this employer, then insert fresh
                 await supabase.from("employer_contacts").delete().eq("employer_id", employerId!);
                 const { error } = await supabase.from("employer_contacts").insert(contacts);
                 if (error) throw error;
 
-                // Create auth account for general contact (employer_admin)
-                const contactEmail = step4.general.email.trim();
-                const tempPassword = generateTempPassword();
-                const { data: fnData, error: fnError } = await supabase.functions.invoke("create-user-account", {
-                  body: {
-                    email: contactEmail,
-                    password: tempPassword,
-                    first_name: step4.general.first_name.trim(),
-                    last_name: step4.general.last_name.trim(),
-                    role: "employer_admin",
-                    employer_id: employerId,
-                  },
-                });
+                // Create auth account for first Employer System Admin
+                const adminUser = step4.systemUsers.find((u) => u.role_title === "Employer System Admin");
+                if (adminUser) {
+                  const contactEmail = adminUser.email.trim();
+                  const tempPassword = generateTempPassword();
+                  const { data: fnData, error: fnError } = await supabase.functions.invoke("create-user-account", {
+                    body: {
+                      email: contactEmail,
+                      password: tempPassword,
+                      first_name: adminUser.first_name.trim(),
+                      last_name: adminUser.last_name.trim(),
+                      role: "employer_admin",
+                      employer_id: employerId,
+                    },
+                  });
 
-                if (fnError || fnData?.error) {
-                  toast.error("Contacts saved, but employer admin account creation failed: " + (fnData?.error || fnError?.message));
-                } else {
-                  toast.success("Step 4 complete — employer admin account created.");
-                  setTempPasswordModal({ open: true, email: contactEmail, password: tempPassword });
-                  return; // Don't advance yet — modal is open
+                  if (fnError || fnData?.error) {
+                    toast.error("Contacts saved, but employer admin account creation failed: " + (fnData?.error || fnError?.message));
+                  } else {
+                    toast.success("Step 4 complete — employer admin account created.");
+                    setTempPasswordModal({ open: true, email: contactEmail, password: tempPassword });
+                    return;
+                  }
                 }
 
                 toast.success("Step 4 complete");

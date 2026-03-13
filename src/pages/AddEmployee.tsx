@@ -38,6 +38,7 @@ import { cn } from "@/lib/utils";
 import type { Tables, Database } from "@/integrations/supabase/types";
 
 type Employer = Tables<"employers">;
+type EmployerContact = Tables<"employer_contacts">;
 type EmploymentType = Database["public"]["Enums"]["employment_type"];
 type AccountType = Database["public"]["Enums"]["account_type"];
 
@@ -100,7 +101,7 @@ const formSchema = z.object({
   bank_account_number: z.string().min(1, "Bank account number is required"),
   account_type: z.enum(["Cheque", "Savings", "Transmission"]).optional(),
   department: z.string().optional(),
-  supervisor_name: z.string().optional(),
+  supervisor_contact_id: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -115,6 +116,7 @@ function generateTempPassword(): string {
 export default function AddEmployee() {
   const navigate = useNavigate();
   const [employers, setEmployers] = useState<Employer[]>([]);
+  const [supervisors, setSupervisors] = useState<EmployerContact[]>([]);
   const [loading, setLoading] = useState(false);
   const [idDocType, setIdDocType] = useState<"sa_id" | "passport" | null>(null);
   const [tempPasswordModal, setTempPasswordModal] = useState<{ open: boolean; email: string; password: string }>({ open: false, email: "", password: "" });
@@ -133,9 +135,27 @@ export default function AddEmployee() {
       bank_name: "",
       bank_account_number: "",
       department: "",
-      supervisor_name: "",
+      supervisor_contact_id: "",
     },
   });
+
+  const selectedEmployerId = form.watch("employer_id");
+
+  useEffect(() => {
+    if (!selectedEmployerId) {
+      setSupervisors([]);
+      return;
+    }
+    const fetchSupervisors = async () => {
+      const { data } = await supabase
+        .from("employer_contacts")
+        .select("*")
+        .eq("employer_id", selectedEmployerId)
+        .eq("role_title", "Supervisor");
+      setSupervisors(data || []);
+    };
+    fetchSupervisors();
+  }, [selectedEmployerId]);
 
   useEffect(() => {
     const fetchEmployers = async () => {
@@ -198,7 +218,12 @@ export default function AddEmployee() {
         bank_account_number: values.bank_account_number,
         account_type: values.account_type || null,
         department: values.department || null,
-        supervisor_name: values.supervisor_name || null,
+        supervisor_name: values.supervisor_contact_id
+          ? supervisors.find((s) => s.contact_id === values.supervisor_contact_id)
+            ? `${supervisors.find((s) => s.contact_id === values.supervisor_contact_id)!.first_name} ${supervisors.find((s) => s.contact_id === values.supervisor_contact_id)!.last_name}`
+            : null
+          : null,
+        supervisor_contact_id: values.supervisor_contact_id || null,
         status,
         import_source: "Manual",
       }).select("employee_id").single();
@@ -528,13 +553,36 @@ export default function AddEmployee() {
 
                 <FormField
                   control={form.control}
-                  name="supervisor_name"
+                  name="supervisor_contact_id"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Supervisor Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Jane Smith" {...field} />
-                      </FormControl>
+                      <FormLabel>Supervisor</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder={
+                              !selectedEmployerId
+                                ? "Select an employer first"
+                                : supervisors.length === 0
+                                ? "No supervisors added"
+                                : "Select supervisor"
+                            } />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {supervisors.length === 0 ? (
+                            <div className="px-2 py-3 text-sm text-muted-foreground">
+                              No supervisors added — add supervisors during employer onboarding
+                            </div>
+                          ) : (
+                            supervisors.map((sup) => (
+                              <SelectItem key={sup.contact_id} value={sup.contact_id}>
+                                {sup.first_name} {sup.last_name}
+                              </SelectItem>
+                            ))
+                          )}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}

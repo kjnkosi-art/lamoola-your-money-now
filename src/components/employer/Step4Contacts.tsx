@@ -3,9 +3,27 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Users, FileSignature } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Users, FileSignature, Plus, Trash2 } from "lucide-react";
 
-export interface ContactData {
+const SYSTEM_USER_ROLES = [
+  "Employer System Admin",
+  "HR Manager",
+  "Finance Manager",
+  "Supervisor",
+] as const;
+
+export interface SystemUserData {
+  role_title: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  cellphone: string;
+  landline: string;
+}
+
+export interface AuthorisedRepData {
+  role_title: string;
   first_name: string;
   last_name: string;
   email: string;
@@ -14,31 +32,40 @@ export interface ContactData {
 }
 
 export interface Step4Data {
-  general: ContactData;
-  authorised: ContactData & { role_title: string };
+  systemUsers: SystemUserData[];
+  authorised: AuthorisedRepData;
 }
 
+export const defaultSystemUser: SystemUserData = {
+  role_title: "", first_name: "", last_name: "", email: "", cellphone: "", landline: "",
+};
+
 export const defaultStep4: Step4Data = {
-  general: { first_name: "", last_name: "", email: "", cellphone: "", landline: "" },
+  systemUsers: [{ ...defaultSystemUser }],
   authorised: { role_title: "", first_name: "", last_name: "", email: "", cellphone: "", landline: "" },
 };
 
 export function validateStep4(data: Step4Data): Record<string, string> {
   const e: Record<string, string> = {};
-  // General
-  if (!data.general.first_name.trim()) e["general.first_name"] = "Required";
-  if (!data.general.last_name.trim()) e["general.last_name"] = "Required";
-  if (!data.general.email.trim()) {
-    e["general.email"] = "Required";
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.general.email.trim())) {
-    e["general.email"] = "Invalid email";
-  }
-  if (!data.general.cellphone.trim()) {
-    e["general.cellphone"] = "Required";
-  } else if (!/^0[6-8]\d{8}$/.test(data.general.cellphone.trim())) {
-    e["general.cellphone"] = "SA mobile: 10 digits starting 06/07/08";
-  }
-  // Authorised
+  
+  // Validate each system user
+  data.systemUsers.forEach((user, i) => {
+    if (!user.role_title) e[`systemUsers.${i}.role_title`] = "Required";
+    if (!user.first_name.trim()) e[`systemUsers.${i}.first_name`] = "Required";
+    if (!user.last_name.trim()) e[`systemUsers.${i}.last_name`] = "Required";
+    if (!user.email.trim()) {
+      e[`systemUsers.${i}.email`] = "Required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user.email.trim())) {
+      e[`systemUsers.${i}.email`] = "Invalid email";
+    }
+    if (!user.cellphone.trim()) {
+      e[`systemUsers.${i}.cellphone`] = "Required";
+    } else if (!/^0[6-8]\d{8}$/.test(user.cellphone.trim())) {
+      e[`systemUsers.${i}.cellphone`] = "SA mobile: 10 digits starting 06/07/08";
+    }
+  });
+
+  // Validate authorised rep
   if (!data.authorised.role_title.trim()) e["authorised.role_title"] = "Required";
   if (!data.authorised.first_name.trim()) e["authorised.first_name"] = "Required";
   if (!data.authorised.last_name.trim()) e["authorised.last_name"] = "Required";
@@ -57,7 +84,10 @@ export function validateStep4(data: Step4Data): Record<string, string> {
 
 interface Props {
   data: Step4Data;
-  onChange: (section: "general" | "authorised", field: string, value: string) => void;
+  onChangeSystemUser: (index: number, field: string, value: string) => void;
+  onAddSystemUser: () => void;
+  onRemoveSystemUser: (index: number) => void;
+  onChangeAuthorised: (field: string, value: string) => void;
   errors: Record<string, string>;
   saving: boolean;
   onBack: () => void;
@@ -68,49 +98,88 @@ interface Props {
 const FieldError = ({ field, errors }: { field: string; errors: Record<string, string> }) =>
   errors[field] ? <p className="text-xs text-destructive">{errors[field]}</p> : null;
 
-export default function Step4Contacts({ data, onChange, errors, saving, onBack, onNext, onSaveDraft }: Props) {
+export default function Step4Contacts({ data, onChangeSystemUser, onAddSystemUser, onRemoveSystemUser, onChangeAuthorised, errors, saving, onBack, onNext, onSaveDraft }: Props) {
   return (
     <Card>
       <CardContent className="pt-6 space-y-6">
-        {/* Section 1: General Contact */}
+        {/* Section 1: System Users */}
         <div className="space-y-4">
           <div className="flex items-center gap-2">
             <Users className="w-5 h-5 text-primary" />
-            <h2 className="text-lg font-semibold font-nunito text-foreground">General Contact</h2>
+            <h2 className="text-lg font-semibold font-nunito text-foreground">System Users</h2>
           </div>
+          <p className="text-sm text-muted-foreground">
+            Add users who will access the system on behalf of this employer. At least one user is required.
+          </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="gen_first_name">First Name *</Label>
-              <Input id="gen_first_name" value={data.general.first_name} onChange={(e) => onChange("general", "first_name", e.target.value)} placeholder="First name" />
-              <FieldError field="general.first_name" errors={errors} />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="gen_last_name">Last Name *</Label>
-              <Input id="gen_last_name" value={data.general.last_name} onChange={(e) => onChange("general", "last_name", e.target.value)} placeholder="Last name" />
-              <FieldError field="general.last_name" errors={errors} />
-            </div>
-          </div>
+          {data.systemUsers.map((user, i) => (
+            <div key={i} className="space-y-4 p-4 border rounded-lg relative">
+              {data.systemUsers.length > 1 && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-2 right-2 text-destructive hover:text-destructive"
+                  onClick={() => onRemoveSystemUser(i)}
+                  disabled={saving}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              )}
+              <p className="text-sm font-medium text-foreground">User {i + 1}</p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="gen_email">Email *</Label>
-              <Input id="gen_email" type="email" value={data.general.email} onChange={(e) => onChange("general", "email", e.target.value)} placeholder="email@company.co.za" />
-              <FieldError field="general.email" errors={errors} />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="gen_cellphone">Cellphone *</Label>
-              <Input id="gen_cellphone" value={data.general.cellphone} onChange={(e) => onChange("general", "cellphone", e.target.value)} placeholder="0712345678" />
-              <FieldError field="general.cellphone" errors={errors} />
-            </div>
-          </div>
+              <div className="space-y-1.5">
+                <Label>Role *</Label>
+                <Select value={user.role_title} onValueChange={(v) => onChangeSystemUser(i, "role_title", v)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SYSTEM_USER_ROLES.map((r) => (
+                      <SelectItem key={r} value={r}>{r}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FieldError field={`systemUsers.${i}.role_title`} errors={errors} />
+              </div>
 
-          <div className="sm:w-1/2">
-            <div className="space-y-1.5">
-              <Label htmlFor="gen_landline">Landline</Label>
-              <Input id="gen_landline" value={data.general.landline} onChange={(e) => onChange("general", "landline", e.target.value)} placeholder="Optional" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label>First Name *</Label>
+                  <Input value={user.first_name} onChange={(e) => onChangeSystemUser(i, "first_name", e.target.value)} placeholder="First name" />
+                  <FieldError field={`systemUsers.${i}.first_name`} errors={errors} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Last Name *</Label>
+                  <Input value={user.last_name} onChange={(e) => onChangeSystemUser(i, "last_name", e.target.value)} placeholder="Last name" />
+                  <FieldError field={`systemUsers.${i}.last_name`} errors={errors} />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label>Email *</Label>
+                  <Input type="email" value={user.email} onChange={(e) => onChangeSystemUser(i, "email", e.target.value)} placeholder="email@company.co.za" />
+                  <FieldError field={`systemUsers.${i}.email`} errors={errors} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Cellphone *</Label>
+                  <Input value={user.cellphone} onChange={(e) => onChangeSystemUser(i, "cellphone", e.target.value)} placeholder="0712345678" />
+                  <FieldError field={`systemUsers.${i}.cellphone`} errors={errors} />
+                </div>
+              </div>
+
+              <div className="sm:w-1/2">
+                <div className="space-y-1.5">
+                  <Label>Landline</Label>
+                  <Input value={user.landline} onChange={(e) => onChangeSystemUser(i, "landline", e.target.value)} placeholder="Optional" />
+                </div>
+              </div>
             </div>
-          </div>
+          ))}
+
+          <Button variant="outline" size="sm" onClick={onAddSystemUser} disabled={saving} className="gap-1">
+            <Plus className="w-4 h-4" /> Add Another User
+          </Button>
         </div>
 
         <Separator />
@@ -126,41 +195,41 @@ export default function Step4Contacts({ data, onChange, errors, saving, onBack, 
           </p>
 
           <div className="space-y-1.5">
-            <Label htmlFor="auth_role_title">Role / Title *</Label>
-            <Input id="auth_role_title" value={data.authorised.role_title} onChange={(e) => onChange("authorised", "role_title", e.target.value)} placeholder="e.g. CEO, HR Director" />
+            <Label>Role / Title *</Label>
+            <Input value={data.authorised.role_title} onChange={(e) => onChangeAuthorised("role_title", e.target.value)} placeholder="e.g. CEO, HR Director" />
             <FieldError field="authorised.role_title" errors={errors} />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <Label htmlFor="auth_first_name">First Name *</Label>
-              <Input id="auth_first_name" value={data.authorised.first_name} onChange={(e) => onChange("authorised", "first_name", e.target.value)} placeholder="First name" />
+              <Label>First Name *</Label>
+              <Input value={data.authorised.first_name} onChange={(e) => onChangeAuthorised("first_name", e.target.value)} placeholder="First name" />
               <FieldError field="authorised.first_name" errors={errors} />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="auth_last_name">Last Name *</Label>
-              <Input id="auth_last_name" value={data.authorised.last_name} onChange={(e) => onChange("authorised", "last_name", e.target.value)} placeholder="Last name" />
+              <Label>Last Name *</Label>
+              <Input value={data.authorised.last_name} onChange={(e) => onChangeAuthorised("last_name", e.target.value)} placeholder="Last name" />
               <FieldError field="authorised.last_name" errors={errors} />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <Label htmlFor="auth_email">Email *</Label>
-              <Input id="auth_email" type="email" value={data.authorised.email} onChange={(e) => onChange("authorised", "email", e.target.value)} placeholder="email@company.co.za" />
+              <Label>Email *</Label>
+              <Input type="email" value={data.authorised.email} onChange={(e) => onChangeAuthorised("email", e.target.value)} placeholder="email@company.co.za" />
               <FieldError field="authorised.email" errors={errors} />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="auth_cellphone">Cellphone *</Label>
-              <Input id="auth_cellphone" value={data.authorised.cellphone} onChange={(e) => onChange("authorised", "cellphone", e.target.value)} placeholder="0712345678" />
+              <Label>Cellphone *</Label>
+              <Input value={data.authorised.cellphone} onChange={(e) => onChangeAuthorised("cellphone", e.target.value)} placeholder="0712345678" />
               <FieldError field="authorised.cellphone" errors={errors} />
             </div>
           </div>
 
           <div className="sm:w-1/2">
             <div className="space-y-1.5">
-              <Label htmlFor="auth_landline">Landline</Label>
-              <Input id="auth_landline" value={data.authorised.landline} onChange={(e) => onChange("authorised", "landline", e.target.value)} placeholder="Optional" />
+              <Label>Landline</Label>
+              <Input value={data.authorised.landline} onChange={(e) => onChangeAuthorised("landline", e.target.value)} placeholder="Optional" />
             </div>
           </div>
         </div>

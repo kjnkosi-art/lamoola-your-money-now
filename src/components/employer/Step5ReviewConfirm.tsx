@@ -129,13 +129,16 @@ export default function Step5ReviewConfirm({ step1, step2, step3, step4, saving,
           </Button>
         </CardHeader>
         <CardContent className="space-y-3">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">General Contact</p>
-          <div className="divide-y divide-border">
-            <Row label="Name" value={`${step4.general.first_name} ${step4.general.last_name}`} />
-            <Row label="Email" value={step4.general.email} />
-            <Row label="Cellphone" value={step4.general.cellphone} />
-            {step4.general.landline && <Row label="Landline" value={step4.general.landline} />}
-          </div>
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">System Users</p>
+          {step4.systemUsers.map((user, i) => (
+            <div key={i} className="divide-y divide-border mb-2">
+              <Row label="Role" value={user.role_title} />
+              <Row label="Name" value={`${user.first_name} ${user.last_name}`} />
+              <Row label="Email" value={user.email} />
+              <Row label="Cellphone" value={user.cellphone} />
+              {user.landline && <Row label="Landline" value={user.landline} />}
+            </div>
+          ))}
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide pt-2">Authorised Representative</p>
           <div className="divide-y divide-border">
             <Row label="Role / Title" value={step4.authorised.role_title} />

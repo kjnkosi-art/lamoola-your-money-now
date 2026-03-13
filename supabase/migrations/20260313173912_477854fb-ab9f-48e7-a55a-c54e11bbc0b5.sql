@@ -1,0 +1,1 @@
+ALTER TABLE public.employees ADD COLUMN supervisor_contact_id uuid REFERENCES public.employer_contacts(contact_id) ON DELETE SET NULL;
