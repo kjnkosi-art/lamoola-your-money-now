@@ -553,13 +553,36 @@ export default function AddEmployee() {
 
                 <FormField
                   control={form.control}
-                  name="supervisor_name"
+                  name="supervisor_contact_id"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Supervisor Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Jane Smith" {...field} />
-                      </FormControl>
+                      <FormLabel>Supervisor</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder={
+                              !selectedEmployerId
+                                ? "Select an employer first"
+                                : supervisors.length === 0
+                                ? "No supervisors added"
+                                : "Select supervisor"
+                            } />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {supervisors.length === 0 ? (
+                            <div className="px-2 py-3 text-sm text-muted-foreground">
+                              No supervisors added — add supervisors during employer onboarding
+                            </div>
+                          ) : (
+                            supervisors.map((sup) => (
+                              <SelectItem key={sup.contact_id} value={sup.contact_id}>
+                                {sup.first_name} {sup.last_name}
+                              </SelectItem>
+                            ))
+                          )}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
