@@ -119,7 +119,7 @@ export default function AddEmployee() {
   const [supervisors, setSupervisors] = useState<EmployerContact[]>([]);
   const [loading, setLoading] = useState(false);
   const [idDocType, setIdDocType] = useState<"sa_id" | "passport" | null>(null);
-  const [tempPasswordModal, setTempPasswordModal] = useState<{ open: boolean; email: string; password: string }>({ open: false, email: "", password: "" });
+  const [tempPasswordModal, setTempPasswordModal] = useState<{ open: boolean; credentials: import("@/components/TempPasswordModal").CredentialEntry[] }>({ open: false, credentials: [] });
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
