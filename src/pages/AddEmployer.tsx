@@ -670,10 +670,45 @@ export default function AddEmployer() {
             saving={saving}
             onBack={() => goToStep(3)}
             onNext={async () => {
+              // Validate step 4 (includes intra-form duplicate checks)
+              const s4Errors = validateStep4(step4);
+              if (Object.keys(s4Errors).length > 0) {
+                setErrors(s4Errors);
+                return;
+              }
+
               const ok = await saveEmployer("4 of 5 steps complete");
               if (!ok) return;
               try {
                 await saveContacts(employerId!);
+
+                // DB-level duplicate checks for all system users + auth rep phones
+                const allContacts = [...step4.systemUsers, step4.authorised];
+                for (const contact of allContacts) {
+                  const phone = contact.cellphone.trim();
+                  if (!phone) continue;
+                  
+                  // Check employer_contacts (exclude current employer)
+                  const { data: existingContacts } = await supabase
+                    .from("employer_contacts")
+                    .select("cellphone")
+                    .eq("cellphone", phone)
+                    .neq("employer_id", employerId!)
+                    .limit(1);
+                  if (existingContacts && existingContacts.length > 0) {
+                    toast.info(`Phone number ${phone} is already registered — linked to existing account.`);
+                  }
+                  
+                  // Check employees table
+                  const { data: existingEmployees } = await supabase
+                    .from("employees")
+                    .select("mobile_number")
+                    .eq("mobile_number", phone)
+                    .limit(1);
+                  if (existingEmployees && existingEmployees.length > 0) {
+                    toast.info(`Phone number ${phone} is already registered — linked to existing employee.`);
+                  }
+                }
 
                 // Create auth account for first Employer System Admin
                 const adminUser = step4.systemUsers.find((u) => u.role_title === "Employer System Admin");
@@ -694,7 +729,7 @@ export default function AddEmployer() {
                   if (fnError || fnData?.error) {
                     toast.error("Contacts saved, but employer admin account creation failed: " + (fnData?.error || fnError?.message));
                   } else if (fnData?.already_existed) {
-                    toast.info("This email is already registered — linked to existing account.");
+                    toast.info(`${contactEmail} is already registered — linked to existing account.`);
                     goToStep(5);
                     return;
                   } else {

@@ -230,6 +230,18 @@ export default function AddEmployee() {
 
       if (error) throw error;
 
+      // Check phone number duplicates against DB
+      const phone = values.mobile_number?.trim();
+      if (phone && status === "Pending Invite") {
+        const [{ data: contactDups }, { data: empDups }] = await Promise.all([
+          supabase.from("employer_contacts").select("cellphone").eq("cellphone", phone).limit(1),
+          supabase.from("employees").select("mobile_number").eq("mobile_number", phone).neq("employee_id", empData.employee_id).limit(1),
+        ]);
+        if ((contactDups && contactDups.length > 0) || (empDups && empDups.length > 0)) {
+          toast.info(`Phone number ${phone} is already registered — linked to existing account.`);
+        }
+      }
+
       // Create auth account if email is provided and status is not Draft
       const email = values.email_address?.trim();
       if (email && status === "Pending Invite" && empData) {
@@ -249,7 +261,7 @@ export default function AddEmployee() {
         if (fnError || fnData?.error) {
           toast.error("Employee saved, but account creation failed: " + (fnData?.error || fnError?.message));
         } else if (fnData?.already_existed) {
-          toast.info("This email is already registered — linked to existing account.");
+          toast.info(`${email} is already registered — linked to existing account.`);
         } else {
           toast.success("Employee added and account created.");
           setTempPasswordModal({ open: true, email, password: tempPassword });
