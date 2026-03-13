@@ -1,8 +1,9 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "npm:@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 function generateTempPassword(): string {
@@ -19,7 +20,7 @@ Deno.serve(async (req) => {
 
   try {
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
+    if (!authHeader?.startsWith("Bearer ")) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -27,23 +28,27 @@ Deno.serve(async (req) => {
     }
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-    // Verify caller is lamoola staff
-    const callerClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY")!, {
+    // Verify caller
+    const callerClient = createClient(supabaseUrl, anonKey, {
       global: { headers: { Authorization: authHeader } },
     });
-    const { data: { user: caller } } = await callerClient.auth.getUser();
-    if (!caller) {
+
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsError } = await callerClient.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
+    const callerId = claimsData.claims.sub as string;
     const adminClient = createClient(supabaseUrl, serviceRoleKey);
 
-    const { data: isStaff } = await adminClient.rpc("is_lamoola_staff", { _user_id: caller.id });
+    const { data: isStaff } = await adminClient.rpc("is_lamoola_staff", { _user_id: callerId });
     if (!isStaff) {
       return new Response(JSON.stringify({ error: "Forbidden — only Lamoola staff can reset passwords" }), {
         status: 403,
@@ -59,8 +64,13 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Find user by email
-    const { data: existingUsers, error: listError } = await adminClient.auth.admin.listUsers();
+    // Find user by email using listUsers with filter
+    const { data: listData, error: listError } = await adminClient.auth.admin.listUsers({
+      page: 1,
+      perPage: 1,
+      filter: email,
+    } as any);
+
     if (listError) {
       return new Response(JSON.stringify({ error: "Failed to list users" }), {
         status: 500,
@@ -68,7 +78,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const existingUser = existingUsers?.users?.find((u: any) => u.email === email);
+    const existingUser = listData?.users?.find((u: any) => u.email === email);
     if (!existingUser) {
       return new Response(JSON.stringify({ error: `No auth account found for ${email}` }), {
         status: 404,
