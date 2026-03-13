@@ -687,11 +687,17 @@ export default function AddEmployer() {
             step3={step3}
             step4={step4}
             saving={saving}
-            onBack={() => { setErrors({}); setSearchParams({ step: "4" }); }}
-            onEdit={(step) => { setErrors({}); setSearchParams({ step: String(step) }); }}
+            validationErrors={getAllValidationErrors()}
+            onBack={() => goToStep(4)}
+            onEdit={(step) => goToStep(step)}
             onConfirm={async () => {
+              const allErrors = getAllValidationErrors();
+              if (allErrors.length > 0) {
+                toast.error("Please complete all required fields before activating.");
+                return;
+              }
               if (!employerId) {
-                toast.error("Employer record not found. Please complete previous steps first.");
+                toast.error("Employer record not found. Please save the employer first.");
                 return;
               }
               setSaving(true);
@@ -699,14 +705,12 @@ export default function AddEmployer() {
                 const user = await getUser();
                 if (!user) return;
 
-                // Update status to Active
                 const { error: updateError } = await supabase
                   .from("employers")
                   .update({ status: "Active" as const, onboarding_progress: "5 of 5 steps complete" })
                   .eq("employer_id", employerId);
                 if (updateError) throw updateError;
 
-                // Write audit trail
                 const { error: auditError } = await supabase.from("audit_trail").insert({
                   user_id: user.id,
                   action_type: "employer_activated" as const,
