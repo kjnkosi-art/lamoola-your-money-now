@@ -658,6 +658,10 @@ export default function AddEmployer() {
 
                   if (fnError || fnData?.error) {
                     toast.error("Contacts saved, but employer admin account creation failed: " + (fnData?.error || fnError?.message));
+                  } else if (fnData?.already_existed) {
+                    toast.info("This email is already registered — linked to existing account.");
+                    goToStep(5);
+                    return;
                   } else {
                     toast.success("Step 4 complete — employer admin account created.");
                     setTempPasswordModal({ open: true, email: contactEmail, password: tempPassword });
