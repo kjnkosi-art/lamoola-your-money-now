@@ -34,7 +34,7 @@ interface TempPasswordModalProps {
   description?: string;
 }
 
-export default function TempPasswordModal({ open, onClose, credentials }: TempPasswordModalProps) {
+export default function TempPasswordModal({ open, onClose, credentials, title, description }: TempPasswordModalProps) {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [copiedAll, setCopiedAll] = useState(false);
 
