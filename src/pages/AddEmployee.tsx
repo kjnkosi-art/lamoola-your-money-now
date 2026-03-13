@@ -693,12 +693,10 @@ export default function AddEmployee() {
       <TempPasswordModal
         open={tempPasswordModal.open}
         onClose={() => {
-          setTempPasswordModal({ open: false, email: "", password: "" });
+          setTempPasswordModal({ open: false, credentials: [] });
           navigate("/admin/employees");
         }}
-        email={tempPasswordModal.email}
-        password={tempPasswordModal.password}
-        role="employee"
+        credentials={tempPasswordModal.credentials}
       />
     </AdminLayout>
   );

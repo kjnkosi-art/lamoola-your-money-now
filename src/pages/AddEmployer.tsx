@@ -862,13 +862,11 @@ export default function AddEmployer() {
       <TempPasswordModal
         open={tempPasswordModal.open}
         onClose={() => {
-          setTempPasswordModal({ open: false, email: "", password: "" });
+          setTempPasswordModal({ open: false, credentials: [] });
           setErrors({});
           setSearchParams({ step: "5" });
         }}
-        email={tempPasswordModal.email}
-        password={tempPasswordModal.password}
-        role="employer admin"
+        credentials={tempPasswordModal.credentials}
       />
       </div>
     </AdminLayout>
