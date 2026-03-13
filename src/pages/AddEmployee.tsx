@@ -264,7 +264,7 @@ export default function AddEmployee() {
           toast.info(`${email} is already registered — linked to existing account.`);
         } else {
           toast.success("Employee added and account created.");
-          setTempPasswordModal({ open: true, email, password: tempPassword });
+          setTempPasswordModal({ open: true, credentials: [{ email, password: tempPassword, role: "Employee", alreadyExisted: false }] });
           return; // Don't navigate yet — modal is open
         }
       } else {
