@@ -162,11 +162,6 @@ const FieldError = ({ field, errors }: { field: string; errors: Record<string, s
   errors[field] ? <p className="text-xs text-destructive">{errors[field]}</p> : null;
 
 export default function Step4Contacts({ data, onChangeSystemUser, onAddSystemUser, onRemoveSystemUser, onChangeAuthorised, onToggleAuthRepIsSystemUser, onSelectAuthRepFromUser, errors, saving, onBack, onNext, onSaveDraft }: Props) {
-  // Get the effective auth rep data (from selected system user or manual)
-  const effectiveAuthRep = data.authRepIsSystemUser && data.authRepSelectedIndex !== null && data.authRepSelectedIndex < data.systemUsers.length
-    ? data.systemUsers[data.authRepSelectedIndex]
-    : data.authorised;
-
   return (
     <Card>
       <CardContent className="pt-6 space-y-6">
