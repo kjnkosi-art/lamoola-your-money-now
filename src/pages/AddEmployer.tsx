@@ -388,17 +388,21 @@ export default function AddEmployer() {
       landline: u.landline.trim() || null,
     }));
 
-    // Only add authorised rep if at least first_name is filled
-    if (step4.authorised.first_name.trim()) {
+    // Resolve auth rep: if linked to system user, use that user's data
+    const effectiveAuthRep = step4.authRepIsSystemUser && step4.authRepSelectedIndex !== null && step4.authRepSelectedIndex < step4.systemUsers.length
+      ? step4.systemUsers[step4.authRepSelectedIndex]
+      : step4.authorised;
+
+    if (effectiveAuthRep.first_name.trim()) {
       contacts.push({
         employer_id: eid,
         contact_type: "authorised_representative" as const,
-        role_title: step4.authorised.role_title.trim(),
-        first_name: step4.authorised.first_name.trim(),
-        last_name: step4.authorised.last_name.trim(),
-        email: step4.authorised.email.trim(),
-        cellphone: step4.authorised.cellphone.trim(),
-        landline: step4.authorised.landline.trim() || null,
+        role_title: effectiveAuthRep.role_title.trim(),
+        first_name: effectiveAuthRep.first_name.trim(),
+        last_name: effectiveAuthRep.last_name.trim(),
+        email: effectiveAuthRep.email.trim(),
+        cellphone: effectiveAuthRep.cellphone.trim(),
+        landline: effectiveAuthRep.landline.trim() || null,
       });
     }
 
