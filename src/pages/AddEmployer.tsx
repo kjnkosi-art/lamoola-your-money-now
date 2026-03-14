@@ -568,33 +568,6 @@ export default function AddEmployer() {
             <CardContent className="pt-6 space-y-5">
               <h2 className="text-lg font-semibold font-nunito text-foreground">Step 2: Payroll & Pay Cycle</h2>
 
-              {/* Payroll Contact */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="payroll_contact_first_name">Payroll Contact First Name *</Label>
-                  <Input id="payroll_contact_first_name" value={step2.payroll_contact_first_name} onChange={(e) => updateStep2("payroll_contact_first_name", e.target.value)} placeholder="First name" />
-                  <FieldError field="payroll_contact_first_name" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="payroll_contact_last_name">Payroll Contact Last Name *</Label>
-                  <Input id="payroll_contact_last_name" value={step2.payroll_contact_last_name} onChange={(e) => updateStep2("payroll_contact_last_name", e.target.value)} placeholder="Last name" />
-                  <FieldError field="payroll_contact_last_name" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="payroll_contact_email">Payroll Contact Email *</Label>
-                  <Input id="payroll_contact_email" type="email" value={step2.payroll_contact_email} onChange={(e) => updateStep2("payroll_contact_email", e.target.value)} placeholder="email@company.co.za" />
-                  <FieldError field="payroll_contact_email" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="payroll_contact_phone">Payroll Contact Phone *</Label>
-                  <Input id="payroll_contact_phone" value={step2.payroll_contact_phone} onChange={(e) => updateStep2("payroll_contact_phone", e.target.value)} placeholder="0712345678" />
-                  <FieldError field="payroll_contact_phone" />
-                </div>
-              </div>
-
               {/* Pay Cycle & Payday */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
