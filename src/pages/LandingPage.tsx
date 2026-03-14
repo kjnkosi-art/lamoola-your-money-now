@@ -212,6 +212,7 @@ const LandingPage = () => {
       </section>
 
       {/* ── Footer ── */}
+      <div className="h-1" style={{ background: "linear-gradient(to right, #5F8B40, #6AE809, #EB5E07)" }} />
       <footer className="px-6 py-12" style={{ backgroundColor: "#062247" }}>
         <div className="mx-auto flex max-w-7xl flex-col items-center gap-6 md:flex-row md:justify-between">
           <div className="flex items-center">
