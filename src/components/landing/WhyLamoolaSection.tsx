@@ -1,6 +1,6 @@
 import { Shield, TrendingUp, Clock, Wallet, Users } from "lucide-react";
-import circlesBg from "@/assets/circles-bg.png";
 import teamWorkforce from "@/assets/team-workforce.jpg";
+import PinwheelIcon from "@/components/landing/PinwheelIcon";
 
 const BENEFITS = [
   {
