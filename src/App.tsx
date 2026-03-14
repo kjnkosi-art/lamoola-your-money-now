@@ -12,6 +12,7 @@ import AddEmployee from "./pages/AddEmployee";
 import EmployeeProfile from "./pages/EmployeeProfile";
 import EmployeeDashboard from "./pages/EmployeeDashboard";
 import EmployerDashboard from "./pages/EmployerDashboard";
+import EmployerProfilePage from "./pages/EmployerProfile";
 import RequestSalaryAccess from "./pages/RequestSalaryAccess";
 import ApprovalQueue from "./pages/ApprovalQueue";
 import AdminDisbursements from "./pages/AdminDisbursements";
