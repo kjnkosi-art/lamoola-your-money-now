@@ -31,11 +31,15 @@ const INDUSTRY_SECTORS = [
 
 const PAY_CYCLES = ["Weekly", "Bi-weekly", "Monthly"] as const;
 
+function ordinal(n: number) {
+  const s = ["th", "st", "nd", "rd"];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
+
 const PAYDAY_OPTIONS = [
   "Last working day of month",
-  "25th of the month",
-  "15th of the month",
-  "Custom date",
+  ...Array.from({ length: 31 }, (_, i) => `${ordinal(i + 1)} of the month`),
 ];
 
 const PAYROLL_FORMATS = [
