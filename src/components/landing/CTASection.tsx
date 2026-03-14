@@ -1,5 +1,5 @@
-import circlesBg from "@/assets/circles-bg.png";
 import joburgSkyline from "@/assets/joburg-skyline.jpg";
+import PinwheelIcon from "@/components/landing/PinwheelIcon";
 
 interface CTASectionProps {
   onOpenDemo: () => void;
