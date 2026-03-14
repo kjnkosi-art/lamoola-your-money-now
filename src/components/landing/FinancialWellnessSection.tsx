@@ -1,6 +1,6 @@
 import { BookOpen, PiggyBank, HeartPulse, GraduationCap } from "lucide-react";
-import circlesBg from "@/assets/circles-bg.png";
 import wellnessPhone from "@/assets/wellness-phone.jpg";
+import PinwheelIcon from "@/components/landing/PinwheelIcon";
 
 const TILES = [
   {
@@ -32,17 +32,9 @@ const TILES = [
 const FinancialWellnessSection = () => {
   return (
     <section id="financial-wellness" className="relative overflow-hidden px-6 py-44" style={{ backgroundColor: "#F7F7F4" }}>
-      {/* Pinwheel watermarks */}
-      <img
-        src={circlesBg}
-        alt=""
-        className="pointer-events-none absolute -right-16 -top-10 w-[400px] opacity-[0.06]"
-      />
-      <img
-        src={circlesBg}
-        alt=""
-        className="pointer-events-none absolute -left-20 -bottom-16 w-[350px] opacity-[0.06]"
-      />
+      {/* Pinwheel watermarks — small top-left, large bottom-right */}
+      <PinwheelIcon size={280} color="#5F8B40" className="pointer-events-none absolute -left-10 -top-10 opacity-[0.06]" />
+      <PinwheelIcon size={450} color="#5F8B40" className="pointer-events-none absolute -right-16 -bottom-16 opacity-[0.06]" />
 
       <div className="relative z-10 mx-auto grid max-w-6xl gap-20 md:grid-cols-2 md:items-center">
         {/* Left column — text + image */}

@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import workerSilhouette from "@/assets/worker-silhouette.jpg";
+import PinwheelIcon from "@/components/landing/PinwheelIcon";
 
 const STATS = [
   { number: "85%", text: "of EWA users report reduced financial stress — ILO 2025" },
@@ -79,8 +80,11 @@ const HeroSection = ({ onOpenDemo }: HeroSectionProps) => {
           </div>
         </div>
 
-        {/* Right column — zoomed silhouette image */}
-        <div className="relative hidden md:block overflow-hidden">
+      {/* Pinwheel watermark — top-right */}
+      <PinwheelIcon size={500} color="#5F8B40" className="pointer-events-none absolute -right-20 -top-16 opacity-[0.06] z-[1]" />
+
+      {/* Right column — zoomed silhouette image */}
+      <div className="relative hidden md:block overflow-hidden">
           <img
             src={workerSilhouette}
             alt="Worker silhouette with city lights double exposure"
