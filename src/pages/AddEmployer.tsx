@@ -242,6 +242,23 @@ export default function AddEmployer() {
     if (errors[key]) setErrors((prev) => ({ ...prev, [key]: "" }));
   };
 
+  const toggleAuthRepIsSystemUser = (value: boolean) => {
+    setStep4((prev) => ({
+      ...prev,
+      authRepIsSystemUser: value,
+      authRepSelectedIndex: value ? prev.authRepSelectedIndex : null,
+    }));
+    if (errors["authRepSelectedIndex"]) setErrors((prev) => ({ ...prev, authRepSelectedIndex: "" }));
+  };
+
+  const selectAuthRepFromUser = (index: number | null) => {
+    setStep4((prev) => ({
+      ...prev,
+      authRepSelectedIndex: index,
+    }));
+    if (errors["authRepSelectedIndex"]) setErrors((prev) => ({ ...prev, authRepSelectedIndex: "" }));
+  };
+
   const getStep1Errors = (): Record<string, string> => {
     const e: Record<string, string> = {};
     if (!step1.company_legal_name.trim()) e.company_legal_name = "Company Legal Name is required";
