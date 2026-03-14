@@ -1,5 +1,6 @@
 import { Shield, TrendingUp, Clock, Wallet, Users } from "lucide-react";
 import circlesBg from "@/assets/circles-bg.png";
+import teamWorkforce from "@/assets/team-workforce.jpg";
 
 const BENEFITS = [
   {
@@ -36,6 +37,13 @@ interface WhyLamoolaSectionProps {
 const WhyLamoolaSection = ({ onOpenDemo }: WhyLamoolaSectionProps) => {
   return (
     <section id="why-lamoola" className="relative overflow-hidden px-6 py-44" style={{ backgroundColor: "#5F8B40" }}>
+      {/* Background workforce image as subtle texture */}
+      <img
+        src={teamWorkforce}
+        alt=""
+        className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-[0.06]"
+      />
+
       {/* Pinwheel watermarks */}
       <img
         src={circlesBg}

@@ -1,4 +1,5 @@
 import circlesBg from "@/assets/circles-bg.png";
+import joburgSkyline from "@/assets/joburg-skyline.jpg";
 
 interface CTASectionProps {
   onOpenDemo: () => void;
@@ -6,7 +7,16 @@ interface CTASectionProps {
 
 const CTASection = ({ onOpenDemo }: CTASectionProps) => {
   return (
-    <section id="contact" className="relative overflow-hidden px-6 py-44" style={{ backgroundColor: "#5F8B40" }}>
+    <section id="contact" className="relative overflow-hidden px-6 py-44">
+      {/* Johannesburg skyline background */}
+      <img
+        src={joburgSkyline}
+        alt=""
+        className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+      />
+      {/* Olive green overlay at 75% */}
+      <div className="absolute inset-0" style={{ backgroundColor: "rgba(95,139,64,0.75)" }} />
+
       {/* Pinwheel watermarks */}
       <img
         src={circlesBg}
