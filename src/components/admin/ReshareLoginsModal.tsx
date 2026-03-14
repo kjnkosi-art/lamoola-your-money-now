@@ -29,7 +29,7 @@ const ROLE_MAP: Record<string, string | null> = {
   "Employer System Admin": "employer_admin",
   "HR Manager": "hr_approver",
   "Supervisor": "supervisor",
-  "Finance Manager": null,
+  "Finance Manager": "employer_admin",
 };
 
 interface SystemUser {

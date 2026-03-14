@@ -761,7 +761,7 @@ export default function AddEmployer() {
                   "Employer System Admin": "employer_admin",
                   "HR Manager": "hr_approver",
                   "Supervisor": "supervisor",
-                  "Finance Manager": null, // contact-only, no login
+                  "Finance Manager": "employer_admin",
                   "Payroll Contact": "employer_admin",
                 };
 
