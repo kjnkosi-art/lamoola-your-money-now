@@ -47,24 +47,25 @@ const Login = () => {
 
       const role = roles[0].role;
 
+      let redirectPath = "/";
       switch (role) {
         case "owner":
         case "admin":
-          navigate("/admin/dashboard");
+          redirectPath = "/admin/dashboard";
           break;
         case "employer_admin":
-          navigate("/employer/dashboard");
+          redirectPath = "/employer/dashboard";
           break;
         case "supervisor":
         case "hr_approver":
-          navigate("/approvals");
+          redirectPath = "/employer/approvals";
           break;
         case "employee":
-          navigate("/employee/dashboard");
+          redirectPath = "/employee/dashboard";
           break;
-        default:
-          navigate("/");
       }
+      console.log("[Login] Auth role:", role, "→ Redirecting to:", redirectPath);
+      navigate(redirectPath);
     } catch {
       setError("Something went wrong. Please try again.");
     } finally {
