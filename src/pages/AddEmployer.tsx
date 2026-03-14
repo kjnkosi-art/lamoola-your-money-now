@@ -257,18 +257,6 @@ export default function AddEmployer() {
 
   const getStep2Errors = (): Record<string, string> => {
     const e: Record<string, string> = {};
-    if (!step2.payroll_contact_first_name.trim()) e.payroll_contact_first_name = "Payroll Contact First Name is required";
-    if (!step2.payroll_contact_last_name.trim()) e.payroll_contact_last_name = "Payroll Contact Last Name is required";
-    if (!step2.payroll_contact_email.trim()) {
-      e.payroll_contact_email = "Payroll Contact Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(step2.payroll_contact_email.trim())) {
-      e.payroll_contact_email = "Payroll Contact Email is invalid";
-    }
-    if (!step2.payroll_contact_phone.trim()) {
-      e.payroll_contact_phone = "Payroll Contact Phone is required";
-    } else if (!/^0[6-8]\d{8}$/.test(step2.payroll_contact_phone.trim())) {
-      e.payroll_contact_phone = "Payroll Contact Phone: SA mobile 10 digits starting 06/07/08";
-    }
     if (!step2.pay_cycle) e.pay_cycle = "Pay Cycle is required";
     if (!step2.payday) e.payday = "Payday is required";
     if (!step2.payroll_period_start.trim()) e.payroll_period_start = "Payroll Period Start is required";
