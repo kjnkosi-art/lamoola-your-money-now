@@ -200,9 +200,8 @@ const LandingPage = () => {
       {/* ── Footer ── */}
       <footer className="px-6 py-12" style={{ backgroundColor: "#062247" }}>
         <div className="mx-auto flex max-w-7xl flex-col items-center gap-6 md:flex-row md:justify-between">
-          <div className="flex items-center gap-2">
-            <PinwheelIcon size={28} color="#5F8B40" />
-            <span className="text-lg font-[900] text-white">Lamoola</span>
+          <div className="flex items-center">
+            <img src={logoNav} alt="Lamoola" className="h-7 w-auto" />
           </div>
           <div className="flex gap-6">
             {NAV_LINKS.map((l) => (
