@@ -6,8 +6,8 @@ interface CTASectionProps {
 
 const CTASection = ({ onOpenDemo }: CTASectionProps) => {
   return (
-    <section id="contact" className="relative overflow-hidden px-6 py-28" style={{ backgroundColor: "#5F8B40" }}>
-      {/* Pinwheel watermark */}
+    <section id="contact" className="relative overflow-hidden px-6 py-44" style={{ backgroundColor: "#5F8B40" }}>
+      {/* Pinwheel watermarks */}
       <img
         src={circlesBg}
         alt=""
@@ -22,10 +22,10 @@ const CTASection = ({ onOpenDemo }: CTASectionProps) => {
       />
 
       <div className="relative z-10 mx-auto max-w-3xl text-center">
-        <h2 className="mb-6 text-4xl font-[900] text-white md:text-6xl leading-tight">
+        <h2 className="mb-8 text-4xl font-[900] text-white md:text-6xl lg:text-7xl leading-tight">
           Ready to eliminate financial stress in your workforce?
         </h2>
-        <p className="mb-10 text-lg text-white/80">
+        <p className="mb-12 text-lg text-white/80 leading-relaxed">
           Join forward-thinking South African employers who are boosting retention,
           productivity, and employee wellbeing — at zero cost.
         </p>
