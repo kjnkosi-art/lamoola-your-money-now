@@ -45,7 +45,7 @@ const LandingPage = () => {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 md:px-8" style={{ minHeight: 80 }}>
           {/* Logo — far left, large and dominant */}
           <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="flex items-center">
-            <img src={logoNav} alt="Lamoola" className="h-[60px] w-auto" />
+            <img src={logoNav} alt="Lamoola" className="h-[80px] w-auto" />
           </button>
 
           {/* Nav links + Login — far right */}
