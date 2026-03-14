@@ -142,30 +142,51 @@ export default function AddEmployer() {
       const generalContacts = contacts.filter((c) => c.contact_type === "general");
       const authRep = contacts.find((c) => c.contact_type === "authorised_representative");
 
+      const systemUsers = generalContacts.length > 0
+        ? generalContacts.map((c) => ({
+            role_title: c.role_title || "",
+            first_name: c.first_name || "",
+            last_name: c.last_name || "",
+            email: c.email || "",
+            cellphone: c.cellphone || "",
+            landline: c.landline || "",
+          }))
+        : [{ role_title: "", first_name: "", last_name: "", email: "", cellphone: "", landline: "" }];
+
+      const authRepData = authRep
+        ? {
+            role_title: authRep.role_title || "",
+            first_name: authRep.first_name || "",
+            last_name: authRep.last_name || "",
+            email: authRep.email || "",
+            cellphone: authRep.cellphone || "",
+            landline: authRep.landline || "",
+          }
+        : { role_title: "", first_name: "", last_name: "", email: "", cellphone: "", landline: "" };
+
+      // Detect if auth rep matches a system user (for toggle restore)
+      let authRepIsSystemUser = true;
+      let authRepSelectedIndex: number | null = null;
+      if (authRep) {
+        const matchIdx = systemUsers.findIndex(
+          (u) => u.email.trim().toLowerCase() === (authRep.email || "").trim().toLowerCase() && u.email.trim() !== ""
+        );
+        if (matchIdx >= 0) {
+          authRepIsSystemUser = true;
+          authRepSelectedIndex = matchIdx;
+        } else {
+          authRepIsSystemUser = false;
+          authRepSelectedIndex = null;
+        }
+      }
+
       const resumedStep4: Step4Data = {
-        systemUsers: generalContacts.length > 0
-          ? generalContacts.map((c) => ({
-              role_title: c.role_title || "",
-              first_name: c.first_name || "",
-              last_name: c.last_name || "",
-              email: c.email || "",
-              cellphone: c.cellphone || "",
-              landline: c.landline || "",
-            }))
-          : [{ role_title: "", first_name: "", last_name: "", email: "", cellphone: "", landline: "" }],
-        authorised: authRep
-          ? {
-              role_title: authRep.role_title || "",
-              first_name: authRep.first_name || "",
-              last_name: authRep.last_name || "",
-              email: authRep.email || "",
-              cellphone: authRep.cellphone || "",
-              landline: authRep.landline || "",
-            }
-          : { role_title: "", first_name: "", last_name: "", email: "", cellphone: "", landline: "" },
+        systemUsers,
+        authorised: authRepData,
+        authRepIsSystemUser,
+        authRepSelectedIndex,
       };
-      console.log("[AddEmployer] Resumed Step 4 system users:", resumedStep4.systemUsers);
-      console.log("[AddEmployer] Resumed Step 4 authorised rep:", resumedStep4.authorised);
+      console.log("[AddEmployer] Resumed Step 4:", resumedStep4);
       setStep4(resumedStep4);
 
       setDraftLoaded(true);
