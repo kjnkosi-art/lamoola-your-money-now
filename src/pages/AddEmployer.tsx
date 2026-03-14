@@ -657,6 +657,8 @@ export default function AddEmployer() {
             onAddSystemUser={addSystemUser}
             onRemoveSystemUser={removeSystemUser}
             onChangeAuthorised={updateAuthorised}
+            onToggleAuthRepIsSystemUser={toggleAuthRepIsSystemUser}
+            onSelectAuthRepFromUser={selectAuthRepFromUser}
             errors={errors}
             saving={saving}
             onBack={() => goToStep(3)}
