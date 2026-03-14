@@ -57,31 +57,19 @@ const AdminDashboard = () => {
         .eq("status", "Active");
       setActiveEmployees(eeCount || 0);
 
-      // Pending approvals
-      const { count: pendCount } = await supabase
+      // This month approved requests
+      const monthStart = startOfMonth(new Date()).toISOString();
+      const { data: monthReqs } = await supabase
         .from("requests")
-        .select("*", { count: "exact", head: true })
-        .eq("request_status", "Pending");
-      setPendingApprovals(pendCount || 0);
+        .select("amount_requested, service_fee")
+        .eq("request_status", "Approved")
+        .gte("created_at", monthStart);
 
-      // This month payouts
-      const startOfMonth = new Date();
-      startOfMonth.setDate(1);
-      startOfMonth.setHours(0, 0, 0, 0);
-      const { data: payoutData } = await supabase
-        .from("payouts")
-        .select("request_id")
-        .eq("payout_status", "Paid")
-        .gte("payout_completed_at", startOfMonth.toISOString());
-
-      if (payoutData && payoutData.length > 0) {
-        const requestIds = payoutData.map((p) => p.request_id);
-        const { data: reqData } = await supabase
-          .from("requests")
-          .select("amount_requested")
-          .in("request_id", requestIds);
-        const total = (reqData || []).reduce((sum, r) => sum + Number(r.amount_requested), 0);
-        setMonthPayouts(total);
+      if (monthReqs) {
+        const totalAdvanced = monthReqs.reduce((sum, r) => sum + Number(r.amount_requested), 0);
+        const totalFees = monthReqs.reduce((sum, r) => sum + Number(r.service_fee || 0), 0);
+        setMonthPayouts(totalAdvanced);
+        setMonthFees(totalFees);
       }
 
       // Recent employers with employee counts
