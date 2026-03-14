@@ -288,6 +288,6 @@ export default function ApprovalQueue() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </AdminLayout>
+    </Layout>
   );
 }
