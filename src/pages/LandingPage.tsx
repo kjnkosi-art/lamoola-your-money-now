@@ -111,16 +111,23 @@ const LandingPage = () => {
         }}
       />
 
-      {/* ── Hero Section (placeholder) ── */}
+      {/* ── Hero Section ── */}
       <section
         className="relative flex min-h-screen items-center justify-center overflow-hidden pt-16"
         style={{ backgroundColor: "#F7F7F4" }}
       >
-        {/* Watermark pinwheels */}
-        <img src={circlesBg} alt="" className="pointer-events-none absolute -top-10 -right-20 w-[500px] opacity-[0.05]" />
-        <img src={circlesBg} alt="" className="pointer-events-none absolute -bottom-16 -left-16 w-[320px] opacity-[0.05]" />
+        {/* Gradient overlay */}
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{ background: "linear-gradient(to right, rgba(95,139,64,0.08), transparent 60%)" }}
+        />
+        {/* Watermark circles — boosted opacity */}
+        <img src={circlesBg} alt="" className="pointer-events-none absolute -top-10 -right-20 w-[500px] opacity-10" />
+        <img src={circlesBg} alt="" className="pointer-events-none absolute -bottom-16 -left-16 w-[320px] opacity-10" />
 
         <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
+          {/* Green accent line */}
+          <div className="mx-auto mb-4 h-1 w-12 rounded-full" style={{ backgroundColor: "#6AE809" }} />
           <p
             className="mb-4 text-sm font-[800] uppercase tracking-widest"
             style={{ color: "#EB5E07" }}
@@ -145,15 +152,18 @@ const LandingPage = () => {
           <button
             onClick={() => scrollTo("#contact")}
             className="rounded-lg px-8 py-3 text-sm font-[800] text-white transition-colors hover:opacity-90"
-            style={{ backgroundColor: "#5F8B40" }}
+            style={{ backgroundColor: "#EB5E07" }}
           >
             Get Started
           </button>
         </div>
       </section>
 
-      {/* ── Section anchors (placeholder content) ── */}
-      <section id="why-lamoola" className="min-h-[60vh] bg-white px-6 py-24">
+      {/* ── Gradient separator ── */}
+      <div className="h-1" style={{ background: "linear-gradient(to right, #5F8B40, #6AE809, #EB5E07)" }} />
+
+      {/* ── Why Lamoola ── */}
+      <section id="why-lamoola" className="min-h-[60vh] px-6 py-24" style={{ backgroundColor: "rgba(95,139,64,0.05)" }}>
         <div className="mx-auto max-w-5xl text-center">
           <p className="mb-2 text-sm font-[800] uppercase tracking-widest" style={{ color: "#EB5E07" }}>
             Why Lamoola
@@ -164,19 +174,22 @@ const LandingPage = () => {
         </div>
       </section>
 
-      <section id="how-it-works" className="min-h-[60vh] px-6 py-24" style={{ backgroundColor: "#F7F7F4" }}>
-        <div className="mx-auto max-w-5xl text-center">
+      {/* ── How It Works — navy block ── */}
+      <section id="how-it-works" className="relative min-h-[60vh] overflow-hidden px-6 py-24" style={{ backgroundColor: "#062247" }}>
+        <img src={circlesBg} alt="" className="pointer-events-none absolute -top-10 -right-16 w-[400px] opacity-[0.08]" style={{ filter: "brightness(3)" }} />
+        <div className="relative z-10 mx-auto max-w-5xl text-center">
           <p className="mb-2 text-sm font-[800] uppercase tracking-widest" style={{ color: "#EB5E07" }}>
             How It Works
           </p>
-          <h2 className="text-3xl font-[900] md:text-4xl" style={{ color: "#323232" }}>
+          <h2 className="text-3xl font-[900] text-white md:text-4xl">
             Simple. Fast. Seamless.
           </h2>
         </div>
       </section>
 
+      {/* ── Financial Wellness ── */}
       <section id="financial-wellness" className="min-h-[60vh] bg-white px-6 py-24">
-        <div className="mx-auto max-w-5xl text-center">
+        <div className="mx-auto max-w-5xl rounded-lg border-l-4 pl-6 text-center" style={{ borderColor: "#6AE809" }}>
           <p className="mb-2 text-sm font-[800] uppercase tracking-widest" style={{ color: "#EB5E07" }}>
             Financial Wellness
           </p>
@@ -186,7 +199,8 @@ const LandingPage = () => {
         </div>
       </section>
 
-      <section id="contact" className="min-h-[60vh] px-6 py-24" style={{ backgroundColor: "#F7F7F4" }}>
+      {/* ── Contact — warm green tint ── */}
+      <section id="contact" className="min-h-[60vh] px-6 py-24" style={{ background: "linear-gradient(180deg, #F7F7F4 0%, rgba(95,139,64,0.10) 100%)" }}>
         <div className="mx-auto max-w-5xl text-center">
           <p className="mb-2 text-sm font-[800] uppercase tracking-widest" style={{ color: "#EB5E07" }}>
             Contact
