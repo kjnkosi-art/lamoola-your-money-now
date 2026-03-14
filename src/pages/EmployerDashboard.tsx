@@ -32,8 +32,9 @@ const statusColor = (s: string) => {
 const EmployerDashboard = () => {
   const [companyName, setCompanyName] = useState("");
   const [activeCount, setActiveCount] = useState(0);
-  const [pendingApprovals, setPendingApprovals] = useState(0);
-  const [recentPayoutsTotal, setRecentPayoutsTotal] = useState(0);
+  const [activeRequests, setActiveRequests] = useState(0);
+  const [monthAdvanced, setMonthAdvanced] = useState(0);
+  const [monthFees, setMonthFees] = useState(0);
   const [activity, setActivity] = useState<RecentActivity[]>([]);
   const [loading, setLoading] = useState(true);
   const [showChangePw, setShowChangePw] = useState(false);
