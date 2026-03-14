@@ -38,8 +38,8 @@ function ordinal(n: number) {
 }
 
 const PAYDAY_OPTIONS = [
-  "Last working day of month",
-  ...Array.from({ length: 31 }, (_, i) => `${ordinal(i + 1)} of the month`),
+  "Last working day",
+  ...Array.from({ length: 31 }, (_, i) => String(i + 1)),
 ];
 
 const PAYROLL_FORMATS = [
