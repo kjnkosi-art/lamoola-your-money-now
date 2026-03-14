@@ -128,37 +128,56 @@ const EmployerDashboard = () => {
         </div>
 
         {/* Stat Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Active Employees</CardTitle>
-              <Users className="h-4 w-4 text-accent" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-foreground">{activeCount}</div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Pending Approvals</CardTitle>
-              <Clock className="h-4 w-4 text-primary" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-foreground">{pendingApprovals}</div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Recent Payouts</CardTitle>
-              <Banknote className="h-4 w-4 text-accent" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-foreground">
-                R{recentPayoutsTotal.toLocaleString("en-ZA", { minimumFractionDigits: 2 })}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Card className="border-border bg-card">
+            <CardContent className="p-5 flex items-center gap-4">
+              <div className="h-11 w-11 rounded-lg bg-lamoola-navy/10 flex items-center justify-center">
+                <Users className="h-5 w-5 text-lamoola-navy" />
               </div>
-              <p className="text-xs text-muted-foreground">This month</p>
+              <div>
+                <p className="text-2xl font-bold text-foreground">{activeCount}</p>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Total Employees</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border bg-card">
+            <CardContent className="p-5 flex items-center gap-4">
+              <div className="h-11 w-11 rounded-lg bg-lamoola-orange/10 flex items-center justify-center">
+                <Clock className="h-5 w-5 text-lamoola-orange" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-foreground">{activeRequests}</p>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Active Requests</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border bg-card">
+            <CardContent className="p-5 flex items-center gap-4">
+              <div className="h-11 w-11 rounded-lg bg-lamoola-green/10 flex items-center justify-center">
+                <Banknote className="h-5 w-5 text-lamoola-green" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-lamoola-green">
+                  R{monthAdvanced.toLocaleString("en-ZA", { minimumFractionDigits: 2 })}
+                </p>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Total Advanced This Month</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border bg-card">
+            <CardContent className="p-5 flex items-center gap-4">
+              <div className="h-11 w-11 rounded-lg bg-lamoola-green/10 flex items-center justify-center">
+                <Receipt className="h-5 w-5 text-lamoola-green" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-lamoola-green">
+                  R{monthFees.toLocaleString("en-ZA", { minimumFractionDigits: 2 })}
+                </p>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Total Fees This Month</p>
+              </div>
             </CardContent>
           </Card>
         </div>

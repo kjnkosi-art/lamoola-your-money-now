@@ -171,50 +171,52 @@ const AdminDashboard = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card className="border-border bg-card">
             <CardContent className="p-5 flex items-center gap-4">
-              <div className="h-11 w-11 rounded-lg bg-secondary/10 flex items-center justify-center">
-                <Building2 className="h-5 w-5 text-secondary" />
+              <div className="h-11 w-11 rounded-lg bg-lamoola-navy/10 flex items-center justify-center">
+                <Building2 className="h-5 w-5 text-lamoola-navy" />
               </div>
               <div>
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Active Employers</p>
                 <p className="text-2xl font-bold text-foreground">{activeEmployers}</p>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Total Employers</p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="border-border bg-card">
             <CardContent className="p-5 flex items-center gap-4">
-              <div className="h-11 w-11 rounded-lg bg-accent/10 flex items-center justify-center">
-                <Users className="h-5 w-5 text-accent-foreground" />
+              <div className="h-11 w-11 rounded-lg bg-lamoola-navy/10 flex items-center justify-center">
+                <Users className="h-5 w-5 text-lamoola-navy" />
               </div>
               <div>
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Active Employees</p>
                 <p className="text-2xl font-bold text-foreground">{activeEmployees}</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-border bg-card border-l-4 border-l-primary">
-            <CardContent className="p-5 flex items-center gap-4">
-              <div className="h-11 w-11 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Clock className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Pending Approvals</p>
-                <p className="text-2xl font-bold text-primary">{pendingApprovals}</p>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Total Employees</p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="border-border bg-card">
             <CardContent className="p-5 flex items-center gap-4">
-              <div className="h-11 w-11 rounded-lg bg-accent/10 flex items-center justify-center">
-                <Banknote className="h-5 w-5 text-accent-foreground" />
+              <div className="h-11 w-11 rounded-lg bg-lamoola-green/10 flex items-center justify-center">
+                <Banknote className="h-5 w-5 text-lamoola-green" />
               </div>
               <div>
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">This Month Payouts</p>
-                <p className="text-2xl font-bold text-foreground">
+                <p className="text-2xl font-bold text-lamoola-green">
                   R{monthPayouts.toLocaleString("en-ZA", { minimumFractionDigits: 2 })}
                 </p>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Total Advanced This Month</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border bg-card">
+            <CardContent className="p-5 flex items-center gap-4">
+              <div className="h-11 w-11 rounded-lg bg-lamoola-green/10 flex items-center justify-center">
+                <Receipt className="h-5 w-5 text-lamoola-green" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-lamoola-green">
+                  R{monthFees.toLocaleString("en-ZA", { minimumFractionDigits: 2 })}
+                </p>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Total Fees This Month</p>
               </div>
             </CardContent>
           </Card>
