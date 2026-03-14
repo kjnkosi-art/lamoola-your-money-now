@@ -1,4 +1,5 @@
 import logoNav from "@/assets/logo-nav.png";
+import PinwheelIcon from "@/components/landing/PinwheelIcon";
 
 interface LandingFooterProps {
   onScrollTo: (href: string) => void;
