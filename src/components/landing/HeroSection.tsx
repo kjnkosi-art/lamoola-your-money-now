@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import workerSilhouette from "@/assets/worker-silhouette.jpg";
+import PinwheelIcon from "@/components/landing/PinwheelIcon";
 
 const STATS = [
   { number: "85%", text: "of EWA users report reduced financial stress — ILO 2025" },
