@@ -252,10 +252,21 @@ export default function AddEmployer() {
   };
 
   const selectAuthRepFromUser = (index: number | null) => {
-    setStep4((prev) => ({
-      ...prev,
-      authRepSelectedIndex: index,
-    }));
+    setStep4((prev) => {
+      const updated = { ...prev, authRepSelectedIndex: index };
+      if (index !== null && index < prev.systemUsers.length) {
+        const user = prev.systemUsers[index];
+        updated.authorised = {
+          role_title: user.role_title,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          email: user.email,
+          cellphone: user.cellphone,
+          landline: user.landline,
+        };
+      }
+      return updated;
+    });
     if (errors["authRepSelectedIndex"]) setErrors((prev) => ({ ...prev, authRepSelectedIndex: "" }));
   };
 

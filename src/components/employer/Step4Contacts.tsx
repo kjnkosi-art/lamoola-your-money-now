@@ -274,103 +274,70 @@ export default function Step4Contacts({ data, onChangeSystemUser, onAddSystemUse
             </Label>
           </div>
 
-          {data.authRepIsSystemUser ? (
-            /* Dropdown to select from system users */
-            <div className="space-y-4">
-              <div className="space-y-1.5">
-                <Label>Select System User *</Label>
-                <Select
-                  value={data.authRepSelectedIndex !== null ? String(data.authRepSelectedIndex) : ""}
-                  onValueChange={(v) => onSelectAuthRepFromUser(v ? Number(v) : null)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a system user" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {data.systemUsers.map((user, i) => {
-                      const hasName = user.first_name.trim() || user.last_name.trim();
-                      const label = hasName
-                        ? `${user.first_name} ${user.last_name}${user.role_title ? ` — ${user.role_title}` : ""}`
-                        : `User ${i + 1}${user.role_title ? ` — ${user.role_title}` : ""}`;
-                      return (
-                        <SelectItem key={i} value={String(i)}>{label}</SelectItem>
-                      );
-                    })}
-                  </SelectContent>
-                </Select>
-                <FieldError field="authRepSelectedIndex" errors={errors} />
-              </div>
-
-              {/* Show read-only preview of selected user */}
-              {data.authRepSelectedIndex !== null && data.authRepSelectedIndex < data.systemUsers.length && (
-                <div className="p-4 border rounded-lg bg-muted/30 space-y-3">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Selected User Details</p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <Label className="text-muted-foreground">Name</Label>
-                      <Input value={`${effectiveAuthRep.first_name} ${effectiveAuthRep.last_name}`} readOnly className="bg-muted" />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-muted-foreground">Role</Label>
-                      <Input value={effectiveAuthRep.role_title} readOnly className="bg-muted" />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <Label className="text-muted-foreground">Email</Label>
-                      <Input value={effectiveAuthRep.email} readOnly className="bg-muted" />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-muted-foreground">Cellphone</Label>
-                      <Input value={effectiveAuthRep.cellphone} readOnly className="bg-muted" />
-                    </div>
-                  </div>
-                </div>
-              )}
+          {data.authRepIsSystemUser && (
+            <div className="space-y-1.5">
+              <Label>Pre-fill from System User</Label>
+              <Select
+                value={data.authRepSelectedIndex !== null ? String(data.authRepSelectedIndex) : ""}
+                onValueChange={(v) => onSelectAuthRepFromUser(v ? Number(v) : null)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a system user to pre-fill" />
+                </SelectTrigger>
+                <SelectContent>
+                  {data.systemUsers.map((user, i) => {
+                    const hasName = user.first_name.trim() || user.last_name.trim();
+                    const label = hasName
+                      ? `${user.first_name} ${user.last_name}${user.role_title ? ` — ${user.role_title}` : ""}`
+                      : `User ${i + 1}${user.role_title ? ` — ${user.role_title}` : ""}`;
+                    return (
+                      <SelectItem key={i} value={String(i)}>{label}</SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+              <FieldError field="authRepSelectedIndex" errors={errors} />
             </div>
-          ) : (
-            /* Manual entry fields */
-            <>
-              <div className="space-y-1.5">
-                <Label>Role / Title *</Label>
-                <Input value={data.authorised.role_title} onChange={(e) => onChangeAuthorised("role_title", e.target.value)} placeholder="e.g. CEO, HR Director" />
-                <FieldError field="authorised.role_title" errors={errors} />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label>First Name *</Label>
-                  <Input value={data.authorised.first_name} onChange={(e) => onChangeAuthorised("first_name", e.target.value)} placeholder="First name" />
-                  <FieldError field="authorised.first_name" errors={errors} />
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Last Name *</Label>
-                  <Input value={data.authorised.last_name} onChange={(e) => onChangeAuthorised("last_name", e.target.value)} placeholder="Last name" />
-                  <FieldError field="authorised.last_name" errors={errors} />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label>Email *</Label>
-                  <Input type="email" value={data.authorised.email} onChange={(e) => onChangeAuthorised("email", e.target.value)} placeholder="email@company.co.za" />
-                  <FieldError field="authorised.email" errors={errors} />
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Cellphone *</Label>
-                  <Input value={data.authorised.cellphone} onChange={(e) => onChangeAuthorised("cellphone", e.target.value)} placeholder="0712345678" />
-                  <FieldError field="authorised.cellphone" errors={errors} />
-                </div>
-              </div>
-
-              <div className="sm:w-1/2">
-                <div className="space-y-1.5">
-                  <Label>Landline</Label>
-                  <Input value={data.authorised.landline} onChange={(e) => onChangeAuthorised("landline", e.target.value)} placeholder="Optional" />
-                </div>
-              </div>
-            </>
           )}
+
+          <div className="space-y-1.5">
+            <Label>Role / Title *</Label>
+            <Input value={data.authorised.role_title} onChange={(e) => onChangeAuthorised("role_title", e.target.value)} placeholder="e.g. CEO, HR Director" />
+            <FieldError field="authorised.role_title" errors={errors} />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <Label>First Name *</Label>
+              <Input value={data.authorised.first_name} onChange={(e) => onChangeAuthorised("first_name", e.target.value)} placeholder="First name" />
+              <FieldError field="authorised.first_name" errors={errors} />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Last Name *</Label>
+              <Input value={data.authorised.last_name} onChange={(e) => onChangeAuthorised("last_name", e.target.value)} placeholder="Last name" />
+              <FieldError field="authorised.last_name" errors={errors} />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <Label>Email *</Label>
+              <Input type="email" value={data.authorised.email} onChange={(e) => onChangeAuthorised("email", e.target.value)} placeholder="email@company.co.za" />
+              <FieldError field="authorised.email" errors={errors} />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Cellphone *</Label>
+              <Input value={data.authorised.cellphone} onChange={(e) => onChangeAuthorised("cellphone", e.target.value)} placeholder="0712345678" />
+              <FieldError field="authorised.cellphone" errors={errors} />
+            </div>
+          </div>
+
+          <div className="sm:w-1/2">
+            <div className="space-y-1.5">
+              <Label>Landline</Label>
+              <Input value={data.authorised.landline} onChange={(e) => onChangeAuthorised("landline", e.target.value)} placeholder="Optional" />
+            </div>
+          </div>
         </div>
 
         {/* Actions */}
