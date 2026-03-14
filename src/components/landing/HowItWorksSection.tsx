@@ -1,6 +1,6 @@
 import { Building2, UserPlus, Banknote } from "lucide-react";
 import officeWorkers from "@/assets/office-workers.jpg";
-import circlesBg from "@/assets/circles-bg.png";
+import PinwheelIcon from "@/components/landing/PinwheelIcon";
 
 const STEPS = [
   {
