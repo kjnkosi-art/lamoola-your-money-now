@@ -742,6 +742,7 @@ export default function AddEmployer() {
                   "HR Manager": "hr_approver",
                   "Supervisor": "supervisor",
                   "Finance Manager": null, // contact-only, no login
+                  "Payroll Contact": "employer_admin",
                 };
 
                 // Collect all users that need auth accounts
@@ -756,23 +757,6 @@ export default function AddEmployer() {
                       last_name: user.last_name.trim(),
                       authRole,
                       displayRole: user.role_title,
-                    });
-                  }
-                }
-
-                // Also provision Payroll Contact from Step 2 as employer_admin
-                if (step2.payroll_contact_email.trim()) {
-                  // Avoid duplicate if payroll contact email matches an existing system user
-                  const alreadyIncluded = usersToProvision.some(
-                    (u) => u.email.toLowerCase() === step2.payroll_contact_email.trim().toLowerCase()
-                  );
-                  if (!alreadyIncluded) {
-                    usersToProvision.push({
-                      email: step2.payroll_contact_email.trim(),
-                      first_name: step2.payroll_contact_first_name.trim(),
-                      last_name: step2.payroll_contact_last_name.trim(),
-                      authRole: "employer_admin",
-                      displayRole: "Payroll Contact",
                     });
                   }
                 }
