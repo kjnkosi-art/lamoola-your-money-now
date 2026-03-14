@@ -71,10 +71,6 @@ export default function AddEmployer() {
 
   // Step 2 fields
   const [step2, setStep2] = useState({
-    payroll_contact_first_name: "",
-    payroll_contact_last_name: "",
-    payroll_contact_email: "",
-    payroll_contact_phone: "",
     pay_cycle: "",
     payday: "",
     payroll_period_start: "",
@@ -124,10 +120,6 @@ export default function AddEmployer() {
 
       // Populate Step 2
       setStep2({
-        payroll_contact_first_name: emp.payroll_contact_first_name || "",
-        payroll_contact_last_name: emp.payroll_contact_last_name || "",
-        payroll_contact_email: emp.payroll_contact_email || "",
-        payroll_contact_phone: emp.payroll_contact_phone || "",
         pay_cycle: emp.pay_cycle || "",
         payday: emp.payday || "",
         payroll_period_start: emp.payroll_period_start || "",
@@ -150,30 +142,51 @@ export default function AddEmployer() {
       const generalContacts = contacts.filter((c) => c.contact_type === "general");
       const authRep = contacts.find((c) => c.contact_type === "authorised_representative");
 
+      const systemUsers = generalContacts.length > 0
+        ? generalContacts.map((c) => ({
+            role_title: c.role_title || "",
+            first_name: c.first_name || "",
+            last_name: c.last_name || "",
+            email: c.email || "",
+            cellphone: c.cellphone || "",
+            landline: c.landline || "",
+          }))
+        : [{ role_title: "", first_name: "", last_name: "", email: "", cellphone: "", landline: "" }];
+
+      const authRepData = authRep
+        ? {
+            role_title: authRep.role_title || "",
+            first_name: authRep.first_name || "",
+            last_name: authRep.last_name || "",
+            email: authRep.email || "",
+            cellphone: authRep.cellphone || "",
+            landline: authRep.landline || "",
+          }
+        : { role_title: "", first_name: "", last_name: "", email: "", cellphone: "", landline: "" };
+
+      // Detect if auth rep matches a system user (for toggle restore)
+      let authRepIsSystemUser = true;
+      let authRepSelectedIndex: number | null = null;
+      if (authRep) {
+        const matchIdx = systemUsers.findIndex(
+          (u) => u.email.trim().toLowerCase() === (authRep.email || "").trim().toLowerCase() && u.email.trim() !== ""
+        );
+        if (matchIdx >= 0) {
+          authRepIsSystemUser = true;
+          authRepSelectedIndex = matchIdx;
+        } else {
+          authRepIsSystemUser = false;
+          authRepSelectedIndex = null;
+        }
+      }
+
       const resumedStep4: Step4Data = {
-        systemUsers: generalContacts.length > 0
-          ? generalContacts.map((c) => ({
-              role_title: c.role_title || "",
-              first_name: c.first_name || "",
-              last_name: c.last_name || "",
-              email: c.email || "",
-              cellphone: c.cellphone || "",
-              landline: c.landline || "",
-            }))
-          : [{ role_title: "", first_name: "", last_name: "", email: "", cellphone: "", landline: "" }],
-        authorised: authRep
-          ? {
-              role_title: authRep.role_title || "",
-              first_name: authRep.first_name || "",
-              last_name: authRep.last_name || "",
-              email: authRep.email || "",
-              cellphone: authRep.cellphone || "",
-              landline: authRep.landline || "",
-            }
-          : { role_title: "", first_name: "", last_name: "", email: "", cellphone: "", landline: "" },
+        systemUsers,
+        authorised: authRepData,
+        authRepIsSystemUser,
+        authRepSelectedIndex,
       };
-      console.log("[AddEmployer] Resumed Step 4 system users:", resumedStep4.systemUsers);
-      console.log("[AddEmployer] Resumed Step 4 authorised rep:", resumedStep4.authorised);
+      console.log("[AddEmployer] Resumed Step 4:", resumedStep4);
       setStep4(resumedStep4);
 
       setDraftLoaded(true);
@@ -229,6 +242,23 @@ export default function AddEmployer() {
     if (errors[key]) setErrors((prev) => ({ ...prev, [key]: "" }));
   };
 
+  const toggleAuthRepIsSystemUser = (value: boolean) => {
+    setStep4((prev) => ({
+      ...prev,
+      authRepIsSystemUser: value,
+      authRepSelectedIndex: value ? prev.authRepSelectedIndex : null,
+    }));
+    if (errors["authRepSelectedIndex"]) setErrors((prev) => ({ ...prev, authRepSelectedIndex: "" }));
+  };
+
+  const selectAuthRepFromUser = (index: number | null) => {
+    setStep4((prev) => ({
+      ...prev,
+      authRepSelectedIndex: index,
+    }));
+    if (errors["authRepSelectedIndex"]) setErrors((prev) => ({ ...prev, authRepSelectedIndex: "" }));
+  };
+
   const getStep1Errors = (): Record<string, string> => {
     const e: Record<string, string> = {};
     if (!step1.company_legal_name.trim()) e.company_legal_name = "Company Legal Name is required";
@@ -244,18 +274,6 @@ export default function AddEmployer() {
 
   const getStep2Errors = (): Record<string, string> => {
     const e: Record<string, string> = {};
-    if (!step2.payroll_contact_first_name.trim()) e.payroll_contact_first_name = "Payroll Contact First Name is required";
-    if (!step2.payroll_contact_last_name.trim()) e.payroll_contact_last_name = "Payroll Contact Last Name is required";
-    if (!step2.payroll_contact_email.trim()) {
-      e.payroll_contact_email = "Payroll Contact Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(step2.payroll_contact_email.trim())) {
-      e.payroll_contact_email = "Payroll Contact Email is invalid";
-    }
-    if (!step2.payroll_contact_phone.trim()) {
-      e.payroll_contact_phone = "Payroll Contact Phone is required";
-    } else if (!/^0[6-8]\d{8}$/.test(step2.payroll_contact_phone.trim())) {
-      e.payroll_contact_phone = "Payroll Contact Phone: SA mobile 10 digits starting 06/07/08";
-    }
     if (!step2.pay_cycle) e.pay_cycle = "Pay Cycle is required";
     if (!step2.payday) e.payday = "Payday is required";
     if (!step2.payroll_period_start.trim()) e.payroll_period_start = "Payroll Period Start is required";
@@ -317,10 +335,10 @@ export default function AddEmployer() {
         industry_sector: step1.industry_sector || null,
         physical_address: step1.physical_address.trim() || null,
         pay_cycle: (step2.pay_cycle || "Monthly") as any,
-        payroll_contact_first_name: step2.payroll_contact_first_name.trim() || null,
-        payroll_contact_last_name: step2.payroll_contact_last_name.trim() || null,
-        payroll_contact_email: step2.payroll_contact_email.trim() || null,
-        payroll_contact_phone: step2.payroll_contact_phone.trim() || null,
+        payroll_contact_first_name: null,
+        payroll_contact_last_name: null,
+        payroll_contact_email: null,
+        payroll_contact_phone: null,
         payday: step2.payday || null,
         payroll_period_start: step2.payroll_period_start.trim() || null,
         payroll_period_end: step2.payroll_period_end.trim() || null,
@@ -370,17 +388,21 @@ export default function AddEmployer() {
       landline: u.landline.trim() || null,
     }));
 
-    // Only add authorised rep if at least first_name is filled
-    if (step4.authorised.first_name.trim()) {
+    // Resolve auth rep: if linked to system user, use that user's data
+    const effectiveAuthRep = step4.authRepIsSystemUser && step4.authRepSelectedIndex !== null && step4.authRepSelectedIndex < step4.systemUsers.length
+      ? step4.systemUsers[step4.authRepSelectedIndex]
+      : step4.authorised;
+
+    if (effectiveAuthRep.first_name.trim()) {
       contacts.push({
         employer_id: eid,
         contact_type: "authorised_representative" as const,
-        role_title: step4.authorised.role_title.trim(),
-        first_name: step4.authorised.first_name.trim(),
-        last_name: step4.authorised.last_name.trim(),
-        email: step4.authorised.email.trim(),
-        cellphone: step4.authorised.cellphone.trim(),
-        landline: step4.authorised.landline.trim() || null,
+        role_title: effectiveAuthRep.role_title.trim(),
+        first_name: effectiveAuthRep.first_name.trim(),
+        last_name: effectiveAuthRep.last_name.trim(),
+        email: effectiveAuthRep.email.trim(),
+        cellphone: effectiveAuthRep.cellphone.trim(),
+        landline: effectiveAuthRep.landline.trim() || null,
       });
     }
 
@@ -550,33 +572,6 @@ export default function AddEmployer() {
             <CardContent className="pt-6 space-y-5">
               <h2 className="text-lg font-semibold font-nunito text-foreground">Step 2: Payroll & Pay Cycle</h2>
 
-              {/* Payroll Contact */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="payroll_contact_first_name">Payroll Contact First Name *</Label>
-                  <Input id="payroll_contact_first_name" value={step2.payroll_contact_first_name} onChange={(e) => updateStep2("payroll_contact_first_name", e.target.value)} placeholder="First name" />
-                  <FieldError field="payroll_contact_first_name" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="payroll_contact_last_name">Payroll Contact Last Name *</Label>
-                  <Input id="payroll_contact_last_name" value={step2.payroll_contact_last_name} onChange={(e) => updateStep2("payroll_contact_last_name", e.target.value)} placeholder="Last name" />
-                  <FieldError field="payroll_contact_last_name" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="payroll_contact_email">Payroll Contact Email *</Label>
-                  <Input id="payroll_contact_email" type="email" value={step2.payroll_contact_email} onChange={(e) => updateStep2("payroll_contact_email", e.target.value)} placeholder="email@company.co.za" />
-                  <FieldError field="payroll_contact_email" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="payroll_contact_phone">Payroll Contact Phone *</Label>
-                  <Input id="payroll_contact_phone" value={step2.payroll_contact_phone} onChange={(e) => updateStep2("payroll_contact_phone", e.target.value)} placeholder="0712345678" />
-                  <FieldError field="payroll_contact_phone" />
-                </div>
-              </div>
-
               {/* Pay Cycle & Payday */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
@@ -666,6 +661,8 @@ export default function AddEmployer() {
             onAddSystemUser={addSystemUser}
             onRemoveSystemUser={removeSystemUser}
             onChangeAuthorised={updateAuthorised}
+            onToggleAuthRepIsSystemUser={toggleAuthRepIsSystemUser}
+            onSelectAuthRepFromUser={selectAuthRepFromUser}
             errors={errors}
             saving={saving}
             onBack={() => goToStep(3)}
@@ -684,7 +681,12 @@ export default function AddEmployer() {
 
                 // DB-level duplicate checks for all system users + auth rep phones AND emails
                 let hasDuplicates = false;
-                const allContacts = [...step4.systemUsers, step4.authorised];
+                const effectiveAuthRepForCheck = step4.authRepIsSystemUser && step4.authRepSelectedIndex !== null && step4.authRepSelectedIndex < step4.systemUsers.length
+                  ? step4.systemUsers[step4.authRepSelectedIndex]
+                  : step4.authorised;
+                const allContacts = step4.authRepIsSystemUser
+                  ? [...step4.systemUsers] // auth rep is already in system users, no double-check
+                  : [...step4.systemUsers, effectiveAuthRepForCheck];
                 for (const contact of allContacts) {
                   const phone = contact.cellphone.trim();
                   const email = contact.email.trim().toLowerCase();
@@ -749,6 +751,7 @@ export default function AddEmployer() {
                   "HR Manager": "hr_approver",
                   "Supervisor": "supervisor",
                   "Finance Manager": null, // contact-only, no login
+                  "Payroll Contact": "employer_admin",
                 };
 
                 // Collect all users that need auth accounts
@@ -763,23 +766,6 @@ export default function AddEmployer() {
                       last_name: user.last_name.trim(),
                       authRole,
                       displayRole: user.role_title,
-                    });
-                  }
-                }
-
-                // Also provision Payroll Contact from Step 2 as employer_admin
-                if (step2.payroll_contact_email.trim()) {
-                  // Avoid duplicate if payroll contact email matches an existing system user
-                  const alreadyIncluded = usersToProvision.some(
-                    (u) => u.email.toLowerCase() === step2.payroll_contact_email.trim().toLowerCase()
-                  );
-                  if (!alreadyIncluded) {
-                    usersToProvision.push({
-                      email: step2.payroll_contact_email.trim(),
-                      first_name: step2.payroll_contact_first_name.trim(),
-                      last_name: step2.payroll_contact_last_name.trim(),
-                      authRole: "employer_admin",
-                      displayRole: "Payroll Contact",
                     });
                   }
                 }

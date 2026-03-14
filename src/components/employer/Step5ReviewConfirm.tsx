@@ -14,10 +14,6 @@ interface Step1Data {
 }
 
 interface Step2Data {
-  payroll_contact_first_name: string;
-  payroll_contact_last_name: string;
-  payroll_contact_email: string;
-  payroll_contact_phone: string;
   pay_cycle: string;
   payday: string;
   payroll_period_start: string;
@@ -62,6 +58,11 @@ function feeLabel(pct: string, flat: string) {
 
 export default function Step5ReviewConfirm({ step1, step2, step3, step4, saving, validationErrors, onBack, onEdit, onConfirm }: Props) {
   const hasErrors = validationErrors.length > 0;
+
+  // Resolve effective auth rep
+  const effectiveAuthRep = step4.authRepIsSystemUser && step4.authRepSelectedIndex !== null && step4.authRepSelectedIndex < step4.systemUsers.length
+    ? step4.systemUsers[step4.authRepSelectedIndex]
+    : step4.authorised;
 
   return (
     <div className="space-y-4">
@@ -124,9 +125,6 @@ export default function Step5ReviewConfirm({ step1, step2, step3, step4, saving,
           </Button>
         </CardHeader>
         <CardContent className="divide-y divide-border">
-          <Row label="Payroll Contact" value={`${step2.payroll_contact_first_name} ${step2.payroll_contact_last_name}`} />
-          <Row label="Email" value={step2.payroll_contact_email} />
-          <Row label="Phone" value={step2.payroll_contact_phone} />
           <Row label="Pay Cycle" value={step2.pay_cycle} />
           <Row label="Payday" value={step2.payday} />
           <Row label="Period" value={`${step2.payroll_period_start} – ${step2.payroll_period_end}`} />
@@ -177,11 +175,12 @@ export default function Step5ReviewConfirm({ step1, step2, step3, step4, saving,
           ))}
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide pt-2">Authorised Representative</p>
           <div className="divide-y divide-border">
-            <Row label="Role / Title" value={step4.authorised.role_title} />
-            <Row label="Name" value={`${step4.authorised.first_name} ${step4.authorised.last_name}`} />
-            <Row label="Email" value={step4.authorised.email} />
-            <Row label="Cellphone" value={step4.authorised.cellphone} />
-            {step4.authorised.landline && <Row label="Landline" value={step4.authorised.landline} />}
+            <Row label="Role / Title" value={effectiveAuthRep.role_title} />
+            <Row label="Name" value={`${effectiveAuthRep.first_name} ${effectiveAuthRep.last_name}`} />
+            <Row label="Email" value={effectiveAuthRep.email} />
+            <Row label="Cellphone" value={effectiveAuthRep.cellphone} />
+            {effectiveAuthRep.landline && <Row label="Landline" value={effectiveAuthRep.landline} />}
+            {step4.authRepIsSystemUser && <Row label="Source" value="Linked to system user above" />}
           </div>
         </CardContent>
       </Card>
