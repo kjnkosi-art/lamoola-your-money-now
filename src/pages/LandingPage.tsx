@@ -37,17 +37,19 @@ const LandingPage = () => {
 
   return (
     <div className="min-h-screen bg-white font-nunito scroll-smooth">
-      {/* ── Sticky Nav — deep navy ── */}
+      {/* ── Sticky Nav — deep navy, taller ── */}
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-shadow ${scrolled ? "shadow-lg" : ""}`}
-        style={{ backgroundColor: "#062247" }}
+        style={{ backgroundColor: "#062247", minHeight: 72 }}
       >
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-8">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 md:px-8" style={{ minHeight: 72 }}>
+          {/* Logo — far left, 2x larger */}
           <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="flex items-center">
-            <img src={logoNav} alt="Lamoola" className="h-14 w-auto" />
+            <img src={logoNav} alt="Lamoola" className="h-[52px] w-auto" />
           </button>
 
-          <div className="hidden items-center gap-6 md:flex">
+          {/* Nav links + Login — far right, plain text */}
+          <div className="hidden items-center gap-8 md:flex">
             {NAV_LINKS.map((l) => (
               <button
                 key={l.href}
@@ -59,7 +61,7 @@ const LandingPage = () => {
             ))}
             <button
               onClick={() => navigate("/login")}
-              className="rounded-lg border border-white px-5 py-2 text-sm font-[800] text-white transition-colors hover:bg-white/15"
+              className="text-base font-[800] text-white transition-opacity hover:opacity-80"
             >
               Login
             </button>
@@ -83,7 +85,7 @@ const LandingPage = () => {
             ))}
             <button
               onClick={() => { setMobileOpen(false); navigate("/login"); }}
-              className="mt-1 rounded-lg border border-white px-5 py-2 text-sm font-[800] text-white hover:bg-white/15"
+              className="mt-1 py-2 text-left text-base font-[800] text-white hover:opacity-80"
             >
               Login
             </button>
@@ -93,12 +95,12 @@ const LandingPage = () => {
 
       {/* ── Gradient divider strip ── */}
       <div
-        className="fixed top-[56px] left-0 right-0 z-50 h-1"
+        className="fixed top-[72px] left-0 right-0 z-50 h-1"
         style={{ background: "linear-gradient(to right, #5F8B40, #6AE809, #EB5E07)" }}
       />
 
       <HeroSection onOpenDemo={() => setDemoOpen(true)} />
-      <WhyLamoolaSection />
+      <WhyLamoolaSection onOpenDemo={() => setDemoOpen(true)} />
       <HowItWorksSection onOpenDemo={() => setDemoOpen(true)} />
       <FinancialWellnessSection />
       <CTASection onOpenDemo={() => setDemoOpen(true)} />
