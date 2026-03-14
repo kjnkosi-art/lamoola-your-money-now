@@ -25,8 +25,8 @@ const AdminDashboard = () => {
   const [firstName, setFirstName] = useState("");
   const [activeEmployers, setActiveEmployers] = useState(0);
   const [activeEmployees, setActiveEmployees] = useState(0);
-  const [pendingApprovals, setPendingApprovals] = useState(0);
   const [monthPayouts, setMonthPayouts] = useState(0);
+  const [monthFees, setMonthFees] = useState(0);
   const [recentEmployers, setRecentEmployers] = useState<EmployerActivity[]>([]);
   const [pendingRequests, setPendingRequests] = useState<PendingApproval[]>([]);
 
