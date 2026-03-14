@@ -41,12 +41,9 @@ const LandingPage = () => {
           {/* Logo */}
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="flex items-center gap-2"
+            className="flex items-center"
           >
-            <PinwheelIcon size={36} color="#ffffff" />
-            <span className="text-2xl font-[900] text-white tracking-tight">
-              Lamoola
-            </span>
+            <img src={logoNav} alt="Lamoola" className="h-9 w-auto" />
           </button>
 
           {/* Desktop links */}
