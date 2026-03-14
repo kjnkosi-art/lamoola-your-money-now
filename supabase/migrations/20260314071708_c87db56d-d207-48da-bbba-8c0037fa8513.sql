@@ -1,0 +1,1 @@
+ALTER TABLE public.employer_contacts ADD COLUMN is_active boolean NOT NULL DEFAULT true;

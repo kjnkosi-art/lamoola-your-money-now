@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { AdminLayout } from "@/components/admin/AdminLayout";
+import { EmployerLayout } from "@/components/employer/EmployerLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -64,6 +66,9 @@ function feeLabel(percent: number | null, flat: number | null) {
 }
 
 export default function ApprovalQueue() {
+  const location = useLocation();
+  const isEmployerRoute = location.pathname.startsWith("/employer/");
+  const Layout = isEmployerRoute ? EmployerLayout : AdminLayout;
   const { toast } = useToast();
   const [requests, setRequests] = useState<PendingRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -158,7 +163,7 @@ export default function ApprovalQueue() {
   };
 
   return (
-    <AdminLayout>
+    <Layout>
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Approval Queue</h1>
@@ -283,6 +288,6 @@ export default function ApprovalQueue() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </AdminLayout>
+    </Layout>
   );
 }

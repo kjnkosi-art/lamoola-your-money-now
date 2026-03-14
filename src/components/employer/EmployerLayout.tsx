@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { EmployerSidebar } from "./EmployerSidebar";
 import { AdminTopBar } from "@/components/admin/AdminTopBar";
+import { useEmployerRole } from "@/hooks/useEmployerRole";
 
 interface EmployerLayoutProps {
   children: React.ReactNode;
@@ -15,6 +16,7 @@ export function EmployerLayout({ children }: EmployerLayoutProps) {
   const [lastName, setLastName] = useState("");
   const [pendingCount, setPendingCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const { permissions, loading: roleLoading } = useEmployerRole();
 
   useEffect(() => {
     const init = async () => {
@@ -35,7 +37,6 @@ export function EmployerLayout({ children }: EmployerLayoutProps) {
         setLastName(profile.last_name);
       }
 
-      // Get employer_id via RPC
       const { data: employerId } = await supabase.rpc("get_user_employer_id", { _user_id: user.id });
 
       if (employerId) {
@@ -53,7 +54,7 @@ export function EmployerLayout({ children }: EmployerLayoutProps) {
     init();
   }, [navigate]);
 
-  if (loading) {
+  if (loading || roleLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="animate-spin h-8 w-8 border-4 border-accent border-t-transparent rounded-full" />
@@ -64,7 +65,11 @@ export function EmployerLayout({ children }: EmployerLayoutProps) {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
-        <EmployerSidebar pendingApprovalsCount={pendingCount} />
+        <EmployerSidebar
+          pendingApprovalsCount={pendingCount}
+          showApprovals={permissions.sidebarItems.includes("approvals")}
+          visibleItems={permissions.sidebarItems}
+        />
         <div className="flex-1 flex flex-col">
           <AdminTopBar firstName={firstName} lastName={lastName} />
           <main className="flex-1 p-6 bg-background overflow-auto">

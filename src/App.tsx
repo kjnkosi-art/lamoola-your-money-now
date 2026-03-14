@@ -18,6 +18,14 @@ import ApprovalQueue from "./pages/ApprovalQueue";
 import AdminDisbursements from "./pages/AdminDisbursements";
 import NotFound from "./pages/NotFound";
 
+// Employer role-based pages
+import { EmployerRouteGuard } from "./components/employer/EmployerRouteGuard";
+import EmployerEmployees from "./pages/employer/EmployerEmployees";
+import EmployerDisbursements from "./pages/employer/EmployerDisbursements";
+import EmployerInvoices from "./pages/employer/EmployerInvoices";
+import EmployerSettings from "./pages/employer/EmployerSettings";
+import EmployerProfileView from "./pages/employer/EmployerProfileView";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -36,12 +44,22 @@ const App = () => (
           <Route path="/admin/employees" element={<AdminEmployees />} />
           <Route path="/admin/employees/new" element={<AddEmployee />} />
           <Route path="/admin/employees/:id" element={<EmployeeProfile />} />
-          <Route path="/employer/dashboard" element={<EmployerDashboard />} />
+          <Route path="/admin/approvals" element={<ApprovalQueue />} />
+          <Route path="/admin/disbursements" element={<AdminDisbursements />} />
+
+          {/* Employer routes — protected by role */}
+          <Route path="/employer/dashboard" element={<EmployerRouteGuard><EmployerDashboard /></EmployerRouteGuard>} />
+          <Route path="/employer/employees" element={<EmployerRouteGuard><EmployerEmployees /></EmployerRouteGuard>} />
+          <Route path="/employer/approvals" element={<EmployerRouteGuard><ApprovalQueue /></EmployerRouteGuard>} />
+          <Route path="/employer/disbursements" element={<EmployerRouteGuard><EmployerDisbursements /></EmployerRouteGuard>} />
+          <Route path="/employer/invoices" element={<EmployerRouteGuard><EmployerInvoices /></EmployerRouteGuard>} />
+          <Route path="/employer/profile" element={<EmployerRouteGuard><EmployerProfileView /></EmployerRouteGuard>} />
+          <Route path="/employer/settings" element={<EmployerRouteGuard><EmployerSettings /></EmployerRouteGuard>} />
+
+          {/* Employee routes */}
           <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
           <Route path="/employee/request" element={<RequestSalaryAccess />} />
-          <Route path="/admin/approvals" element={<ApprovalQueue />} />
-          <Route path="/employer/approvals" element={<ApprovalQueue />} />
-          <Route path="/admin/disbursements" element={<AdminDisbursements />} />
+
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
@@ -51,4 +69,3 @@ const App = () => (
 );
 
 export default App;
-
