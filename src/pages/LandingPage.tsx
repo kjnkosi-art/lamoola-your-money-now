@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
-import PinwheelIcon from "@/components/landing/PinwheelIcon";
+import logoNav from "@/assets/logo-nav.png";
+import circlesBg from "@/assets/circles-bg.png";
 
 const NAV_LINKS = [
   { label: "Why Lamoola", href: "#why-lamoola" },
