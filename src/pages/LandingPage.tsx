@@ -44,7 +44,7 @@ const LandingPage = () => {
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-8">
           <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="flex items-center">
-            <img src={logoNav} alt="Lamoola" className="h-9 w-auto" />
+            <img src={logoNav} alt="Lamoola" className="h-14 w-auto" />
           </button>
 
           <div className="hidden items-center gap-6 md:flex">

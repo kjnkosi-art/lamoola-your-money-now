@@ -30,14 +30,14 @@ const BENEFITS = [
 
 const WhyLamoolaSection = () => {
   return (
-    <section id="why-lamoola" className="px-6 py-28" style={{ backgroundColor: "#5F8B40" }}>
+    <section id="why-lamoola" className="px-6 py-34" style={{ backgroundColor: "#5F8B40" }}>
       <div className="mx-auto grid max-w-6xl gap-16 md:grid-cols-2 md:items-start">
         {/* Left column */}
         <div>
           <p className="mb-3 text-sm font-[800] uppercase tracking-[0.2em]" style={{ color: "#6AE809" }}>
             Why Lamoola
           </p>
-          <h2 className="mb-6 text-3xl font-[900] text-white md:text-5xl leading-tight">
+          <h2 className="mb-6 text-4xl font-[900] text-white md:text-5xl lg:text-6xl leading-tight">
             Why South Africa's top employers choose Lamoola
           </h2>
           <p className="text-lg leading-relaxed text-white/80">
@@ -49,16 +49,16 @@ const WhyLamoolaSection = () => {
         </div>
 
         {/* Right column — benefit cards */}
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-6">
           {BENEFITS.map((b) => (
             <div
               key={b.title}
-              className="flex items-start gap-5 rounded-xl border-l-4 px-6 py-6"
+              className="flex items-start gap-5 rounded-xl border-l-[3px] px-8 py-7"
               style={{ backgroundColor: "rgba(255,255,255,0.10)", borderColor: "#6AE809" }}
             >
               <b.icon size={32} strokeWidth={2.5} style={{ color: "#6AE809", flexShrink: 0, marginTop: 2 }} />
               <div>
-                <p className="mb-2 text-base font-[800] text-white">{b.title}</p>
+                <p className="mb-2 text-lg font-[800] text-white">{b.title}</p>
                 <p className="text-sm leading-relaxed text-white/75">{b.desc}</p>
               </div>
             </div>
