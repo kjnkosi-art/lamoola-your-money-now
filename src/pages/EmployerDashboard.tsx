@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { Users, Clock, Banknote, KeyRound } from "lucide-react";
+import { Users, Clock, Banknote, KeyRound, Receipt } from "lucide-react";
 import { startOfMonth, format } from "date-fns";
 import { ChangePasswordModal } from "@/components/ChangePasswordModal";
 
