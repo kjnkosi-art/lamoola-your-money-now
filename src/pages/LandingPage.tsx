@@ -37,10 +37,10 @@ const LandingPage = () => {
 
   return (
     <div className="min-h-screen bg-white font-nunito scroll-smooth">
-      {/* ── Sticky Nav ── */}
+      {/* ── Sticky Nav — deep navy ── */}
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-shadow ${scrolled ? "shadow-lg" : ""}`}
-        style={{ backgroundColor: "#5F8B40" }}
+        style={{ backgroundColor: "#062247" }}
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-8">
           <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="flex items-center">
@@ -71,7 +71,7 @@ const LandingPage = () => {
         </div>
 
         {mobileOpen && (
-          <div className="flex flex-col gap-2 px-6 pb-5 md:hidden" style={{ backgroundColor: "#4a7333" }}>
+          <div className="flex flex-col gap-2 px-6 pb-5 md:hidden" style={{ backgroundColor: "#041a38" }}>
             {NAV_LINKS.map((l) => (
               <button
                 key={l.href}
