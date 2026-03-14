@@ -31,21 +31,21 @@ const TILES = [
 
 const FinancialWellnessSection = () => {
   return (
-    <section id="financial-wellness" className="relative overflow-hidden px-6 py-44" style={{ backgroundColor: "#F7F7F4" }}>
-      {/* Pinwheel watermarks — small top-left, large bottom-right */}
+    <section id="financial-wellness" className="relative overflow-hidden" style={{ backgroundColor: "#F7F7F4", padding: "100px 24px" }}>
+      {/* Pinwheel watermarks */}
       <PinwheelIcon size={280} color="#5F8B40" className="pointer-events-none absolute -left-10 -top-10 opacity-[0.06]" />
       <PinwheelIcon size={450} color="#5F8B40" className="pointer-events-none absolute -right-16 -bottom-16 opacity-[0.06]" />
 
       <div className="relative z-10 mx-auto grid max-w-6xl gap-20 md:grid-cols-2 md:items-center">
         {/* Left column — text + image */}
         <div>
-          <p className="mb-4 text-sm font-[800] uppercase tracking-[0.2em]" style={{ color: "#EB5E07" }}>
+          <p className="mb-4 uppercase tracking-[0.2em]" style={{ fontSize: 14, fontWeight: 800, color: "#EB5E07" }}>
             Financial Wellness
           </p>
-          <h2 className="mb-8 text-3xl font-[900] md:text-5xl lg:text-6xl leading-tight" style={{ color: "#1A1A1A" }}>
+          <h2 className="mb-8 leading-tight" style={{ fontSize: 42, fontWeight: 900, color: "#1A1A1A" }}>
             Beyond Early Pay
           </h2>
-          <p className="mb-10 text-lg leading-relaxed" style={{ color: "#545454" }}>
+          <p className="mb-10" style={{ fontSize: 16, lineHeight: 1.9, color: "#545454" }}>
             Lamoola isn't just about accessing wages early. Our roadmap includes a full financial
             wellness ecosystem — from literacy tools to savings nudges — designed to help your
             workforce build lasting financial health. Healthier employees mean a healthier business.
@@ -67,17 +67,17 @@ const FinancialWellnessSection = () => {
           {TILES.map((t) => (
             <div
               key={t.title}
-              className="rounded-xl border-l-4 px-8 py-8"
-              style={{ backgroundColor: "#FFFFFF", borderColor: "#EB5E07" }}
+              className="rounded-xl border-l-4"
+              style={{ backgroundColor: "#FFFFFF", borderColor: "#EB5E07", padding: 24 }}
             >
               <t.icon size={30} strokeWidth={2} style={{ color: "#5F8B40" }} className="mb-4" />
-              <p className="mb-2 text-lg font-[800]" style={{ color: "#1A1A1A" }}>
+              <p className="mb-2" style={{ fontSize: 16, fontWeight: 700, color: "#1A1A1A" }}>
                 {t.title}
               </p>
-              <p className="mb-3 text-sm font-[700]" style={{ color: "#5F8B40" }}>
+              <p className="mb-3" style={{ fontSize: 14, fontWeight: 700, color: "#5F8B40" }}>
                 {t.subtitle}
               </p>
-              <p className="text-base leading-relaxed" style={{ color: "#545454" }}>
+              <p style={{ fontSize: 14, lineHeight: 1.7, color: "#545454" }}>
                 {t.desc}
               </p>
             </div>

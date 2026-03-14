@@ -31,7 +31,8 @@ const HowItWorksSection = ({ onOpenDemo }: HowItWorksSectionProps) => {
   return (
     <section
       id="how-it-works"
-      className="relative px-6 py-44 overflow-hidden"
+      className="relative overflow-hidden"
+      style={{ padding: "120px 24px" }}
     >
       {/* Background image + navy overlay */}
       <img
@@ -39,19 +40,19 @@ const HowItWorksSection = ({ onOpenDemo }: HowItWorksSectionProps) => {
         alt=""
         className="pointer-events-none absolute inset-0 h-full w-full object-cover"
       />
-      <div className="absolute inset-0" style={{ backgroundColor: "rgba(6,34,71,0.70)" }} />
+      <div className="absolute inset-0" style={{ backgroundColor: "rgba(6,34,71,0.65)" }} />
 
       {/* Pinwheel watermark — large top-right */}
       <PinwheelIcon size={500} color="#FFFFFF" className="pointer-events-none absolute -right-16 -top-10 opacity-[0.10]" />
 
       <div className="relative z-10 mx-auto max-w-5xl text-center">
-        <p className="mb-4 text-sm font-[800] uppercase tracking-[0.2em]" style={{ color: "#EB5E07" }}>
+        <p className="mb-4 uppercase tracking-[0.2em]" style={{ fontSize: 14, fontWeight: 800, color: "#EB5E07" }}>
           How It Works
         </p>
-        <h2 className="mb-6 text-4xl font-[900] text-white md:text-5xl lg:text-6xl leading-tight">
+        <h2 className="mb-6 text-white leading-tight" style={{ fontSize: 48, fontWeight: 900 }}>
           Simple. Seamless. Live in days.
         </h2>
-        <p className="mx-auto mb-12 max-w-2xl text-lg text-white/80 leading-relaxed">
+        <p className="mx-auto mb-12 max-w-2xl text-white/80" style={{ fontSize: 17, lineHeight: 1.8 }}>
           No complex integrations. No disruption to your payroll. Lamoola slots into your existing
           workflow and takes care of the rest.
         </p>
@@ -59,14 +60,14 @@ const HowItWorksSection = ({ onOpenDemo }: HowItWorksSectionProps) => {
         <div className="mb-8 inline-flex flex-col items-center gap-4 sm:flex-row">
           <button
             onClick={onOpenDemo}
-            className="rounded-lg px-8 py-3.5 text-sm font-[800] text-white transition-opacity hover:opacity-90"
-            style={{ backgroundColor: "#5F8B40" }}
+            className="rounded-lg text-white transition-opacity hover:opacity-90"
+            style={{ fontSize: 16, fontWeight: 800, backgroundColor: "#5F8B40", padding: "14px 32px" }}
           >
             Get Started Today
           </button>
           <span
-            className="rounded-full px-5 py-1.5 text-xs font-[700] text-white"
-            style={{ backgroundColor: "#EB5E07" }}
+            className="rounded-full text-white"
+            style={{ fontSize: 13, fontWeight: 700, backgroundColor: "#EB5E07", padding: "6px 20px" }}
           >
             No cost to employer
           </span>
@@ -76,17 +77,17 @@ const HowItWorksSection = ({ onOpenDemo }: HowItWorksSectionProps) => {
           {STEPS.map((s) => (
             <div
               key={s.step}
-              className="rounded-xl border-t-[3px] px-8 py-10 text-left"
-              style={{ backgroundColor: "#FFFFFF", borderColor: "#EB5E07" }}
+              className="rounded-xl border-t-[3px] text-left"
+              style={{ backgroundColor: "#FFFFFF", borderColor: "#EB5E07", padding: 28 }}
             >
               <s.icon size={34} strokeWidth={2} style={{ color: "#5F8B40" }} className="mb-5" />
-              <p className="mb-2 text-xs font-[800] uppercase tracking-wider" style={{ color: "#EB5E07" }}>
+              <p className="mb-2 uppercase tracking-wider" style={{ fontSize: 13, fontWeight: 800, color: "#EB5E07" }}>
                 {s.step}
               </p>
-              <p className="mb-4 text-xl font-[800]" style={{ color: "#1A1A1A" }}>
+              <p className="mb-4" style={{ fontSize: 18, fontWeight: 700, color: "#1A1A1A" }}>
                 {s.title}
               </p>
-              <p className="text-base leading-relaxed" style={{ color: "#545454" }}>
+              <p style={{ fontSize: 14, lineHeight: 1.7, color: "#545454" }}>
                 {s.desc}
               </p>
             </div>

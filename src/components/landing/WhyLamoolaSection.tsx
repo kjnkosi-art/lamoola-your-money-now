@@ -36,7 +36,7 @@ interface WhyLamoolaSectionProps {
 
 const WhyLamoolaSection = ({ onOpenDemo }: WhyLamoolaSectionProps) => {
   return (
-    <section id="why-lamoola" className="relative overflow-hidden px-6 py-44" style={{ backgroundColor: "#5F8B40" }}>
+    <section id="why-lamoola" className="relative overflow-hidden" style={{ backgroundColor: "#5F8B40", padding: "100px 24px" }}>
       {/* Background workforce image as subtle texture */}
       <img
         src={teamWorkforce}
@@ -44,20 +44,20 @@ const WhyLamoolaSection = ({ onOpenDemo }: WhyLamoolaSectionProps) => {
         className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-[0.06]"
       />
 
-      {/* Pinwheel watermarks — large top-right, medium bottom-left */}
+      {/* Pinwheel watermarks */}
       <PinwheelIcon size={550} color="#FFFFFF" className="pointer-events-none absolute -right-20 -top-16 opacity-[0.08]" />
       <PinwheelIcon size={380} color="#FFFFFF" className="pointer-events-none absolute -left-16 -bottom-20 opacity-[0.08]" />
 
       <div className="relative z-10 mx-auto grid max-w-6xl gap-20 md:grid-cols-2 md:items-start">
         {/* Left column */}
         <div>
-          <p className="mb-4 text-sm font-[800] uppercase tracking-[0.2em]" style={{ color: "#6AE809" }}>
+          <p className="mb-4 uppercase tracking-[0.2em]" style={{ fontSize: 14, fontWeight: 800, color: "#6AE809" }}>
             Why Lamoola
           </p>
-          <h2 className="mb-8 text-4xl font-[900] text-white md:text-5xl lg:text-6xl leading-tight">
+          <h2 className="mb-8 text-white leading-tight" style={{ fontSize: 42, fontWeight: 900 }}>
             Why South Africa's top employers choose Lamoola
           </h2>
-          <p className="mb-10 text-lg leading-relaxed text-white/80">
+          <p className="mb-10 text-white/80" style={{ fontSize: 16, lineHeight: 1.9 }}>
             Traditional pay cycles were designed for business, not people. With 75% of South African
             workers running out of money before payday, the old model is broken. Lamoola bridges the
             gap — giving employees instant access to wages they've already earned, while costing your
@@ -65,7 +65,8 @@ const WhyLamoolaSection = ({ onOpenDemo }: WhyLamoolaSectionProps) => {
           </p>
           <button
             onClick={onOpenDemo}
-            className="text-base font-[700] text-white underline underline-offset-4 transition-opacity hover:opacity-80"
+            className="text-white underline underline-offset-4 transition-opacity hover:opacity-80"
+            style={{ fontSize: 16, fontWeight: 700 }}
           >
             Book a demo →
           </button>
@@ -76,13 +77,13 @@ const WhyLamoolaSection = ({ onOpenDemo }: WhyLamoolaSectionProps) => {
           {BENEFITS.map((b) => (
             <div
               key={b.title}
-              className="flex items-start gap-6 rounded-xl border-l-[3px] px-10 py-9"
-              style={{ backgroundColor: "rgba(255,255,255,0.10)", borderColor: "#6AE809" }}
+              className="flex items-start gap-6 rounded-xl border-l-[3px]"
+              style={{ backgroundColor: "rgba(255,255,255,0.10)", borderColor: "#6AE809", padding: 24 }}
             >
               <b.icon size={34} strokeWidth={2.5} style={{ color: "#6AE809", flexShrink: 0, marginTop: 2 }} />
               <div>
-                <p className="mb-3 text-lg font-[800] text-white">{b.title}</p>
-                <p className="text-base leading-relaxed text-white/75">{b.desc}</p>
+                <p className="mb-3 text-white" style={{ fontSize: 17, fontWeight: 700 }}>{b.title}</p>
+                <p className="text-white/75" style={{ fontSize: 14, lineHeight: 1.7 }}>{b.desc}</p>
               </div>
             </div>
           ))}
