@@ -73,25 +73,23 @@ export function validateStep4(data: Step4Data): Record<string, string> {
 
   // Validate authorised rep
   if (data.authRepIsSystemUser) {
-    // Must select a system user
     if (data.authRepSelectedIndex === null || data.authRepSelectedIndex < 0 || data.authRepSelectedIndex >= data.systemUsers.length) {
       e["authRepSelectedIndex"] = "Please select a system user as the Authorised Representative";
     }
-  } else {
-    // Manual entry validation
-    if (!data.authorised.role_title.trim()) e["authorised.role_title"] = "Required";
-    if (!data.authorised.first_name.trim()) e["authorised.first_name"] = "Required";
-    if (!data.authorised.last_name.trim()) e["authorised.last_name"] = "Required";
-    if (!data.authorised.email.trim()) {
-      e["authorised.email"] = "Required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.authorised.email.trim())) {
-      e["authorised.email"] = "Invalid email";
-    }
-    if (!data.authorised.cellphone.trim()) {
-      e["authorised.cellphone"] = "Required";
-    } else if (!/^0[6-8]\d{8}$/.test(data.authorised.cellphone.trim())) {
-      e["authorised.cellphone"] = "SA mobile: 10 digits starting 06/07/08";
-    }
+  }
+  // Always validate authorised fields (editable in both modes)
+  if (!data.authorised.role_title.trim()) e["authorised.role_title"] = "Required";
+  if (!data.authorised.first_name.trim()) e["authorised.first_name"] = "Required";
+  if (!data.authorised.last_name.trim()) e["authorised.last_name"] = "Required";
+  if (!data.authorised.email.trim()) {
+    e["authorised.email"] = "Required";
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.authorised.email.trim())) {
+    e["authorised.email"] = "Invalid email";
+  }
+  if (!data.authorised.cellphone.trim()) {
+    e["authorised.cellphone"] = "Required";
+  } else if (!/^0[6-8]\d{8}$/.test(data.authorised.cellphone.trim())) {
+    e["authorised.cellphone"] = "SA mobile: 10 digits starting 06/07/08";
   }
 
   // Intra-form duplicate detection (system users only, skip auth rep if linked)
