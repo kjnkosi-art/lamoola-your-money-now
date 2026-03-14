@@ -681,7 +681,12 @@ export default function AddEmployer() {
 
                 // DB-level duplicate checks for all system users + auth rep phones AND emails
                 let hasDuplicates = false;
-                const allContacts = [...step4.systemUsers, step4.authorised];
+                const effectiveAuthRepForCheck = step4.authRepIsSystemUser && step4.authRepSelectedIndex !== null && step4.authRepSelectedIndex < step4.systemUsers.length
+                  ? step4.systemUsers[step4.authRepSelectedIndex]
+                  : step4.authorised;
+                const allContacts = step4.authRepIsSystemUser
+                  ? [...step4.systemUsers] // auth rep is already in system users, no double-check
+                  : [...step4.systemUsers, effectiveAuthRepForCheck];
                 for (const contact of allContacts) {
                   const phone = contact.cellphone.trim();
                   const email = contact.email.trim().toLowerCase();
