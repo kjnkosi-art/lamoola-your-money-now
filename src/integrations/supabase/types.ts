@@ -113,6 +113,33 @@ export type Database = {
         }
         Relationships: []
       }
+      demo_requests: {
+        Row: {
+          company_name: string
+          created_at: string
+          email: string
+          employee_count: string | null
+          full_name: string
+          id: string
+        }
+        Insert: {
+          company_name: string
+          created_at?: string
+          email: string
+          employee_count?: string | null
+          full_name: string
+          id?: string
+        }
+        Update: {
+          company_name?: string
+          created_at?: string
+          email?: string
+          employee_count?: string | null
+          full_name?: string
+          id?: string
+        }
+        Relationships: []
+      }
       employees: {
         Row: {
           access_limit_override_percent: number | null

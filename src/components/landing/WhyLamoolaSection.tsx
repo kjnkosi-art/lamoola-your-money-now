@@ -30,17 +30,17 @@ const BENEFITS = [
 
 const WhyLamoolaSection = () => {
   return (
-    <section id="why-lamoola" className="px-6 py-24" style={{ backgroundColor: "#5F8B40" }}>
-      <div className="mx-auto grid max-w-6xl gap-12 md:grid-cols-2 md:items-start">
+    <section id="why-lamoola" className="px-6 py-28" style={{ backgroundColor: "#5F8B40" }}>
+      <div className="mx-auto grid max-w-6xl gap-16 md:grid-cols-2 md:items-start">
         {/* Left column */}
         <div>
-          <p className="mb-2 text-sm font-[800] uppercase tracking-widest" style={{ color: "#6AE809" }}>
+          <p className="mb-3 text-sm font-[800] uppercase tracking-[0.2em]" style={{ color: "#6AE809" }}>
             Why Lamoola
           </p>
-          <h2 className="mb-4 text-3xl font-[900] text-white md:text-4xl">
+          <h2 className="mb-6 text-3xl font-[900] text-white md:text-5xl leading-tight">
             Why South Africa's top employers choose Lamoola
           </h2>
-          <p className="text-base leading-relaxed text-white/80">
+          <p className="text-lg leading-relaxed text-white/80">
             Traditional pay cycles were designed for business, not people. With 75% of South African
             workers running out of money before payday, the old model is broken. Lamoola bridges the
             gap — giving employees instant access to wages they've already earned, while costing your
@@ -49,17 +49,17 @@ const WhyLamoolaSection = () => {
         </div>
 
         {/* Right column — benefit cards */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-5">
           {BENEFITS.map((b) => (
             <div
               key={b.title}
-              className="flex items-start gap-4 rounded-xl border border-white/20 px-5 py-4"
-              style={{ backgroundColor: "rgba(255,255,255,0.08)" }}
+              className="flex items-start gap-5 rounded-xl border-l-4 px-6 py-6"
+              style={{ backgroundColor: "rgba(255,255,255,0.10)", borderColor: "#6AE809" }}
             >
-              <b.icon size={28} strokeWidth={2.5} style={{ color: "#6AE809", flexShrink: 0, marginTop: 2 }} />
+              <b.icon size={32} strokeWidth={2.5} style={{ color: "#6AE809", flexShrink: 0, marginTop: 2 }} />
               <div>
-                <p className="mb-1 text-sm font-[800] text-white">{b.title}</p>
-                <p className="text-sm leading-snug text-white/70">{b.desc}</p>
+                <p className="mb-2 text-base font-[800] text-white">{b.title}</p>
+                <p className="text-sm leading-relaxed text-white/75">{b.desc}</p>
               </div>
             </div>
           ))}
