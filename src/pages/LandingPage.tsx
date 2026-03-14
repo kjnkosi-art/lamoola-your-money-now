@@ -117,12 +117,8 @@ const LandingPage = () => {
         style={{ backgroundColor: "#F7F7F4" }}
       >
         {/* Watermark pinwheels */}
-        <div className="pointer-events-none absolute -top-10 -right-20 opacity-[0.05]">
-          <PinwheelIcon size={500} color="#5F8B40" />
-        </div>
-        <div className="pointer-events-none absolute -bottom-16 -left-16 opacity-[0.05]">
-          <PinwheelIcon size={320} color="#5F8B40" />
-        </div>
+        <img src={circlesBg} alt="" className="pointer-events-none absolute -top-10 -right-20 w-[500px] opacity-[0.05]" />
+        <img src={circlesBg} alt="" className="pointer-events-none absolute -bottom-16 -left-16 w-[320px] opacity-[0.05]" />
 
         <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
           <p
