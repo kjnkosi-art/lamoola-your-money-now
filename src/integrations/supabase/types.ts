@@ -259,6 +259,7 @@ export type Database = {
           email: string | null
           employer_id: string
           first_name: string
+          is_active: boolean
           landline: string | null
           last_name: string
           role_title: string | null
@@ -270,6 +271,7 @@ export type Database = {
           email?: string | null
           employer_id: string
           first_name: string
+          is_active?: boolean
           landline?: string | null
           last_name: string
           role_title?: string | null
@@ -281,6 +283,7 @@ export type Database = {
           email?: string | null
           employer_id?: string
           first_name?: string
+          is_active?: boolean
           landline?: string | null
           last_name?: string
           role_title?: string | null
