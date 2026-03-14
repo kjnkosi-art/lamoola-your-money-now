@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
-import PinwheelIcon from "@/components/landing/PinwheelIcon";
+import logoNav from "@/assets/logo-nav.png";
+import circlesBg from "@/assets/circles-bg.png";
 
 const NAV_LINKS = [
   { label: "Why Lamoola", href: "#why-lamoola" },
@@ -40,12 +41,9 @@ const LandingPage = () => {
           {/* Logo */}
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="flex items-center gap-2"
+            className="flex items-center"
           >
-            <PinwheelIcon size={36} color="#ffffff" />
-            <span className="text-2xl font-[900] text-white tracking-tight">
-              Lamoola
-            </span>
+            <img src={logoNav} alt="Lamoola" className="h-9 w-auto" />
           </button>
 
           {/* Desktop links */}
@@ -119,12 +117,8 @@ const LandingPage = () => {
         style={{ backgroundColor: "#F7F7F4" }}
       >
         {/* Watermark pinwheels */}
-        <div className="pointer-events-none absolute -top-10 -right-20 opacity-[0.05]">
-          <PinwheelIcon size={500} color="#5F8B40" />
-        </div>
-        <div className="pointer-events-none absolute -bottom-16 -left-16 opacity-[0.05]">
-          <PinwheelIcon size={320} color="#5F8B40" />
-        </div>
+        <img src={circlesBg} alt="" className="pointer-events-none absolute -top-10 -right-20 w-[500px] opacity-[0.05]" />
+        <img src={circlesBg} alt="" className="pointer-events-none absolute -bottom-16 -left-16 w-[320px] opacity-[0.05]" />
 
         <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
           <p
@@ -206,9 +200,8 @@ const LandingPage = () => {
       {/* ── Footer ── */}
       <footer className="px-6 py-12" style={{ backgroundColor: "#062247" }}>
         <div className="mx-auto flex max-w-7xl flex-col items-center gap-6 md:flex-row md:justify-between">
-          <div className="flex items-center gap-2">
-            <PinwheelIcon size={28} color="#5F8B40" />
-            <span className="text-lg font-[900] text-white">Lamoola</span>
+          <div className="flex items-center">
+            <img src={logoNav} alt="Lamoola" className="h-7 w-auto" />
           </div>
           <div className="flex gap-6">
             {NAV_LINKS.map((l) => (
