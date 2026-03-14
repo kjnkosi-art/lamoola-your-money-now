@@ -58,13 +58,15 @@ const FinancialWellnessSection = () => {
             wellness ecosystem — from literacy tools to savings nudges — designed to help your
             workforce build lasting financial health. Healthier employees mean a healthier business.
           </p>
-          <div className="overflow-hidden rounded-2xl">
+          <div className="relative overflow-hidden rounded-2xl">
             <img
               src={wellnessPhone}
               alt="Employee using financial wellness app on mobile"
               className="h-auto w-full object-cover"
               style={{ maxHeight: 320 }}
             />
+            {/* Olive green tint overlay */}
+            <div className="absolute inset-0 rounded-2xl" style={{ backgroundColor: "rgba(95,139,64,0.30)" }} />
           </div>
         </div>
 
