@@ -41,13 +41,8 @@ const HowItWorksSection = ({ onOpenDemo }: HowItWorksSectionProps) => {
       />
       <div className="absolute inset-0" style={{ backgroundColor: "rgba(6,34,71,0.70)" }} />
 
-      {/* Pinwheel watermark top-right */}
-      <img
-        src={circlesBg}
-        alt=""
-        className="pointer-events-none absolute -right-16 -top-10 w-[450px] opacity-[0.10]"
-        style={{ filter: "brightness(3)" }}
-      />
+      {/* Pinwheel watermark — large top-right */}
+      <PinwheelIcon size={500} color="#FFFFFF" className="pointer-events-none absolute -right-16 -top-10 opacity-[0.10]" />
 
       <div className="relative z-10 mx-auto max-w-5xl text-center">
         <p className="mb-4 text-sm font-[800] uppercase tracking-[0.2em]" style={{ color: "#EB5E07" }}>

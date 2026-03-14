@@ -17,19 +17,8 @@ const CTASection = ({ onOpenDemo }: CTASectionProps) => {
       {/* Olive green overlay at 75% */}
       <div className="absolute inset-0" style={{ backgroundColor: "rgba(95,139,64,0.75)" }} />
 
-      {/* Pinwheel watermarks */}
-      <img
-        src={circlesBg}
-        alt=""
-        className="pointer-events-none absolute -right-20 -top-10 w-[400px] opacity-[0.08]"
-        style={{ filter: "brightness(3)" }}
-      />
-      <img
-        src={circlesBg}
-        alt=""
-        className="pointer-events-none absolute -left-16 -bottom-16 w-[300px] opacity-[0.08]"
-        style={{ filter: "brightness(3)" }}
-      />
+      {/* Pinwheel — very large, centred behind headline */}
+      <PinwheelIcon size={700} color="#FFFFFF" className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.08] z-0" />
 
       <div className="relative z-10 mx-auto max-w-3xl text-center">
         <h2 className="mb-8 text-4xl font-[900] text-white md:text-6xl lg:text-7xl leading-tight">
