@@ -66,6 +66,9 @@ function feeLabel(percent: number | null, flat: number | null) {
 }
 
 export default function ApprovalQueue() {
+  const location = useLocation();
+  const isEmployerRoute = location.pathname.startsWith("/employer/");
+  const Layout = isEmployerRoute ? EmployerLayout : AdminLayout;
   const { toast } = useToast();
   const [requests, setRequests] = useState<PendingRequest[]>([]);
   const [loading, setLoading] = useState(true);
