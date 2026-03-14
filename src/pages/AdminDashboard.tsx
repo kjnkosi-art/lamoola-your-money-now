@@ -4,8 +4,9 @@ import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Building2, Users, Clock, Banknote } from "lucide-react";
+import { Building2, Users, Banknote, Receipt } from "lucide-react";
 import citrusWheel from "@/assets/citrus-wheel.png";
+import { startOfMonth } from "date-fns";
 
 interface EmployerActivity {
   employer_id: string;
@@ -25,8 +26,8 @@ const AdminDashboard = () => {
   const [firstName, setFirstName] = useState("");
   const [activeEmployers, setActiveEmployers] = useState(0);
   const [activeEmployees, setActiveEmployees] = useState(0);
-  const [pendingApprovals, setPendingApprovals] = useState(0);
   const [monthPayouts, setMonthPayouts] = useState(0);
+  const [monthFees, setMonthFees] = useState(0);
   const [recentEmployers, setRecentEmployers] = useState<EmployerActivity[]>([]);
   const [pendingRequests, setPendingRequests] = useState<PendingApproval[]>([]);
 
@@ -57,31 +58,19 @@ const AdminDashboard = () => {
         .eq("status", "Active");
       setActiveEmployees(eeCount || 0);
 
-      // Pending approvals
-      const { count: pendCount } = await supabase
+      // This month approved requests
+      const monthStart = startOfMonth(new Date()).toISOString();
+      const { data: monthReqs } = await supabase
         .from("requests")
-        .select("*", { count: "exact", head: true })
-        .eq("request_status", "Pending");
-      setPendingApprovals(pendCount || 0);
+        .select("amount_requested, service_fee")
+        .eq("request_status", "Approved")
+        .gte("created_at", monthStart);
 
-      // This month payouts
-      const startOfMonth = new Date();
-      startOfMonth.setDate(1);
-      startOfMonth.setHours(0, 0, 0, 0);
-      const { data: payoutData } = await supabase
-        .from("payouts")
-        .select("request_id")
-        .eq("payout_status", "Paid")
-        .gte("payout_completed_at", startOfMonth.toISOString());
-
-      if (payoutData && payoutData.length > 0) {
-        const requestIds = payoutData.map((p) => p.request_id);
-        const { data: reqData } = await supabase
-          .from("requests")
-          .select("amount_requested")
-          .in("request_id", requestIds);
-        const total = (reqData || []).reduce((sum, r) => sum + Number(r.amount_requested), 0);
-        setMonthPayouts(total);
+      if (monthReqs) {
+        const totalAdvanced = monthReqs.reduce((sum, r) => sum + Number(r.amount_requested), 0);
+        const totalFees = monthReqs.reduce((sum, r) => sum + Number(r.service_fee || 0), 0);
+        setMonthPayouts(totalAdvanced);
+        setMonthFees(totalFees);
       }
 
       // Recent employers with employee counts
@@ -183,50 +172,52 @@ const AdminDashboard = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card className="border-border bg-card">
             <CardContent className="p-5 flex items-center gap-4">
-              <div className="h-11 w-11 rounded-lg bg-secondary/10 flex items-center justify-center">
-                <Building2 className="h-5 w-5 text-secondary" />
+              <div className="h-11 w-11 rounded-lg bg-lamoola-navy/10 flex items-center justify-center">
+                <Building2 className="h-5 w-5 text-lamoola-navy" />
               </div>
               <div>
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Active Employers</p>
                 <p className="text-2xl font-bold text-foreground">{activeEmployers}</p>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Total Employers</p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="border-border bg-card">
             <CardContent className="p-5 flex items-center gap-4">
-              <div className="h-11 w-11 rounded-lg bg-accent/10 flex items-center justify-center">
-                <Users className="h-5 w-5 text-accent-foreground" />
+              <div className="h-11 w-11 rounded-lg bg-lamoola-navy/10 flex items-center justify-center">
+                <Users className="h-5 w-5 text-lamoola-navy" />
               </div>
               <div>
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Active Employees</p>
                 <p className="text-2xl font-bold text-foreground">{activeEmployees}</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-border bg-card border-l-4 border-l-primary">
-            <CardContent className="p-5 flex items-center gap-4">
-              <div className="h-11 w-11 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Clock className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Pending Approvals</p>
-                <p className="text-2xl font-bold text-primary">{pendingApprovals}</p>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Total Employees</p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="border-border bg-card">
             <CardContent className="p-5 flex items-center gap-4">
-              <div className="h-11 w-11 rounded-lg bg-accent/10 flex items-center justify-center">
-                <Banknote className="h-5 w-5 text-accent-foreground" />
+              <div className="h-11 w-11 rounded-lg bg-lamoola-green/10 flex items-center justify-center">
+                <Banknote className="h-5 w-5 text-lamoola-green" />
               </div>
               <div>
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">This Month Payouts</p>
-                <p className="text-2xl font-bold text-foreground">
+                <p className="text-2xl font-bold text-lamoola-green">
                   R{monthPayouts.toLocaleString("en-ZA", { minimumFractionDigits: 2 })}
                 </p>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Total Advanced This Month</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border bg-card">
+            <CardContent className="p-5 flex items-center gap-4">
+              <div className="h-11 w-11 rounded-lg bg-lamoola-green/10 flex items-center justify-center">
+                <Receipt className="h-5 w-5 text-lamoola-green" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-lamoola-green">
+                  R{monthFees.toLocaleString("en-ZA", { minimumFractionDigits: 2 })}
+                </p>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Total Fees This Month</p>
               </div>
             </CardContent>
           </Card>
