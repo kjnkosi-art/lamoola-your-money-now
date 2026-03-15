@@ -96,7 +96,7 @@ const HeroSection = ({ onOpenDemo }: HeroSectionProps) => {
             src={heroWorker}
             alt="Construction worker with arms crossed wearing hard hat and hi-vis vest"
             className="absolute inset-0 h-full w-full object-cover"
-            style={{ objectPosition: "center top", backgroundColor: "#062247" }}
+            style={{ objectPosition: "center top", backgroundColor: "#062247", mixBlendMode: "multiply" }}
           />
           <img src={circleSingle} alt="" className="pointer-events-none absolute -top-4 -right-4 z-0" style={{ width: 160, opacity: 0.15 }} />
         </div>
