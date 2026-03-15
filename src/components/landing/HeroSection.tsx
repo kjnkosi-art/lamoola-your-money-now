@@ -4,10 +4,10 @@ import circleSingle from "@/assets/circle-single.png";
 import PinwheelIcon from "@/components/landing/PinwheelIcon";
 
 const STATS = [
-  { number: "85%", text: "of EWA users report reduced financial stress — ILO 2025" },
-  { number: "41%", text: "less employee turnover where EWA is offered — HR Brew 2024" },
-  { number: "5×", text: "more distracted at work when financially stressed — PwC 2023" },
-  { number: "8%", text: "measurable productivity increase — Good Business Lab" },
+  { number: "85%", text: "EWA users report less financial stress" },
+  { number: "41%", text: "less turnover with EWA" },
+  { number: "5×", text: "more distracted when financially stressed" },
+  { number: "8%", text: "productivity increase" },
 ];
 
 interface HeroSectionProps {
@@ -32,13 +32,13 @@ const HeroSection = ({ onOpenDemo }: HeroSectionProps) => {
 
             <h1
               className="mb-3 leading-[1.05]"
-              style={{ fontSize: 52, fontWeight: 900, color: "#FFFFFF" }}
+              style={{ fontSize: 48, fontWeight: 900, color: "#FFFFFF", whiteSpace: "normal" }}
             >
               Your employees earned it.
             </h1>
             <h1
               className="mb-12 leading-[1.05]"
-              style={{ fontSize: 52, fontWeight: 900, color: "#6AE809" }}
+              style={{ fontSize: 48, fontWeight: 900, color: "#6AE809", whiteSpace: "normal" }}
             >
               They just can't access it yet.
             </h1>
@@ -49,17 +49,17 @@ const HeroSection = ({ onOpenDemo }: HeroSectionProps) => {
             </p>
 
             {/* Stat pills — 4-column grid */}
-            <div className="mb-16 grid grid-cols-4 gap-5">
+            <div className="mb-16 grid grid-cols-4 gap-4">
               {STATS.map((s) => (
                 <div
                   key={s.number}
                   className="rounded-xl text-center"
-                  style={{ backgroundColor: "rgba(255,255,255,0.08)", border: "1.5px solid rgba(255,255,255,0.2)", padding: 24 }}
+                  style={{ backgroundColor: "rgba(255,255,255,0.08)", border: "1.5px solid rgba(255,255,255,0.2)", padding: "20px 12px", minWidth: 130 }}
                 >
                   <p className="mb-2" style={{ fontSize: 38, fontWeight: 900, color: "#6AE809" }}>
                     {s.number}
                   </p>
-                  <p style={{ fontSize: 13, lineHeight: 1.6, color: "rgba(255,255,255,0.85)" }}>
+                  <p style={{ fontSize: 11, lineHeight: 1.5, color: "rgba(255,255,255,0.85)" }}>
                     {s.text}
                   </p>
                 </div>
@@ -96,7 +96,7 @@ const HeroSection = ({ onOpenDemo }: HeroSectionProps) => {
             src={heroWorker}
             alt="Construction worker with arms crossed wearing hard hat and hi-vis vest"
             className="absolute inset-0 h-full w-full object-cover"
-            style={{ objectPosition: "center top", backgroundColor: "#062247" }}
+            style={{ objectPosition: "center top", backgroundColor: "#062247", mixBlendMode: "multiply" }}
           />
           <img src={circleSingle} alt="" className="pointer-events-none absolute -top-4 -right-4 z-0" style={{ width: 160, opacity: 0.15 }} />
         </div>
