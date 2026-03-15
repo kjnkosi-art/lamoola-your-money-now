@@ -90,17 +90,12 @@ const HeroSection = ({ onOpenDemo }: HeroSectionProps) => {
         <PinwheelIcon size={500} color="#5F8B40" className="pointer-events-none absolute -right-20 -top-16 opacity-[0.06] z-[1]" />
 
         {/* Right column — hero worker image */}
-        <div className="relative hidden md:block overflow-hidden">
+        <div className="relative hidden md:block overflow-hidden" style={{ backgroundColor: "#062247" }}>
           <img
             src={heroWorker}
             alt="Construction worker with arms crossed wearing hard hat and hi-vis vest"
-            className="absolute inset-0 h-full w-full object-cover"
-            style={{ objectPosition: "center 20%", transform: "scale(1.15)" }}
-          />
-          {/* Navy overlay at 40% */}
-          <div
-            className="absolute inset-0"
-            style={{ backgroundColor: "rgba(6,34,71,0.40)" }}
+            className="absolute inset-0 h-full w-full object-contain object-center"
+            style={{ objectPosition: "center 15%" }}
           />
         </div>
       </div>

@@ -36,7 +36,7 @@ const HowItWorksSection = ({ onOpenDemo }: HowItWorksSectionProps) => {
     >
       {/* Background image + navy overlay */}
       <img
-        src={officeWorkers}
+        src={howItWorksBg}
         alt=""
         className="pointer-events-none absolute inset-0 h-full w-full object-cover"
       />
