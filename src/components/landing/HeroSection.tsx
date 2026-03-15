@@ -47,18 +47,18 @@ const HeroSection = ({ onOpenDemo }: HeroSectionProps) => {
               Lamoola fixes that — at zero cost to your business.
             </p>
 
-            {/* Stat pills */}
-            <div className="mb-16 grid grid-cols-2 gap-5 lg:grid-cols-4">
+        {/* Stat pills */}
+            <div className="mb-16 flex flex-wrap justify-center gap-5">
               {STATS.map((s) => (
                 <div
                   key={s.number}
                   className="rounded-xl border-2"
-                  style={{ backgroundColor: "#F7F7F4", borderColor: "#5F8B40", padding: 20 }}
+                  style={{ backgroundColor: "#F7F7F4", borderColor: "#5F8B40", padding: 24, flex: "0 1 auto", minWidth: 160 }}
                 >
                   <p className="mb-2" style={{ fontSize: 42, fontWeight: 900, color: "#6AE809" }}>
                     {s.number}
                   </p>
-                  <p style={{ fontSize: 13, lineHeight: 1.5, color: "#323232" }}>
+                  <p style={{ fontSize: 14, lineHeight: 1.5, color: "#323232" }}>
                     {s.text}
                   </p>
                 </div>
