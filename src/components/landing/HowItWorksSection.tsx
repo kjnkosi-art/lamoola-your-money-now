@@ -1,5 +1,6 @@
 import { Building2, UserPlus, Banknote } from "lucide-react";
 import howItWorksBg from "@/assets/how-it-works-bg.jpg";
+import circlesCluster from "@/assets/circles-cluster.png";
 import PinwheelIcon from "@/components/landing/PinwheelIcon";
 
 const STEPS = [
@@ -44,6 +45,7 @@ const HowItWorksSection = ({ onOpenDemo }: HowItWorksSectionProps) => {
 
       {/* Pinwheel watermark — large top-right */}
       <PinwheelIcon size={500} color="#FFFFFF" className="pointer-events-none absolute -right-16 -top-10 opacity-[0.10]" />
+      <img src={circlesCluster} alt="" className="pointer-events-none absolute -bottom-10 -right-10 z-0" style={{ width: 280, opacity: 0.12 }} />
 
       <div className="relative z-10 mx-auto max-w-5xl text-center">
         <p className="mb-4 uppercase" style={{ fontSize: 13, fontWeight: 700, letterSpacing: 4, color: "#EB5E07" }}>
