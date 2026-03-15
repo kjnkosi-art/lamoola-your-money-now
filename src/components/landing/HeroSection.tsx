@@ -4,10 +4,10 @@ import circleSingle from "@/assets/circle-single.png";
 import PinwheelIcon from "@/components/landing/PinwheelIcon";
 
 const STATS = [
-  { number: "85%", text: "of EWA users report reduced financial stress — ILO 2025" },
-  { number: "41%", text: "less employee turnover where EWA is offered — HR Brew 2024" },
-  { number: "5×", text: "more distracted at work when financially stressed — PwC 2023" },
-  { number: "8%", text: "measurable productivity increase — Good Business Lab" },
+  { number: "85%", text: "EWA users report less financial stress" },
+  { number: "41%", text: "less turnover with EWA" },
+  { number: "5×", text: "more distracted when financially stressed" },
+  { number: "8%", text: "productivity increase" },
 ];
 
 interface HeroSectionProps {
