@@ -16,7 +16,7 @@ const CTASection = ({ onOpenDemo }: CTASectionProps) => {
       {/* Navy overlay at 65% */}
       <div className="absolute inset-0" style={{ backgroundColor: "rgba(6,34,71,0.65)" }} />
 
-      
+      <img src={pinwheelCluster} alt="" className="pointer-events-none absolute -top-8 -right-8" style={{ width: 280, opacity: 0.10, zIndex: 0 }} />
 
       <div className="relative z-10 mx-auto max-w-3xl text-center">
         <h2 className="mb-8 text-white leading-tight" style={{ fontSize: 52, fontWeight: 900 }}>

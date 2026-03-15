@@ -31,7 +31,7 @@ const TILES = [
 const FinancialWellnessSection = () => {
   return (
     <section id="financial-wellness" className="relative overflow-hidden" style={{ backgroundColor: "#F7F7F4", padding: "100px 24px" }}>
-      
+      <img src={pinwheelSingle} alt="" className="pointer-events-none absolute -bottom-6 -right-6" style={{ width: 140, opacity: 0.08, zIndex: 0 }} />
 
       <div className="relative z-10 mx-auto grid max-w-6xl gap-20 md:grid-cols-2 md:items-center">
         {/* Left column — text + image */}
