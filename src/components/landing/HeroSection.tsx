@@ -32,13 +32,13 @@ const HeroSection = ({ onOpenDemo }: HeroSectionProps) => {
 
             <h1
               className="mb-3 leading-[1.05]"
-              style={{ fontSize: 52, fontWeight: 900, color: "#FFFFFF" }}
+              style={{ fontSize: 48, fontWeight: 900, color: "#FFFFFF", whiteSpace: "normal" }}
             >
               Your employees earned it.
             </h1>
             <h1
               className="mb-12 leading-[1.05]"
-              style={{ fontSize: 52, fontWeight: 900, color: "#6AE809" }}
+              style={{ fontSize: 48, fontWeight: 900, color: "#6AE809", whiteSpace: "normal" }}
             >
               They just can't access it yet.
             </h1>
