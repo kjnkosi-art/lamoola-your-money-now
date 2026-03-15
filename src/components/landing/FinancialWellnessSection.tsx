@@ -33,8 +33,8 @@ const FinancialWellnessSection = () => {
   return (
     <section id="financial-wellness" className="relative overflow-hidden" style={{ backgroundColor: "#F7F7F4", padding: "100px 24px" }}>
       {/* Pinwheel watermarks */}
-      <PinwheelIcon size={280} color="#5F8B40" className="pointer-events-none absolute -left-10 -top-10 opacity-[0.06]" />
-      <PinwheelIcon size={450} color="#5F8B40" className="pointer-events-none absolute -right-16 -bottom-16 opacity-[0.06]" />
+      <PinwheelIcon size={180} color="#5F8B40" className="pointer-events-none absolute -right-6 -top-6 opacity-[0.06] z-0" />
+      <PinwheelIcon size={100} color="#5F8B40" className="pointer-events-none absolute -left-4 -bottom-4 opacity-[0.05] z-0" />
 
       <div className="relative z-10 mx-auto grid max-w-6xl gap-20 md:grid-cols-2 md:items-center">
         {/* Left column — text + image */}
@@ -53,7 +53,7 @@ const FinancialWellnessSection = () => {
           <div className="relative overflow-hidden rounded-2xl">
             <img
               src={wellnessPhone}
-              alt="Employee using financial wellness app on mobile"
+              alt="African worker using financial wellness app on smartphone"
               className="h-auto w-full object-cover"
               style={{ maxHeight: 320 }}
             />
@@ -71,7 +71,7 @@ const FinancialWellnessSection = () => {
               style={{ backgroundColor: "#FFFFFF", borderColor: "#EB5E07", padding: 24 }}
             >
               <t.icon size={30} strokeWidth={2} style={{ color: "#5F8B40" }} className="mb-4" />
-              <p className="mb-2" style={{ fontSize: 16, fontWeight: 700, color: "#1A1A1A" }}>
+              <p className="mb-2" style={{ fontSize: 17, fontWeight: 700, color: "#1A1A1A" }}>
                 {t.title}
               </p>
               <p className="mb-3" style={{ fontSize: 14, fontWeight: 700, color: "#5F8B40" }}>

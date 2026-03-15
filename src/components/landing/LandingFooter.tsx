@@ -14,15 +14,15 @@ const NAV_LINKS = [
 
 const LandingFooter = ({ onScrollTo }: LandingFooterProps) => {
   return (
-    <footer className="relative overflow-hidden px-6 py-16" style={{ backgroundColor: "#062247" }}>
-      {/* Pinwheel watermark — medium, far right */}
-      <PinwheelIcon size={300} color="#FFFFFF" className="pointer-events-none absolute -right-10 top-1/2 -translate-y-1/2 opacity-[0.05]" />
+    <footer className="relative overflow-hidden px-6" style={{ backgroundColor: "#062247", paddingTop: 60, paddingBottom: 40 }}>
+      {/* Pinwheel watermark — large, right side */}
+      <PinwheelIcon size={200} color="#FFFFFF" className="pointer-events-none absolute -right-10 top-1/2 -translate-y-1/2 opacity-[0.08]" />
       <div className="relative z-10 mx-auto max-w-7xl">
         <div className="flex flex-col items-center gap-10 md:flex-row md:items-start md:justify-between">
           {/* Logo + tagline */}
           <div className="flex flex-col items-center md:items-start">
-            <img src={logoNav} alt="Lamoola" className="mb-3 h-8 w-auto" />
-            <p className="text-sm italic text-white/50">
+            <img src={logoNav} alt="Lamoola" className="mb-3 h-10 w-auto" />
+            <p className="italic" style={{ fontSize: 13, color: "rgba(255,255,255,0.55)" }}>
               Empowering Financial Wellness, One Paycheque at a Time
             </p>
           </div>
@@ -33,7 +33,8 @@ const LandingFooter = ({ onScrollTo }: LandingFooterProps) => {
               <button
                 key={l.href}
                 onClick={() => onScrollTo(l.href)}
-                className="text-sm font-semibold text-white/70 transition-colors hover:text-white"
+                className="font-semibold text-white/70 transition-colors hover:text-white"
+                style={{ fontSize: 14 }}
               >
                 {l.label}
               </button>
@@ -41,7 +42,7 @@ const LandingFooter = ({ onScrollTo }: LandingFooterProps) => {
           </div>
 
           {/* Contact info */}
-          <div className="flex flex-col items-center gap-2 text-sm text-white/60 md:items-end">
+          <div className="flex flex-col items-center md:items-end" style={{ fontSize: 14, lineHeight: 2.2, color: "rgba(255,255,255,0.6)" }}>
             <a href="mailto:hello@lamoola.co.za" className="hover:text-white transition-colors">
               hello@lamoola.co.za
             </a>
@@ -56,14 +57,14 @@ const LandingFooter = ({ onScrollTo }: LandingFooterProps) => {
 
         {/* Bottom bar */}
         <div className="mt-10 flex flex-col items-center gap-4 border-t border-white/10 pt-8 md:flex-row md:justify-between">
-          <p className="text-xs text-white/40">
+          <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>
             © {new Date().getFullYear()} Lamoola. All rights reserved.
           </p>
           <div className="flex gap-6">
-            <button className="text-xs text-white/40 hover:text-white transition-colors">
+            <button className="hover:text-white transition-colors" style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>
               Privacy Policy
             </button>
-            <button className="text-xs text-white/40 hover:text-white transition-colors">
+            <button className="hover:text-white transition-colors" style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>
               Terms of Use
             </button>
           </div>
