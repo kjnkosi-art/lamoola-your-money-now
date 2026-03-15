@@ -58,7 +58,7 @@ const HeroSection = ({ onOpenDemo }: HeroSectionProps) => {
                   <p className="mb-2" style={{ fontSize: 38, fontWeight: 900, color: "#6AE809" }}>
                     {s.number}
                   </p>
-                  <p style={{ fontSize: 12, lineHeight: 1.5, color: "rgba(255,255,255,0.7)" }}>
+                  <p style={{ fontSize: 13, lineHeight: 1.6, color: "rgba(255,255,255,0.85)" }}>
                     {s.text}
                   </p>
                 </div>

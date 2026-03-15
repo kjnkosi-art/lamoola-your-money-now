@@ -81,7 +81,7 @@ const HowItWorksSection = ({ onOpenDemo }: HowItWorksSectionProps) => {
               style={{ backgroundColor: "#FFFFFF", borderColor: "#EB5E07", padding: 28 }}
             >
               <s.icon size={34} strokeWidth={2} style={{ color: "#5F8B40" }} className="mb-5" />
-              <p className="mb-2 uppercase tracking-wider" style={{ fontSize: 13, fontWeight: 800, color: "#EB5E07" }}>
+              <p className="mb-2 uppercase" style={{ fontSize: 13, fontWeight: 700, letterSpacing: 4, color: "#EB5E07" }}>
                 {s.step}
               </p>
               <p className="mb-4" style={{ fontSize: 18, fontWeight: 700, color: "#1A1A1A" }}>
