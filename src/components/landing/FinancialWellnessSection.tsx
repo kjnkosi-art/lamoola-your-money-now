@@ -55,7 +55,7 @@ const FinancialWellnessSection = () => {
               style={{ objectPosition: "center 15%" }}
             />
             {/* Olive green tint overlay */}
-            <div className="absolute inset-0 rounded-2xl" style={{ backgroundColor: "rgba(95,139,64,0.25)" }} />
+            <div className="absolute inset-0 rounded-2xl" style={{ backgroundColor: "rgba(95,139,64,0.18)" }} />
           </div>
         </div>
 
