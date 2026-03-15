@@ -21,7 +21,7 @@ const CTASection = ({ onOpenDemo }: CTASectionProps) => {
       {/* Pinwheel overlays — behind text, on top of background */}
       <PinwheelIcon size={220} color="#FFFFFF" className="pointer-events-none absolute -right-8 -top-8 opacity-[0.10] z-[1]" />
       <PinwheelIcon size={130} color="#FFFFFF" className="pointer-events-none absolute -left-6 -bottom-6 opacity-[0.08] z-[1]" />
-      <img src={circlesCluster} alt="" className="pointer-events-none absolute -top-8 -right-8 z-[1]" style={{ width: 300, opacity: 0.10 }} />
+      
 
       <div className="relative z-10 mx-auto max-w-3xl text-center">
         <h2 className="mb-8 text-white leading-tight" style={{ fontSize: 52, fontWeight: 900 }}>

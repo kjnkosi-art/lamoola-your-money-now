@@ -48,7 +48,7 @@ const WhyLamoolaSection = ({ onOpenDemo }: WhyLamoolaSectionProps) => {
       {/* Pinwheel watermarks */}
       <PinwheelIcon size={550} color="#FFFFFF" className="pointer-events-none absolute -right-20 -top-16 opacity-[0.08]" />
       <PinwheelIcon size={380} color="#FFFFFF" className="pointer-events-none absolute -left-16 -bottom-20 opacity-[0.08]" />
-      <img src={circlesCluster} alt="" className="pointer-events-none absolute -top-8 -right-8 z-0" style={{ width: 280, opacity: 0.12 }} />
+      
 
       <div className="relative z-10 mx-auto grid max-w-6xl gap-20 md:grid-cols-2 md:items-start">
         {/* Left column */}
