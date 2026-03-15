@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import heroWorker from "@/assets/hero-worker.jpg";
 
-import PinwheelIcon from "@/components/landing/PinwheelIcon";
+
 
 const STATS = [
   { number: "85%", text: "EWA users report less financial stress" },
