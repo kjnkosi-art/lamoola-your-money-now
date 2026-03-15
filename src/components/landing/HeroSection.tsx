@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import heroWorker from "@/assets/hero-worker.jpg";
+import circleSingle from "@/assets/circle-single.png";
 import PinwheelIcon from "@/components/landing/PinwheelIcon";
 
 const STATS = [
