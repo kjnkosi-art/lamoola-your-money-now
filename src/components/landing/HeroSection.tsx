@@ -49,17 +49,17 @@ const HeroSection = ({ onOpenDemo }: HeroSectionProps) => {
             </p>
 
             {/* Stat pills — 4-column grid */}
-            <div className="mb-16 grid grid-cols-4 gap-5">
+            <div className="mb-16 grid grid-cols-4 gap-4">
               {STATS.map((s) => (
                 <div
                   key={s.number}
                   className="rounded-xl text-center"
-                  style={{ backgroundColor: "rgba(255,255,255,0.08)", border: "1.5px solid rgba(255,255,255,0.2)", padding: 24 }}
+                  style={{ backgroundColor: "rgba(255,255,255,0.08)", border: "1.5px solid rgba(255,255,255,0.2)", padding: "20px 12px", minWidth: 130 }}
                 >
                   <p className="mb-2" style={{ fontSize: 38, fontWeight: 900, color: "#6AE809" }}>
                     {s.number}
                   </p>
-                  <p style={{ fontSize: 13, lineHeight: 1.6, color: "rgba(255,255,255,0.85)" }}>
+                  <p style={{ fontSize: 11, lineHeight: 1.5, color: "rgba(255,255,255,0.85)" }}>
                     {s.text}
                   </p>
                 </div>
