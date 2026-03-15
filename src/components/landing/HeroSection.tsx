@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import heroWorker from "@/assets/hero-worker.jpg";
 
-import PinwheelIcon from "@/components/landing/PinwheelIcon";
+
 
 const STATS = [
   { number: "85%", text: "EWA users report less financial stress" },
@@ -87,8 +87,6 @@ const HeroSection = ({ onOpenDemo }: HeroSectionProps) => {
           </div>
         </div>
 
-        {/* Pinwheel watermark — top-right */}
-        <PinwheelIcon size={500} color="#5F8B40" className="pointer-events-none absolute -right-20 -top-16 opacity-[0.06] z-[1]" />
 
         {/* Right column — hero worker image */}
         <div className="relative hidden md:block overflow-hidden" style={{ backgroundColor: "#062247" }}>

@@ -1,6 +1,6 @@
 import joburgSkyline from "@/assets/joburg-skyline.jpg";
 
-import PinwheelIcon from "@/components/landing/PinwheelIcon";
+
 
 interface CTASectionProps {
   onOpenDemo: () => void;
@@ -18,9 +18,6 @@ const CTASection = ({ onOpenDemo }: CTASectionProps) => {
       {/* Navy overlay at 65% */}
       <div className="absolute inset-0" style={{ backgroundColor: "rgba(6,34,71,0.65)" }} />
 
-      {/* Pinwheel overlays — behind text, on top of background */}
-      <PinwheelIcon size={220} color="#FFFFFF" className="pointer-events-none absolute -right-8 -top-8 opacity-[0.10] z-[1]" />
-      <PinwheelIcon size={130} color="#FFFFFF" className="pointer-events-none absolute -left-6 -bottom-6 opacity-[0.08] z-[1]" />
       
 
       <div className="relative z-10 mx-auto max-w-3xl text-center">
