@@ -43,8 +43,6 @@ const HowItWorksSection = ({ onOpenDemo }: HowItWorksSectionProps) => {
       />
       <div className="absolute inset-0" style={{ backgroundColor: "rgba(6,34,71,0.65)" }} />
 
-      {/* Pinwheel watermark — large top-right */}
-      <PinwheelIcon size={500} color="#FFFFFF" className="pointer-events-none absolute -right-16 -top-10 opacity-[0.10]" />
       
 
       <div className="relative z-10 mx-auto max-w-5xl text-center">

@@ -87,8 +87,6 @@ const HeroSection = ({ onOpenDemo }: HeroSectionProps) => {
           </div>
         </div>
 
-        {/* Pinwheel watermark — top-right */}
-        <PinwheelIcon size={500} color="#5F8B40" className="pointer-events-none absolute -right-20 -top-16 opacity-[0.06] z-[1]" />
 
         {/* Right column — hero worker image */}
         <div className="relative hidden md:block overflow-hidden" style={{ backgroundColor: "#062247" }}>

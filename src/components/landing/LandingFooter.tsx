@@ -16,8 +16,6 @@ const NAV_LINKS = [
 const LandingFooter = ({ onScrollTo }: LandingFooterProps) => {
   return (
     <footer className="relative overflow-hidden px-6" style={{ backgroundColor: "#062247", paddingTop: 60, paddingBottom: 40 }}>
-      {/* Pinwheel watermark — large, right side */}
-      <PinwheelIcon size={200} color="#FFFFFF" className="pointer-events-none absolute -right-10 top-1/2 -translate-y-1/2 opacity-[0.08]" />
       
       <div className="relative z-10 mx-auto max-w-7xl">
         <div className="flex flex-col items-center gap-10 md:flex-row md:items-start md:justify-between">

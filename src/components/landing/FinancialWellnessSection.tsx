@@ -33,9 +33,6 @@ const TILES = [
 const FinancialWellnessSection = () => {
   return (
     <section id="financial-wellness" className="relative overflow-hidden" style={{ backgroundColor: "#F7F7F4", padding: "100px 24px" }}>
-      {/* Pinwheel watermarks */}
-      <PinwheelIcon size={180} color="#5F8B40" className="pointer-events-none absolute -right-6 -top-6 opacity-[0.06] z-0" />
-      <PinwheelIcon size={100} color="#5F8B40" className="pointer-events-none absolute -left-4 -bottom-4 opacity-[0.05] z-0" />
       
 
       <div className="relative z-10 mx-auto grid max-w-6xl gap-20 md:grid-cols-2 md:items-center">
