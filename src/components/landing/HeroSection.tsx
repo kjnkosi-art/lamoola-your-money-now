@@ -17,11 +17,11 @@ const HeroSection = ({ onOpenDemo }: HeroSectionProps) => {
   const navigate = useNavigate();
 
   return (
-    <section className="relative flex" style={{ minHeight: "100vh", paddingTop: 83, backgroundColor: "#FFFFFF" }}>
+    <section className="relative flex" style={{ minHeight: "100vh", paddingTop: 83, backgroundColor: "#062247" }}>
       <div className="grid w-full md:grid-cols-2">
         {/* Left column — text, vertically centred */}
         <div className="flex items-center px-8 py-20 md:px-16 lg:px-24">
-          <div className="border-l-4 pl-10" style={{ borderColor: "#6AE809" }}>
+          <div className="border-l-4 pl-10" style={{ borderColor: "#EB5E07" }}>
             <p
               className="mb-8 uppercase tracking-[0.22em]"
               style={{ fontSize: 13, fontWeight: 800, color: "#EB5E07" }}
@@ -31,34 +31,34 @@ const HeroSection = ({ onOpenDemo }: HeroSectionProps) => {
 
             <h1
               className="mb-3 leading-[1.05]"
-              style={{ fontSize: 64, fontWeight: 900, color: "#1A1A1A" }}
+              style={{ fontSize: 64, fontWeight: 900, color: "#FFFFFF" }}
             >
               Your employees earned it.
             </h1>
             <h1
               className="mb-12 leading-[1.05]"
-              style={{ fontSize: 64, fontWeight: 900, color: "#5F8B40" }}
+              style={{ fontSize: 64, fontWeight: 900, color: "#6AE809" }}
             >
               They just can't access it yet.
             </h1>
 
-            <p className="mb-16 max-w-lg" style={{ fontSize: 18, lineHeight: 1.8, color: "#545454" }}>
+            <p className="mb-16 max-w-lg" style={{ fontSize: 18, lineHeight: 1.8, color: "rgba(255,255,255,0.75)" }}>
               Financial stress is quietly costing you in turnover, productivity, and risk.
               Lamoola fixes that — at zero cost to your business.
             </p>
 
-        {/* Stat pills */}
-            <div className="mb-16 flex flex-wrap justify-center gap-5">
+            {/* Stat pills — 4-column grid */}
+            <div className="mb-16 grid grid-cols-4 gap-5">
               {STATS.map((s) => (
                 <div
                   key={s.number}
-                  className="rounded-xl border-2"
-                  style={{ backgroundColor: "#F7F7F4", borderColor: "#5F8B40", padding: 24, flex: "0 1 auto", minWidth: 160 }}
+                  className="rounded-xl text-center"
+                  style={{ backgroundColor: "rgba(255,255,255,0.08)", border: "1.5px solid rgba(255,255,255,0.2)", padding: 24 }}
                 >
-                  <p className="mb-2" style={{ fontSize: 42, fontWeight: 900, color: "#6AE809" }}>
+                  <p className="mb-2" style={{ fontSize: 38, fontWeight: 900, color: "#6AE809" }}>
                     {s.number}
                   </p>
-                  <p style={{ fontSize: 14, lineHeight: 1.5, color: "#323232" }}>
+                  <p style={{ fontSize: 12, lineHeight: 1.5, color: "rgba(255,255,255,0.7)" }}>
                     {s.text}
                   </p>
                 </div>
@@ -68,17 +68,17 @@ const HeroSection = ({ onOpenDemo }: HeroSectionProps) => {
             <button
               onClick={onOpenDemo}
               className="text-white transition-opacity hover:opacity-90"
-              style={{ fontSize: 18, fontWeight: 800, backgroundColor: "#062247", padding: "18px 40px", borderRadius: 10 }}
+              style={{ fontSize: 18, fontWeight: 800, backgroundColor: "#EB5E07", padding: "18px 40px", borderRadius: 10 }}
             >
               Book Your Free Demo
             </button>
 
-            <p className="mt-6" style={{ fontSize: 15, color: "#545454" }}>
+            <p className="mt-6" style={{ fontSize: 15, color: "rgba(255,255,255,0.6)" }}>
               Already have an account?{" "}
               <button
                 onClick={() => navigate("/login")}
                 className="underline transition-colors hover:opacity-80"
-                style={{ fontWeight: 700, color: "#5F8B40" }}
+                style={{ fontWeight: 700, color: "#6AE809" }}
               >
                 Login →
               </button>
