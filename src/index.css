@@ -97,7 +97,8 @@
     @apply border-border;
   }
 
-  body {
+  html, body {
     @apply bg-background text-foreground font-nunito;
+    overflow-x: hidden;
   }
 }
