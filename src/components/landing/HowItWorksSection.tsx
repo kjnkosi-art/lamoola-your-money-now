@@ -1,8 +1,6 @@
 import { Building2, UserPlus, Banknote } from "lucide-react";
 import howItWorksBg from "@/assets/how-it-works-bg.jpg";
-
-
-
+import pinwheelCluster from "@/assets/pinwheel-cluster.png";
 const STEPS = [
   {
     icon: Building2,
