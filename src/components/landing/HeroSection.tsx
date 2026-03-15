@@ -98,6 +98,7 @@ const HeroSection = ({ onOpenDemo }: HeroSectionProps) => {
             className="absolute inset-0 h-full w-full object-contain object-center"
             style={{ objectPosition: "center 15%" }}
           />
+          <img src={circleSingle} alt="" className="pointer-events-none absolute -top-4 -right-4 z-0" style={{ width: 180, opacity: 0.12 }} />
         </div>
       </div>
     </section>

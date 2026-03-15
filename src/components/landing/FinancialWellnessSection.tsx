@@ -36,6 +36,7 @@ const FinancialWellnessSection = () => {
       {/* Pinwheel watermarks */}
       <PinwheelIcon size={180} color="#5F8B40" className="pointer-events-none absolute -right-6 -top-6 opacity-[0.06] z-0" />
       <PinwheelIcon size={100} color="#5F8B40" className="pointer-events-none absolute -left-4 -bottom-4 opacity-[0.05] z-0" />
+      <img src={circleSingle} alt="" className="pointer-events-none absolute -bottom-6 -right-6 z-0" style={{ width: 160, opacity: 0.08 }} />
 
       <div className="relative z-10 mx-auto grid max-w-6xl gap-20 md:grid-cols-2 md:items-center">
         {/* Left column — text + image */}
