@@ -1,5 +1,5 @@
 import logoNav from "@/assets/logo-nav.png";
-import circleSingle from "@/assets/circle-single.png";
+
 import PinwheelIcon from "@/components/landing/PinwheelIcon";
 
 interface LandingFooterProps {
