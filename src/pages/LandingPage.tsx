@@ -36,7 +36,7 @@ const LandingPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white font-nunito scroll-smooth">
+    <div className="min-h-screen bg-white font-nunito scroll-smooth" style={{ overflowX: "hidden" }}>
       {/* ── Sticky Nav — deep navy, 80px tall ── */}
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-shadow ${scrolled ? "shadow-lg" : ""}`}
