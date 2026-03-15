@@ -19,7 +19,7 @@ const CTASection = ({ onOpenDemo }: CTASectionProps) => {
       <img src={pinwheelCluster} alt="" className="pointer-events-none absolute -top-8 -right-8" style={{ width: 280, opacity: 0.10, zIndex: 0 }} />
 
       <div className="relative z-10 mx-auto max-w-3xl text-center">
-        <p className="mb-4 uppercase" style={{ fontSize: 14, fontWeight: 800, letterSpacing: 4, color: "#FFFFFF" }}>
+        <p className="mb-4 uppercase" style={{ fontSize: 16, fontWeight: 900, letterSpacing: 5, color: "#FFFFFF" }}>
           Let's Talk
         </p>
         <h2 className="mb-8 text-white leading-tight" style={{ fontSize: 52, fontWeight: 900 }}>

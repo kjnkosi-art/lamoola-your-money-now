@@ -25,7 +25,7 @@ const HeroSection = ({ onOpenDemo }: HeroSectionProps) => {
           <div className="border-l-4 pl-10" style={{ borderColor: "#EB5E07" }}>
             <p
               className="mb-8 uppercase"
-              style={{ fontSize: 14, fontWeight: 800, letterSpacing: 4, color: "#EB5E07" }}
+              style={{ fontSize: 16, fontWeight: 900, letterSpacing: 5, color: "#EB5E07" }}
             >
               The Silent Cost Your Business Is Carrying
             </p>
