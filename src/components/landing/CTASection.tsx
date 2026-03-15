@@ -1,4 +1,5 @@
 import joburgSkyline from "@/assets/joburg-skyline.jpg";
+import circlesCluster from "@/assets/circles-cluster.png";
 import PinwheelIcon from "@/components/landing/PinwheelIcon";
 
 interface CTASectionProps {
