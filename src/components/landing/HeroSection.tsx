@@ -32,13 +32,13 @@ const HeroSection = ({ onOpenDemo }: HeroSectionProps) => {
 
             <h1
               className="mb-3 leading-[1.05]"
-              style={{ fontSize: 64, fontWeight: 900, color: "#FFFFFF" }}
+              style={{ fontSize: 52, fontWeight: 900, color: "#FFFFFF" }}
             >
               Your employees earned it.
             </h1>
             <h1
               className="mb-12 leading-[1.05]"
-              style={{ fontSize: 64, fontWeight: 900, color: "#6AE809" }}
+              style={{ fontSize: 52, fontWeight: 900, color: "#6AE809" }}
             >
               They just can't access it yet.
             </h1>
@@ -98,7 +98,7 @@ const HeroSection = ({ onOpenDemo }: HeroSectionProps) => {
             className="absolute inset-0 h-full w-full object-contain object-center"
             style={{ objectPosition: "center 15%" }}
           />
-          <img src={circleSingle} alt="" className="pointer-events-none absolute -top-4 -right-4 z-0" style={{ width: 180, opacity: 0.12 }} />
+          <img src={circleSingle} alt="" className="pointer-events-none absolute -top-4 -right-4 z-0" style={{ width: 160, opacity: 0.15 }} />
         </div>
       </div>
     </section>
