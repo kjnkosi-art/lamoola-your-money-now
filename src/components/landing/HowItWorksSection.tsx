@@ -46,7 +46,7 @@ const HowItWorksSection = ({ onOpenDemo }: HowItWorksSectionProps) => {
       <PinwheelIcon size={500} color="#FFFFFF" className="pointer-events-none absolute -right-16 -top-10 opacity-[0.10]" />
 
       <div className="relative z-10 mx-auto max-w-5xl text-center">
-        <p className="mb-4 uppercase tracking-[0.2em]" style={{ fontSize: 14, fontWeight: 800, color: "#EB5E07" }}>
+        <p className="mb-4 uppercase" style={{ fontSize: 13, fontWeight: 700, letterSpacing: 4, color: "#EB5E07" }}>
           How It Works
         </p>
         <h2 className="mb-6 text-white leading-tight" style={{ fontSize: 48, fontWeight: 900 }}>
@@ -81,7 +81,7 @@ const HowItWorksSection = ({ onOpenDemo }: HowItWorksSectionProps) => {
               style={{ backgroundColor: "#FFFFFF", borderColor: "#EB5E07", padding: 28 }}
             >
               <s.icon size={34} strokeWidth={2} style={{ color: "#5F8B40" }} className="mb-5" />
-              <p className="mb-2 uppercase tracking-wider" style={{ fontSize: 13, fontWeight: 800, color: "#EB5E07" }}>
+              <p className="mb-2 uppercase" style={{ fontSize: 13, fontWeight: 700, letterSpacing: 4, color: "#EB5E07" }}>
                 {s.step}
               </p>
               <p className="mb-4" style={{ fontSize: 18, fontWeight: 700, color: "#1A1A1A" }}>

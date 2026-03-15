@@ -23,8 +23,8 @@ const HeroSection = ({ onOpenDemo }: HeroSectionProps) => {
         <div className="flex items-center px-8 py-20 md:px-16 lg:px-24">
           <div className="border-l-4 pl-10" style={{ borderColor: "#EB5E07" }}>
             <p
-              className="mb-8 uppercase tracking-[0.22em]"
-              style={{ fontSize: 13, fontWeight: 800, color: "#EB5E07" }}
+              className="mb-8 uppercase"
+              style={{ fontSize: 13, fontWeight: 700, letterSpacing: 4, color: "#EB5E07" }}
             >
               The Silent Cost Your Business Is Carrying
             </p>
@@ -58,7 +58,7 @@ const HeroSection = ({ onOpenDemo }: HeroSectionProps) => {
                   <p className="mb-2" style={{ fontSize: 38, fontWeight: 900, color: "#6AE809" }}>
                     {s.number}
                   </p>
-                  <p style={{ fontSize: 12, lineHeight: 1.5, color: "rgba(255,255,255,0.7)" }}>
+                  <p style={{ fontSize: 13, lineHeight: 1.6, color: "rgba(255,255,255,0.85)" }}>
                     {s.text}
                   </p>
                 </div>

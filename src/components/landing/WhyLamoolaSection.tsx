@@ -51,7 +51,7 @@ const WhyLamoolaSection = ({ onOpenDemo }: WhyLamoolaSectionProps) => {
       <div className="relative z-10 mx-auto grid max-w-6xl gap-20 md:grid-cols-2 md:items-start">
         {/* Left column */}
         <div>
-          <p className="mb-4 uppercase tracking-[0.2em]" style={{ fontSize: 14, fontWeight: 800, color: "#6AE809" }}>
+          <p className="mb-4 uppercase" style={{ fontSize: 13, fontWeight: 700, letterSpacing: 4, color: "#6AE809" }}>
             Why Lamoola
           </p>
           <h2 className="mb-8 text-white leading-tight" style={{ fontSize: 42, fontWeight: 900 }}>

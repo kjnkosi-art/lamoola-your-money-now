@@ -7,7 +7,7 @@ interface CTASectionProps {
 
 const CTASection = ({ onOpenDemo }: CTASectionProps) => {
   return (
-    <section id="contact" className="relative overflow-hidden" style={{ padding: "120px 24px" }}>
+    <section id="contact" className="relative overflow-hidden -mt-px" style={{ padding: "120px 24px", backgroundColor: "#062247" }}>
       {/* Johannesburg skyline background */}
       <img
         src={joburgSkyline}
