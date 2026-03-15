@@ -1,8 +1,6 @@
 import { BookOpen, PiggyBank, HeartPulse, GraduationCap } from "lucide-react";
 import wellnessPhone from "@/assets/wellness-phone.jpg";
-
-
-
+import pinwheelSingle from "@/assets/pinwheel-single.png";
 const TILES = [
   {
     icon: BookOpen,
