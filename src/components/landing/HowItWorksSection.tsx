@@ -46,7 +46,7 @@ const HowItWorksSection = ({ onOpenDemo }: HowItWorksSectionProps) => {
       <PinwheelIcon size={500} color="#FFFFFF" className="pointer-events-none absolute -right-16 -top-10 opacity-[0.10]" />
 
       <div className="relative z-10 mx-auto max-w-5xl text-center">
-        <p className="mb-4 uppercase tracking-[0.2em]" style={{ fontSize: 14, fontWeight: 800, color: "#EB5E07" }}>
+        <p className="mb-4 uppercase" style={{ fontSize: 13, fontWeight: 700, letterSpacing: 4, color: "#EB5E07" }}>
           How It Works
         </p>
         <h2 className="mb-6 text-white leading-tight" style={{ fontSize: 48, fontWeight: 900 }}>
