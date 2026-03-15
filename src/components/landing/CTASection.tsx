@@ -14,14 +14,15 @@ const CTASection = ({ onOpenDemo }: CTASectionProps) => {
         alt=""
         className="pointer-events-none absolute inset-0 h-full w-full object-cover"
       />
-      {/* Olive green overlay at 75% */}
-      <div className="absolute inset-0" style={{ backgroundColor: "rgba(95,139,64,0.75)" }} />
+      {/* Navy overlay at 60% */}
+      <div className="absolute inset-0" style={{ backgroundColor: "rgba(6,34,71,0.60)" }} />
 
-      {/* Pinwheel — very large, centred behind headline */}
-      <PinwheelIcon size={700} color="#FFFFFF" className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.08] z-0" />
+      {/* Pinwheel overlays — behind text, on top of background */}
+      <PinwheelIcon size={220} color="#FFFFFF" className="pointer-events-none absolute -right-8 -top-8 opacity-[0.10] z-[1]" />
+      <PinwheelIcon size={130} color="#FFFFFF" className="pointer-events-none absolute -left-6 -bottom-6 opacity-[0.08] z-[1]" />
 
       <div className="relative z-10 mx-auto max-w-3xl text-center">
-        <h2 className="mb-8 text-white leading-tight" style={{ fontSize: 48, fontWeight: 900 }}>
+        <h2 className="mb-8 text-white leading-tight" style={{ fontSize: 52, fontWeight: 900 }}>
           Ready to eliminate financial stress in your workforce?
         </h2>
         <p className="mb-12 text-white/80" style={{ fontSize: 18, lineHeight: 1.8 }}>
@@ -30,15 +31,13 @@ const CTASection = ({ onOpenDemo }: CTASectionProps) => {
         </p>
         <button
           onClick={onOpenDemo}
-          className="transition-colors"
-          style={{ fontSize: 18, fontWeight: 800, backgroundColor: "#FFFFFF", color: "#5F8B40", padding: "18px 48px", borderRadius: 10 }}
+          className="text-white transition-colors"
+          style={{ fontSize: 18, fontWeight: 800, backgroundColor: "#EB5E07", padding: "18px 48px", borderRadius: 10 }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "#EB5E07";
-            e.currentTarget.style.color = "#FFFFFF";
+            e.currentTarget.style.backgroundColor = "#5F8B40";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "#FFFFFF";
-            e.currentTarget.style.color = "#5F8B40";
+            e.currentTarget.style.backgroundColor = "#EB5E07";
           }}
         >
           Request My Demo
