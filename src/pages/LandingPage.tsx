@@ -36,7 +36,7 @@ const LandingPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white font-nunito scroll-smooth flex flex-col" style={{ gap: 0 }}>
+    <div className="min-h-screen bg-white font-nunito scroll-smooth [&>section]:m-0 [&>footer]:m-0" style={{ fontSize: 0, lineHeight: 0 }}>
       {/* ── Sticky Nav — deep navy, 80px tall ── */}
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-shadow ${scrolled ? "shadow-lg" : ""}`}
