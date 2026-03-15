@@ -77,8 +77,8 @@ export default function AddEmployer() {
   const [step2, setStep2] = useState({
     pay_cycle: "",
     payday: "",
-    payroll_period_start: "",
-    payroll_period_end: "",
+    payroll_period_start: "1",
+    payroll_period_end: "31",
     payroll_export_format: "",
   });
 
