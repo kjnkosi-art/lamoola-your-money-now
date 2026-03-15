@@ -615,12 +615,18 @@ export default function AddEmployer() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <Label htmlFor="payroll_period_start">Payroll Period Start *</Label>
-                  <Input id="payroll_period_start" value={step2.payroll_period_start} onChange={(e) => updateStep2("payroll_period_start", e.target.value)} placeholder="e.g. 1st of month" />
+                  <Select value={step2.payroll_period_start || "1"} onValueChange={(v) => updateStep2("payroll_period_start", v)}>
+                    <SelectTrigger id="payroll_period_start"><SelectValue placeholder="Select day" /></SelectTrigger>
+                    <SelectContent>{Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (<SelectItem key={d} value={String(d)}>{d}</SelectItem>))}</SelectContent>
+                  </Select>
                   <FieldError field="payroll_period_start" />
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="payroll_period_end">Payroll Period End *</Label>
-                  <Input id="payroll_period_end" value={step2.payroll_period_end} onChange={(e) => updateStep2("payroll_period_end", e.target.value)} placeholder="e.g. Last day of month" />
+                  <Select value={step2.payroll_period_end || "31"} onValueChange={(v) => updateStep2("payroll_period_end", v)}>
+                    <SelectTrigger id="payroll_period_end"><SelectValue placeholder="Select day" /></SelectTrigger>
+                    <SelectContent>{Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (<SelectItem key={d} value={String(d)}>{d}</SelectItem>))}</SelectContent>
+                  </Select>
                   <FieldError field="payroll_period_end" />
                 </div>
               </div>
