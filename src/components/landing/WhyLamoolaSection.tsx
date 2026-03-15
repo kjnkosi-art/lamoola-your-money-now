@@ -1,8 +1,6 @@
 import { Shield, TrendingUp, Clock, Wallet, Users } from "lucide-react";
 import teamWorkforce from "@/assets/team-workforce.jpg";
-
-
-
+import pinwheelCluster from "@/assets/pinwheel-cluster.png";
 const BENEFITS = [
   {
     icon: Wallet,
@@ -45,7 +43,7 @@ const WhyLamoolaSection = ({ onOpenDemo }: WhyLamoolaSectionProps) => {
         className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-[0.06]"
       />
 
-      
+      <img src={pinwheelCluster} alt="" className="pointer-events-none absolute -top-8 -right-8" style={{ width: 260, opacity: 0.12, zIndex: 0 }} />
 
       <div className="relative z-10 mx-auto grid max-w-6xl gap-20 md:grid-cols-2 md:items-start">
         {/* Left column */}

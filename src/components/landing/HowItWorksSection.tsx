@@ -1,8 +1,6 @@
 import { Building2, UserPlus, Banknote } from "lucide-react";
 import howItWorksBg from "@/assets/how-it-works-bg.jpg";
-
-
-
+import pinwheelCluster from "@/assets/pinwheel-cluster.png";
 const STEPS = [
   {
     icon: Building2,
@@ -43,7 +41,7 @@ const HowItWorksSection = ({ onOpenDemo }: HowItWorksSectionProps) => {
       />
       <div className="absolute inset-0" style={{ backgroundColor: "rgba(6,34,71,0.65)" }} />
 
-      
+      <img src={pinwheelCluster} alt="" className="pointer-events-none absolute -bottom-8 -right-8" style={{ width: 240, opacity: 0.10, zIndex: 0 }} />
 
       <div className="relative z-10 mx-auto max-w-5xl text-center">
         <p className="mb-4 uppercase" style={{ fontSize: 13, fontWeight: 700, letterSpacing: 4, color: "#EB5E07" }}>
