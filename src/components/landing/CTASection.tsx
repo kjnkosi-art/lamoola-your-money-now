@@ -1,7 +1,5 @@
 import joburgSkyline from "@/assets/joburg-skyline.jpg";
-
-
-
+import pinwheelCluster from "@/assets/pinwheel-cluster.png";
 interface CTASectionProps {
   onOpenDemo: () => void;
 }
