@@ -44,7 +44,7 @@ const HowItWorksSection = ({ onOpenDemo }: HowItWorksSectionProps) => {
       <img src={pinwheelCluster} alt="" className="pointer-events-none absolute -bottom-8 -right-8" style={{ width: 240, opacity: 0.10, zIndex: 0 }} />
 
       <div className="relative z-10 mx-auto max-w-5xl text-center">
-        <p className="mb-4 uppercase" style={{ fontSize: 13, fontWeight: 700, letterSpacing: 4, color: "#EB5E07" }}>
+        <p className="mb-4 uppercase" style={{ fontSize: 14, fontWeight: 800, letterSpacing: 4, color: "#EB5E07" }}>
           How It Works
         </p>
         <h2 className="mb-6 text-white leading-tight" style={{ fontSize: 48, fontWeight: 900 }}>

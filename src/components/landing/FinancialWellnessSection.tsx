@@ -36,7 +36,7 @@ const FinancialWellnessSection = () => {
       <div className="relative z-10 mx-auto grid max-w-6xl gap-20 md:grid-cols-2 md:items-center">
         {/* Left column — text + image */}
         <div>
-          <p className="mb-4 uppercase" style={{ fontSize: 13, fontWeight: 700, letterSpacing: 4, color: "#EB5E07" }}>
+          <p className="mb-4 uppercase" style={{ fontSize: 14, fontWeight: 800, letterSpacing: 4, color: "#EB5E07" }}>
             Financial Wellness
           </p>
           <h2 className="mb-8 leading-tight" style={{ fontSize: 42, fontWeight: 900, color: "#1A1A1A" }}>
