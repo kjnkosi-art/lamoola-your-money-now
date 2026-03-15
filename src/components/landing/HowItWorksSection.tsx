@@ -1,5 +1,5 @@
 import { Building2, UserPlus, Banknote } from "lucide-react";
-import officeWorkers from "@/assets/office-workers.jpg";
+import howItWorksBg from "@/assets/how-it-works-bg.jpg";
 import PinwheelIcon from "@/components/landing/PinwheelIcon";
 
 const STEPS = [
@@ -36,7 +36,7 @@ const HowItWorksSection = ({ onOpenDemo }: HowItWorksSectionProps) => {
     >
       {/* Background image + navy overlay */}
       <img
-        src={officeWorkers}
+        src={howItWorksBg}
         alt=""
         className="pointer-events-none absolute inset-0 h-full w-full object-cover"
       />

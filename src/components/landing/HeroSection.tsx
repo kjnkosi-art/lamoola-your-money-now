@@ -47,18 +47,18 @@ const HeroSection = ({ onOpenDemo }: HeroSectionProps) => {
               Lamoola fixes that — at zero cost to your business.
             </p>
 
-            {/* Stat pills */}
-            <div className="mb-16 grid grid-cols-2 gap-5 lg:grid-cols-4">
+        {/* Stat pills */}
+            <div className="mb-16 flex flex-wrap justify-center gap-5">
               {STATS.map((s) => (
                 <div
                   key={s.number}
                   className="rounded-xl border-2"
-                  style={{ backgroundColor: "#F7F7F4", borderColor: "#5F8B40", padding: 20 }}
+                  style={{ backgroundColor: "#F7F7F4", borderColor: "#5F8B40", padding: 24, flex: "0 1 auto", minWidth: 160 }}
                 >
                   <p className="mb-2" style={{ fontSize: 42, fontWeight: 900, color: "#6AE809" }}>
                     {s.number}
                   </p>
-                  <p style={{ fontSize: 13, lineHeight: 1.5, color: "#323232" }}>
+                  <p style={{ fontSize: 14, lineHeight: 1.5, color: "#323232" }}>
                     {s.text}
                   </p>
                 </div>
@@ -90,17 +90,12 @@ const HeroSection = ({ onOpenDemo }: HeroSectionProps) => {
         <PinwheelIcon size={500} color="#5F8B40" className="pointer-events-none absolute -right-20 -top-16 opacity-[0.06] z-[1]" />
 
         {/* Right column — hero worker image */}
-        <div className="relative hidden md:block overflow-hidden">
+        <div className="relative hidden md:block overflow-hidden" style={{ backgroundColor: "#062247" }}>
           <img
             src={heroWorker}
             alt="Construction worker with arms crossed wearing hard hat and hi-vis vest"
-            className="absolute inset-0 h-full w-full object-cover"
-            style={{ objectPosition: "center 20%", transform: "scale(1.15)" }}
-          />
-          {/* Navy overlay at 40% */}
-          <div
-            className="absolute inset-0"
-            style={{ backgroundColor: "rgba(6,34,71,0.40)" }}
+            className="absolute inset-0 h-full w-full object-contain object-center"
+            style={{ objectPosition: "center 15%" }}
           />
         </div>
       </div>
